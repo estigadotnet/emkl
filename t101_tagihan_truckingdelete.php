@@ -51,6 +51,8 @@ ft101_tagihan_truckingdelete.validateRequired = <?php echo json_encode(CLIENT_VA
 // Dynamic selection lists
 ft101_tagihan_truckingdelete.lists["x_Shipper_id"] = <?php echo $t101_tagihan_trucking_delete->Shipper_id->Lookup->toClientList() ?>;
 ft101_tagihan_truckingdelete.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_delete->Shipper_id->lookupOptions()) ?>;
+ft101_tagihan_truckingdelete.lists["x_Jenis_Container"] = <?php echo $t101_tagihan_trucking_delete->Jenis_Container->Lookup->toClientList() ?>;
+ft101_tagihan_truckingdelete.lists["x_Jenis_Container"].options = <?php echo JsonEncode($t101_tagihan_trucking_delete->Jenis_Container->options(FALSE, TRUE)) ?>;
 
 // Form object for search
 </script>
@@ -97,6 +99,9 @@ $t101_tagihan_trucking_delete->showMessage();
 <?php } ?>
 <?php if ($t101_tagihan_trucking->Ke_Lokasi->Visible) { // Ke_Lokasi ?>
 		<th class="<?php echo $t101_tagihan_trucking->Ke_Lokasi->headerCellClass() ?>"><span id="elh_t101_tagihan_trucking_Ke_Lokasi" class="t101_tagihan_trucking_Ke_Lokasi"><?php echo $t101_tagihan_trucking->Ke_Lokasi->caption() ?></span></th>
+<?php } ?>
+<?php if ($t101_tagihan_trucking->Jenis_Container->Visible) { // Jenis_Container ?>
+		<th class="<?php echo $t101_tagihan_trucking->Jenis_Container->headerCellClass() ?>"><span id="elh_t101_tagihan_trucking_Jenis_Container" class="t101_tagihan_trucking_Jenis_Container"><?php echo $t101_tagihan_trucking->Jenis_Container->caption() ?></span></th>
 <?php } ?>
 <?php if ($t101_tagihan_trucking->Nomor_Container_1->Visible) { // Nomor_Container_1 ?>
 		<th class="<?php echo $t101_tagihan_trucking->Nomor_Container_1->headerCellClass() ?>"><span id="elh_t101_tagihan_trucking_Nomor_Container_1" class="t101_tagihan_trucking_Nomor_Container_1"><?php echo $t101_tagihan_trucking->Nomor_Container_1->caption() ?></span></th>
@@ -181,6 +186,14 @@ while (!$t101_tagihan_trucking_delete->Recordset->EOF) {
 <span id="el<?php echo $t101_tagihan_trucking_delete->RowCnt ?>_t101_tagihan_trucking_Ke_Lokasi" class="t101_tagihan_trucking_Ke_Lokasi">
 <span<?php echo $t101_tagihan_trucking->Ke_Lokasi->viewAttributes() ?>>
 <?php echo $t101_tagihan_trucking->Ke_Lokasi->getViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($t101_tagihan_trucking->Jenis_Container->Visible) { // Jenis_Container ?>
+		<td<?php echo $t101_tagihan_trucking->Jenis_Container->cellAttributes() ?>>
+<span id="el<?php echo $t101_tagihan_trucking_delete->RowCnt ?>_t101_tagihan_trucking_Jenis_Container" class="t101_tagihan_trucking_Jenis_Container">
+<span<?php echo $t101_tagihan_trucking->Jenis_Container->viewAttributes() ?>>
+<?php echo $t101_tagihan_trucking->Jenis_Container->getViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

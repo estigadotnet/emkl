@@ -559,6 +559,7 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 		$this->Shipper_id->setVisibility();
 		$this->Dari_Lokasi->setVisibility();
 		$this->Ke_Lokasi->setVisibility();
+		$this->Jenis_Container->setVisibility();
 		$this->Nomor_Container_1->setVisibility();
 		$this->Nomor_Container_2->setVisibility();
 		$this->Keterangan->setVisibility();
@@ -800,6 +801,15 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 				$this->Ke_Lokasi->setFormValue($val);
 		}
 
+		// Check field name 'Jenis_Container' first before field var 'x_Jenis_Container'
+		$val = $CurrentForm->hasValue("Jenis_Container") ? $CurrentForm->getValue("Jenis_Container") : $CurrentForm->getValue("x_Jenis_Container");
+		if (!$this->Jenis_Container->IsDetailKey) {
+			if (IsApi() && $val == NULL)
+				$this->Jenis_Container->Visible = FALSE; // Disable update for API request
+			else
+				$this->Jenis_Container->setFormValue($val);
+		}
+
 		// Check field name 'Nomor_Container_1' first before field var 'x_Nomor_Container_1'
 		$val = $CurrentForm->hasValue("Nomor_Container_1") ? $CurrentForm->getValue("Nomor_Container_1") : $CurrentForm->getValue("x_Nomor_Container_1");
 		if (!$this->Nomor_Container_1->IsDetailKey) {
@@ -855,6 +865,7 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 		$this->Shipper_id->CurrentValue = $this->Shipper_id->FormValue;
 		$this->Dari_Lokasi->CurrentValue = $this->Dari_Lokasi->FormValue;
 		$this->Ke_Lokasi->CurrentValue = $this->Ke_Lokasi->FormValue;
+		$this->Jenis_Container->CurrentValue = $this->Jenis_Container->FormValue;
 		$this->Nomor_Container_1->CurrentValue = $this->Nomor_Container_1->FormValue;
 		$this->Nomor_Container_2->CurrentValue = $this->Nomor_Container_2->FormValue;
 		$this->Keterangan->CurrentValue = $this->Keterangan->FormValue;
@@ -904,6 +915,7 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 		$this->Shipper_id->setDbValue($row['Shipper_id']);
 		$this->Dari_Lokasi->setDbValue($row['Dari_Lokasi']);
 		$this->Ke_Lokasi->setDbValue($row['Ke_Lokasi']);
+		$this->Jenis_Container->setDbValue($row['Jenis_Container']);
 		$this->Nomor_Container_1->setDbValue($row['Nomor_Container_1']);
 		$this->Nomor_Container_2->setDbValue($row['Nomor_Container_2']);
 		$this->Keterangan->setDbValue($row['Keterangan']);
@@ -922,6 +934,7 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 		$row['Shipper_id'] = NULL;
 		$row['Dari_Lokasi'] = NULL;
 		$row['Ke_Lokasi'] = NULL;
+		$row['Jenis_Container'] = NULL;
 		$row['Nomor_Container_1'] = NULL;
 		$row['Nomor_Container_2'] = NULL;
 		$row['Keterangan'] = NULL;
@@ -975,6 +988,7 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 		// Shipper_id
 		// Dari_Lokasi
 		// Ke_Lokasi
+		// Jenis_Container
 		// Nomor_Container_1
 		// Nomor_Container_2
 		// Keterangan
@@ -1033,6 +1047,14 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 			$this->Ke_Lokasi->ViewValue = $this->Ke_Lokasi->CurrentValue;
 			$this->Ke_Lokasi->ViewCustomAttributes = "";
 
+			// Jenis_Container
+			if (strval($this->Jenis_Container->CurrentValue) <> "") {
+				$this->Jenis_Container->ViewValue = $this->Jenis_Container->optionCaption($this->Jenis_Container->CurrentValue);
+			} else {
+				$this->Jenis_Container->ViewValue = NULL;
+			}
+			$this->Jenis_Container->ViewCustomAttributes = "";
+
 			// Nomor_Container_1
 			$this->Nomor_Container_1->ViewValue = $this->Nomor_Container_1->CurrentValue;
 			$this->Nomor_Container_1->ViewCustomAttributes = "";
@@ -1085,6 +1107,11 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 			$this->Ke_Lokasi->LinkCustomAttributes = "";
 			$this->Ke_Lokasi->HrefValue = "";
 			$this->Ke_Lokasi->TooltipValue = "";
+
+			// Jenis_Container
+			$this->Jenis_Container->LinkCustomAttributes = "";
+			$this->Jenis_Container->HrefValue = "";
+			$this->Jenis_Container->TooltipValue = "";
 
 			// Nomor_Container_1
 			$this->Nomor_Container_1->LinkCustomAttributes = "";
@@ -1176,6 +1203,10 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 			$this->Ke_Lokasi->EditValue = HtmlEncode($this->Ke_Lokasi->CurrentValue);
 			$this->Ke_Lokasi->PlaceHolder = RemoveHtml($this->Ke_Lokasi->caption());
 
+			// Jenis_Container
+			$this->Jenis_Container->EditCustomAttributes = "";
+			$this->Jenis_Container->EditValue = $this->Jenis_Container->options(FALSE);
+
 			// Nomor_Container_1
 			$this->Nomor_Container_1->EditAttrs["class"] = "form-control";
 			$this->Nomor_Container_1->EditCustomAttributes = "";
@@ -1235,6 +1266,10 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 			// Ke_Lokasi
 			$this->Ke_Lokasi->LinkCustomAttributes = "";
 			$this->Ke_Lokasi->HrefValue = "";
+
+			// Jenis_Container
+			$this->Jenis_Container->LinkCustomAttributes = "";
+			$this->Jenis_Container->HrefValue = "";
 
 			// Nomor_Container_1
 			$this->Nomor_Container_1->LinkCustomAttributes = "";
@@ -1312,6 +1347,11 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 		if ($this->Ke_Lokasi->Required) {
 			if (!$this->Ke_Lokasi->IsDetailKey && $this->Ke_Lokasi->FormValue != NULL && $this->Ke_Lokasi->FormValue == "") {
 				AddMessage($FormError, str_replace("%s", $this->Ke_Lokasi->caption(), $this->Ke_Lokasi->RequiredErrorMessage));
+			}
+		}
+		if ($this->Jenis_Container->Required) {
+			if ($this->Jenis_Container->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->Jenis_Container->caption(), $this->Jenis_Container->RequiredErrorMessage));
 			}
 		}
 		if ($this->Nomor_Container_1->Required) {
@@ -1394,6 +1434,9 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 
 			// Ke_Lokasi
 			$this->Ke_Lokasi->setDbValueDef($rsnew, $this->Ke_Lokasi->CurrentValue, "", $this->Ke_Lokasi->ReadOnly);
+
+			// Jenis_Container
+			$this->Jenis_Container->setDbValueDef($rsnew, $this->Jenis_Container->CurrentValue, "", $this->Jenis_Container->ReadOnly);
 
 			// Nomor_Container_1
 			$this->Nomor_Container_1->setDbValueDef($rsnew, $this->Nomor_Container_1->CurrentValue, "", $this->Nomor_Container_1->ReadOnly);

@@ -91,6 +91,11 @@ ft101_tagihan_truckingadd.validate = function() {
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
 				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_tagihan_trucking->Ke_Lokasi->caption(), $t101_tagihan_trucking->Ke_Lokasi->RequiredErrorMessage)) ?>");
 		<?php } ?>
+		<?php if ($t101_tagihan_trucking_add->Jenis_Container->Required) { ?>
+			elm = this.getElements("x" + infix + "_Jenis_Container");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_tagihan_trucking->Jenis_Container->caption(), $t101_tagihan_trucking->Jenis_Container->RequiredErrorMessage)) ?>");
+		<?php } ?>
 		<?php if ($t101_tagihan_trucking_add->Nomor_Container_1->Required) { ?>
 			elm = this.getElements("x" + infix + "_Nomor_Container_1");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -144,6 +149,8 @@ ft101_tagihan_truckingadd.validateRequired = <?php echo json_encode(CLIENT_VALID
 // Dynamic selection lists
 ft101_tagihan_truckingadd.lists["x_Shipper_id"] = <?php echo $t101_tagihan_trucking_add->Shipper_id->Lookup->toClientList() ?>;
 ft101_tagihan_truckingadd.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_add->Shipper_id->lookupOptions()) ?>;
+ft101_tagihan_truckingadd.lists["x_Jenis_Container"] = <?php echo $t101_tagihan_trucking_add->Jenis_Container->Lookup->toClientList() ?>;
+ft101_tagihan_truckingadd.lists["x_Jenis_Container"].options = <?php echo JsonEncode($t101_tagihan_trucking_add->Jenis_Container->options(FALSE, TRUE)) ?>;
 
 // Form object for search
 </script>
@@ -242,6 +249,19 @@ ew.createDateTimePicker("ft101_tagihan_truckingadd", "x_Tanggal", {"ignoreReadon
 <input type="text" data-table="t101_tagihan_trucking" data-field="x_Ke_Lokasi" name="x_Ke_Lokasi" id="x_Ke_Lokasi" size="30" maxlength="100" placeholder="<?php echo HtmlEncode($t101_tagihan_trucking->Ke_Lokasi->getPlaceHolder()) ?>" value="<?php echo $t101_tagihan_trucking->Ke_Lokasi->EditValue ?>"<?php echo $t101_tagihan_trucking->Ke_Lokasi->editAttributes() ?>>
 </span>
 <?php echo $t101_tagihan_trucking->Ke_Lokasi->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($t101_tagihan_trucking->Jenis_Container->Visible) { // Jenis_Container ?>
+	<div id="r_Jenis_Container" class="form-group row">
+		<label id="elh_t101_tagihan_trucking_Jenis_Container" class="<?php echo $t101_tagihan_trucking_add->LeftColumnClass ?>"><?php echo $t101_tagihan_trucking->Jenis_Container->caption() ?><?php echo ($t101_tagihan_trucking->Jenis_Container->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
+		<div class="<?php echo $t101_tagihan_trucking_add->RightColumnClass ?>"><div<?php echo $t101_tagihan_trucking->Jenis_Container->cellAttributes() ?>>
+<span id="el_t101_tagihan_trucking_Jenis_Container">
+<div id="tp_x_Jenis_Container" class="ew-template"><input type="radio" class="form-check-input" data-table="t101_tagihan_trucking" data-field="x_Jenis_Container" data-value-separator="<?php echo $t101_tagihan_trucking->Jenis_Container->displayValueSeparatorAttribute() ?>" name="x_Jenis_Container" id="x_Jenis_Container" value="{value}"<?php echo $t101_tagihan_trucking->Jenis_Container->editAttributes() ?>></div>
+<div id="dsl_x_Jenis_Container" data-repeatcolumn="5" class="ew-item-list d-none"><div>
+<?php echo $t101_tagihan_trucking->Jenis_Container->radioButtonListHtml(FALSE, "x_Jenis_Container") ?>
+</div></div>
+</span>
+<?php echo $t101_tagihan_trucking->Jenis_Container->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($t101_tagihan_trucking->Nomor_Container_1->Visible) { // Nomor_Container_1 ?>

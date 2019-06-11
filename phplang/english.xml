@@ -849,6 +849,13 @@
       <field id="ke_lokasi">
         <phrase id="fldcaption" value="Ke Lokasi" />
       </field>
+      <field id="jenis_container">
+        <phrase id="fldcaption" value="Jenis Container" />
+        <phrase id="fldtagvalue1" value="40" />
+        <phrase id="fldtagcaption1" value="40" />
+        <phrase id="fldtagvalue2" value="20" />
+        <phrase id="fldtagcaption2" value="20" />
+      </field>
       <field id="nomor_container_1">
         <phrase id="fldcaption" value="Nomor Container 1" />
       </field>

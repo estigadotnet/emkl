@@ -674,6 +674,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		$this->Shipper_id->setVisibility();
 		$this->Dari_Lokasi->setVisibility();
 		$this->Ke_Lokasi->setVisibility();
+		$this->Jenis_Container->setVisibility();
 		$this->Nomor_Container_1->setVisibility();
 		$this->Nomor_Container_2->setVisibility();
 		$this->Keterangan->Visible = FALSE;
@@ -1342,6 +1343,8 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			return FALSE;
 		if ($CurrentForm->hasValue("x_Ke_Lokasi") && $CurrentForm->hasValue("o_Ke_Lokasi") && $this->Ke_Lokasi->CurrentValue <> $this->Ke_Lokasi->OldValue)
 			return FALSE;
+		if ($CurrentForm->hasValue("x_Jenis_Container") && $CurrentForm->hasValue("o_Jenis_Container") && $this->Jenis_Container->CurrentValue <> $this->Jenis_Container->OldValue)
+			return FALSE;
 		if ($CurrentForm->hasValue("x_Nomor_Container_1") && $CurrentForm->hasValue("o_Nomor_Container_1") && $this->Nomor_Container_1->CurrentValue <> $this->Nomor_Container_1->OldValue)
 			return FALSE;
 		if ($CurrentForm->hasValue("x_Nomor_Container_2") && $CurrentForm->hasValue("o_Nomor_Container_2") && $this->Nomor_Container_2->CurrentValue <> $this->Nomor_Container_2->OldValue)
@@ -1438,6 +1441,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		$filterList = Concat($filterList, $this->Shipper_id->AdvancedSearch->toJson(), ","); // Field Shipper_id
 		$filterList = Concat($filterList, $this->Dari_Lokasi->AdvancedSearch->toJson(), ","); // Field Dari_Lokasi
 		$filterList = Concat($filterList, $this->Ke_Lokasi->AdvancedSearch->toJson(), ","); // Field Ke_Lokasi
+		$filterList = Concat($filterList, $this->Jenis_Container->AdvancedSearch->toJson(), ","); // Field Jenis_Container
 		$filterList = Concat($filterList, $this->Nomor_Container_1->AdvancedSearch->toJson(), ","); // Field Nomor_Container_1
 		$filterList = Concat($filterList, $this->Nomor_Container_2->AdvancedSearch->toJson(), ","); // Field Nomor_Container_2
 		$filterList = Concat($filterList, $this->Keterangan->AdvancedSearch->toJson(), ","); // Field Keterangan
@@ -1540,6 +1544,14 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		$this->Ke_Lokasi->AdvancedSearch->SearchOperator2 = @$filter["w_Ke_Lokasi"];
 		$this->Ke_Lokasi->AdvancedSearch->save();
 
+		// Field Jenis_Container
+		$this->Jenis_Container->AdvancedSearch->SearchValue = @$filter["x_Jenis_Container"];
+		$this->Jenis_Container->AdvancedSearch->SearchOperator = @$filter["z_Jenis_Container"];
+		$this->Jenis_Container->AdvancedSearch->SearchCondition = @$filter["v_Jenis_Container"];
+		$this->Jenis_Container->AdvancedSearch->SearchValue2 = @$filter["y_Jenis_Container"];
+		$this->Jenis_Container->AdvancedSearch->SearchOperator2 = @$filter["w_Jenis_Container"];
+		$this->Jenis_Container->AdvancedSearch->save();
+
 		// Field Nomor_Container_1
 		$this->Nomor_Container_1->AdvancedSearch->SearchValue = @$filter["x_Nomor_Container_1"];
 		$this->Nomor_Container_1->AdvancedSearch->SearchOperator = @$filter["z_Nomor_Container_1"];
@@ -1586,6 +1598,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		$this->buildSearchSql($where, $this->Shipper_id, $default, FALSE); // Shipper_id
 		$this->buildSearchSql($where, $this->Dari_Lokasi, $default, FALSE); // Dari_Lokasi
 		$this->buildSearchSql($where, $this->Ke_Lokasi, $default, FALSE); // Ke_Lokasi
+		$this->buildSearchSql($where, $this->Jenis_Container, $default, FALSE); // Jenis_Container
 		$this->buildSearchSql($where, $this->Nomor_Container_1, $default, FALSE); // Nomor_Container_1
 		$this->buildSearchSql($where, $this->Nomor_Container_2, $default, FALSE); // Nomor_Container_2
 		$this->buildSearchSql($where, $this->Keterangan, $default, FALSE); // Keterangan
@@ -1604,6 +1617,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			$this->Shipper_id->AdvancedSearch->save(); // Shipper_id
 			$this->Dari_Lokasi->AdvancedSearch->save(); // Dari_Lokasi
 			$this->Ke_Lokasi->AdvancedSearch->save(); // Ke_Lokasi
+			$this->Jenis_Container->AdvancedSearch->save(); // Jenis_Container
 			$this->Nomor_Container_1->AdvancedSearch->save(); // Nomor_Container_1
 			$this->Nomor_Container_2->AdvancedSearch->save(); // Nomor_Container_2
 			$this->Keterangan->AdvancedSearch->save(); // Keterangan
@@ -1683,6 +1697,8 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			return TRUE;
 		if ($this->Ke_Lokasi->AdvancedSearch->issetSession())
 			return TRUE;
+		if ($this->Jenis_Container->AdvancedSearch->issetSession())
+			return TRUE;
 		if ($this->Nomor_Container_1->AdvancedSearch->issetSession())
 			return TRUE;
 		if ($this->Nomor_Container_2->AdvancedSearch->issetSession())
@@ -1723,6 +1739,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		$this->Shipper_id->AdvancedSearch->unsetSession();
 		$this->Dari_Lokasi->AdvancedSearch->unsetSession();
 		$this->Ke_Lokasi->AdvancedSearch->unsetSession();
+		$this->Jenis_Container->AdvancedSearch->unsetSession();
 		$this->Nomor_Container_1->AdvancedSearch->unsetSession();
 		$this->Nomor_Container_2->AdvancedSearch->unsetSession();
 		$this->Keterangan->AdvancedSearch->unsetSession();
@@ -1743,6 +1760,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		$this->Shipper_id->AdvancedSearch->load();
 		$this->Dari_Lokasi->AdvancedSearch->load();
 		$this->Ke_Lokasi->AdvancedSearch->load();
+		$this->Jenis_Container->AdvancedSearch->load();
 		$this->Nomor_Container_1->AdvancedSearch->load();
 		$this->Nomor_Container_2->AdvancedSearch->load();
 		$this->Keterangan->AdvancedSearch->load();
@@ -1764,6 +1782,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			$this->updateSort($this->Shipper_id); // Shipper_id
 			$this->updateSort($this->Dari_Lokasi); // Dari_Lokasi
 			$this->updateSort($this->Ke_Lokasi); // Ke_Lokasi
+			$this->updateSort($this->Jenis_Container); // Jenis_Container
 			$this->updateSort($this->Nomor_Container_1); // Nomor_Container_1
 			$this->updateSort($this->Nomor_Container_2); // Nomor_Container_2
 			$this->updateSort($this->Tagihan); // Tagihan
@@ -1809,6 +1828,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 				$this->Shipper_id->setSort("");
 				$this->Dari_Lokasi->setSort("");
 				$this->Ke_Lokasi->setSort("");
+				$this->Jenis_Container->setSort("");
 				$this->Nomor_Container_1->setSort("");
 				$this->Nomor_Container_2->setSort("");
 				$this->Tagihan->setSort("");
@@ -2354,6 +2374,8 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		$this->Dari_Lokasi->OldValue = $this->Dari_Lokasi->CurrentValue;
 		$this->Ke_Lokasi->CurrentValue = "-";
 		$this->Ke_Lokasi->OldValue = $this->Ke_Lokasi->CurrentValue;
+		$this->Jenis_Container->CurrentValue = "40";
+		$this->Jenis_Container->OldValue = $this->Jenis_Container->CurrentValue;
 		$this->Nomor_Container_1->CurrentValue = "-";
 		$this->Nomor_Container_1->OldValue = $this->Nomor_Container_1->CurrentValue;
 		$this->Nomor_Container_2->CurrentValue = "-";
@@ -2426,6 +2448,13 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		if ($this->Ke_Lokasi->AdvancedSearch->SearchValue <> "" && $this->Command == "")
 			$this->Command = "search";
 		$this->Ke_Lokasi->AdvancedSearch->setSearchOperator(Get("z_Ke_Lokasi", ""));
+
+		// Jenis_Container
+		if (!$this->isAddOrEdit())
+			$this->Jenis_Container->AdvancedSearch->setSearchValue(Get("x_Jenis_Container", Get("Jenis_Container", "")));
+		if ($this->Jenis_Container->AdvancedSearch->SearchValue <> "" && $this->Command == "")
+			$this->Command = "search";
+		$this->Jenis_Container->AdvancedSearch->setSearchOperator(Get("z_Jenis_Container", ""));
 
 		// Nomor_Container_1
 		if (!$this->isAddOrEdit())
@@ -2534,6 +2563,16 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		}
 		$this->Ke_Lokasi->setOldValue($CurrentForm->getValue("o_Ke_Lokasi"));
 
+		// Check field name 'Jenis_Container' first before field var 'x_Jenis_Container'
+		$val = $CurrentForm->hasValue("Jenis_Container") ? $CurrentForm->getValue("Jenis_Container") : $CurrentForm->getValue("x_Jenis_Container");
+		if (!$this->Jenis_Container->IsDetailKey) {
+			if (IsApi() && $val == NULL)
+				$this->Jenis_Container->Visible = FALSE; // Disable update for API request
+			else
+				$this->Jenis_Container->setFormValue($val);
+		}
+		$this->Jenis_Container->setOldValue($CurrentForm->getValue("o_Jenis_Container"));
+
 		// Check field name 'Nomor_Container_1' first before field var 'x_Nomor_Container_1'
 		$val = $CurrentForm->hasValue("Nomor_Container_1") ? $CurrentForm->getValue("Nomor_Container_1") : $CurrentForm->getValue("x_Nomor_Container_1");
 		if (!$this->Nomor_Container_1->IsDetailKey) {
@@ -2584,6 +2623,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		$this->Shipper_id->CurrentValue = $this->Shipper_id->FormValue;
 		$this->Dari_Lokasi->CurrentValue = $this->Dari_Lokasi->FormValue;
 		$this->Ke_Lokasi->CurrentValue = $this->Ke_Lokasi->FormValue;
+		$this->Jenis_Container->CurrentValue = $this->Jenis_Container->FormValue;
 		$this->Nomor_Container_1->CurrentValue = $this->Nomor_Container_1->FormValue;
 		$this->Nomor_Container_2->CurrentValue = $this->Nomor_Container_2->FormValue;
 		$this->Tagihan->CurrentValue = $this->Tagihan->FormValue;
@@ -2661,6 +2701,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		$this->Shipper_id->setDbValue($row['Shipper_id']);
 		$this->Dari_Lokasi->setDbValue($row['Dari_Lokasi']);
 		$this->Ke_Lokasi->setDbValue($row['Ke_Lokasi']);
+		$this->Jenis_Container->setDbValue($row['Jenis_Container']);
 		$this->Nomor_Container_1->setDbValue($row['Nomor_Container_1']);
 		$this->Nomor_Container_2->setDbValue($row['Nomor_Container_2']);
 		$this->Keterangan->setDbValue($row['Keterangan']);
@@ -2680,6 +2721,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		$row['Shipper_id'] = $this->Shipper_id->CurrentValue;
 		$row['Dari_Lokasi'] = $this->Dari_Lokasi->CurrentValue;
 		$row['Ke_Lokasi'] = $this->Ke_Lokasi->CurrentValue;
+		$row['Jenis_Container'] = $this->Jenis_Container->CurrentValue;
 		$row['Nomor_Container_1'] = $this->Nomor_Container_1->CurrentValue;
 		$row['Nomor_Container_2'] = $this->Nomor_Container_2->CurrentValue;
 		$row['Keterangan'] = $this->Keterangan->CurrentValue;
@@ -2739,6 +2781,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		// Shipper_id
 		// Dari_Lokasi
 		// Ke_Lokasi
+		// Jenis_Container
 		// Nomor_Container_1
 		// Nomor_Container_2
 		// Keterangan
@@ -2797,6 +2840,14 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			$this->Ke_Lokasi->ViewValue = $this->Ke_Lokasi->CurrentValue;
 			$this->Ke_Lokasi->ViewCustomAttributes = "";
 
+			// Jenis_Container
+			if (strval($this->Jenis_Container->CurrentValue) <> "") {
+				$this->Jenis_Container->ViewValue = $this->Jenis_Container->optionCaption($this->Jenis_Container->CurrentValue);
+			} else {
+				$this->Jenis_Container->ViewValue = NULL;
+			}
+			$this->Jenis_Container->ViewCustomAttributes = "";
+
 			// Nomor_Container_1
 			$this->Nomor_Container_1->ViewValue = $this->Nomor_Container_1->CurrentValue;
 			$this->Nomor_Container_1->ViewCustomAttributes = "";
@@ -2845,6 +2896,11 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			$this->Ke_Lokasi->LinkCustomAttributes = "";
 			$this->Ke_Lokasi->HrefValue = "";
 			$this->Ke_Lokasi->TooltipValue = "";
+
+			// Jenis_Container
+			$this->Jenis_Container->LinkCustomAttributes = "";
+			$this->Jenis_Container->HrefValue = "";
+			$this->Jenis_Container->TooltipValue = "";
 
 			// Nomor_Container_1
 			$this->Nomor_Container_1->LinkCustomAttributes = "";
@@ -2931,6 +2987,10 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			$this->Ke_Lokasi->EditValue = HtmlEncode($this->Ke_Lokasi->CurrentValue);
 			$this->Ke_Lokasi->PlaceHolder = RemoveHtml($this->Ke_Lokasi->caption());
 
+			// Jenis_Container
+			$this->Jenis_Container->EditCustomAttributes = "";
+			$this->Jenis_Container->EditValue = $this->Jenis_Container->options(FALSE);
+
 			// Nomor_Container_1
 			$this->Nomor_Container_1->EditAttrs["class"] = "form-control";
 			$this->Nomor_Container_1->EditCustomAttributes = "";
@@ -2986,6 +3046,10 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			// Ke_Lokasi
 			$this->Ke_Lokasi->LinkCustomAttributes = "";
 			$this->Ke_Lokasi->HrefValue = "";
+
+			// Jenis_Container
+			$this->Jenis_Container->LinkCustomAttributes = "";
+			$this->Jenis_Container->HrefValue = "";
 
 			// Nomor_Container_1
 			$this->Nomor_Container_1->LinkCustomAttributes = "";
@@ -3069,6 +3133,10 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			$this->Ke_Lokasi->EditValue = HtmlEncode($this->Ke_Lokasi->CurrentValue);
 			$this->Ke_Lokasi->PlaceHolder = RemoveHtml($this->Ke_Lokasi->caption());
 
+			// Jenis_Container
+			$this->Jenis_Container->EditCustomAttributes = "";
+			$this->Jenis_Container->EditValue = $this->Jenis_Container->options(FALSE);
+
 			// Nomor_Container_1
 			$this->Nomor_Container_1->EditAttrs["class"] = "form-control";
 			$this->Nomor_Container_1->EditCustomAttributes = "";
@@ -3124,6 +3192,10 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			// Ke_Lokasi
 			$this->Ke_Lokasi->LinkCustomAttributes = "";
 			$this->Ke_Lokasi->HrefValue = "";
+
+			// Jenis_Container
+			$this->Jenis_Container->LinkCustomAttributes = "";
+			$this->Jenis_Container->HrefValue = "";
 
 			// Nomor_Container_1
 			$this->Nomor_Container_1->LinkCustomAttributes = "";
@@ -3206,6 +3278,10 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 				$this->Ke_Lokasi->AdvancedSearch->SearchValue = HtmlDecode($this->Ke_Lokasi->AdvancedSearch->SearchValue);
 			$this->Ke_Lokasi->EditValue = HtmlEncode($this->Ke_Lokasi->AdvancedSearch->SearchValue);
 			$this->Ke_Lokasi->PlaceHolder = RemoveHtml($this->Ke_Lokasi->caption());
+
+			// Jenis_Container
+			$this->Jenis_Container->EditCustomAttributes = "";
+			$this->Jenis_Container->EditValue = $this->Jenis_Container->options(FALSE);
 
 			// Nomor_Container_1
 			$this->Nomor_Container_1->EditAttrs["class"] = "form-control";
@@ -3313,6 +3389,11 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		if ($this->Ke_Lokasi->Required) {
 			if (!$this->Ke_Lokasi->IsDetailKey && $this->Ke_Lokasi->FormValue != NULL && $this->Ke_Lokasi->FormValue == "") {
 				AddMessage($FormError, str_replace("%s", $this->Ke_Lokasi->caption(), $this->Ke_Lokasi->RequiredErrorMessage));
+			}
+		}
+		if ($this->Jenis_Container->Required) {
+			if ($this->Jenis_Container->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->Jenis_Container->caption(), $this->Jenis_Container->RequiredErrorMessage));
 			}
 		}
 		if ($this->Nomor_Container_1->Required) {
@@ -3476,6 +3557,9 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			// Ke_Lokasi
 			$this->Ke_Lokasi->setDbValueDef($rsnew, $this->Ke_Lokasi->CurrentValue, "", $this->Ke_Lokasi->ReadOnly);
 
+			// Jenis_Container
+			$this->Jenis_Container->setDbValueDef($rsnew, $this->Jenis_Container->CurrentValue, "", $this->Jenis_Container->ReadOnly);
+
 			// Nomor_Container_1
 			$this->Nomor_Container_1->setDbValueDef($rsnew, $this->Nomor_Container_1->CurrentValue, "", $this->Nomor_Container_1->ReadOnly);
 
@@ -3550,6 +3634,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		$hash .= GetFieldHash($rs->fields('Shipper_id')); // Shipper_id
 		$hash .= GetFieldHash($rs->fields('Dari_Lokasi')); // Dari_Lokasi
 		$hash .= GetFieldHash($rs->fields('Ke_Lokasi')); // Ke_Lokasi
+		$hash .= GetFieldHash($rs->fields('Jenis_Container')); // Jenis_Container
 		$hash .= GetFieldHash($rs->fields('Nomor_Container_1')); // Nomor_Container_1
 		$hash .= GetFieldHash($rs->fields('Nomor_Container_2')); // Nomor_Container_2
 		$hash .= GetFieldHash($rs->fields('Tagihan')); // Tagihan
@@ -3588,6 +3673,9 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 
 		// Ke_Lokasi
 		$this->Ke_Lokasi->setDbValueDef($rsnew, $this->Ke_Lokasi->CurrentValue, "", strval($this->Ke_Lokasi->CurrentValue) == "");
+
+		// Jenis_Container
+		$this->Jenis_Container->setDbValueDef($rsnew, $this->Jenis_Container->CurrentValue, "", strval($this->Jenis_Container->CurrentValue) == "");
 
 		// Nomor_Container_1
 		$this->Nomor_Container_1->setDbValueDef($rsnew, $this->Nomor_Container_1->CurrentValue, "", strval($this->Nomor_Container_1->CurrentValue) == "");
@@ -3645,6 +3733,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		$this->Shipper_id->AdvancedSearch->load();
 		$this->Dari_Lokasi->AdvancedSearch->load();
 		$this->Ke_Lokasi->AdvancedSearch->load();
+		$this->Jenis_Container->AdvancedSearch->load();
 		$this->Nomor_Container_1->AdvancedSearch->load();
 		$this->Nomor_Container_2->AdvancedSearch->load();
 		$this->Keterangan->AdvancedSearch->load();

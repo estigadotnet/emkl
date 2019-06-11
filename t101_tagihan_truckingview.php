@@ -52,6 +52,8 @@ ft101_tagihan_truckingview.validateRequired = <?php echo json_encode(CLIENT_VALI
 // Dynamic selection lists
 ft101_tagihan_truckingview.lists["x_Shipper_id"] = <?php echo $t101_tagihan_trucking_view->Shipper_id->Lookup->toClientList() ?>;
 ft101_tagihan_truckingview.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_view->Shipper_id->lookupOptions()) ?>;
+ft101_tagihan_truckingview.lists["x_Jenis_Container"] = <?php echo $t101_tagihan_trucking_view->Jenis_Container->Lookup->toClientList() ?>;
+ft101_tagihan_truckingview.lists["x_Jenis_Container"].options = <?php echo JsonEncode($t101_tagihan_trucking_view->Jenis_Container->options(FALSE, TRUE)) ?>;
 
 // Form object for search
 </script>
@@ -151,6 +153,17 @@ $t101_tagihan_trucking_view->showMessage();
 <span id="el_t101_tagihan_trucking_Ke_Lokasi">
 <span<?php echo $t101_tagihan_trucking->Ke_Lokasi->viewAttributes() ?>>
 <?php echo $t101_tagihan_trucking->Ke_Lokasi->getViewValue() ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($t101_tagihan_trucking->Jenis_Container->Visible) { // Jenis_Container ?>
+	<tr id="r_Jenis_Container">
+		<td class="<?php echo $t101_tagihan_trucking_view->TableLeftColumnClass ?>"><span id="elh_t101_tagihan_trucking_Jenis_Container"><?php echo $t101_tagihan_trucking->Jenis_Container->caption() ?></span></td>
+		<td data-name="Jenis_Container"<?php echo $t101_tagihan_trucking->Jenis_Container->cellAttributes() ?>>
+<span id="el_t101_tagihan_trucking_Jenis_Container">
+<span<?php echo $t101_tagihan_trucking->Jenis_Container->viewAttributes() ?>>
+<?php echo $t101_tagihan_trucking->Jenis_Container->getViewValue() ?></span>
 </span>
 </td>
 	</tr>

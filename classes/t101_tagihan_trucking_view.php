@@ -623,6 +623,7 @@ class t101_tagihan_trucking_view extends t101_tagihan_trucking
 		$this->Shipper_id->setVisibility();
 		$this->Dari_Lokasi->setVisibility();
 		$this->Ke_Lokasi->setVisibility();
+		$this->Jenis_Container->setVisibility();
 		$this->Nomor_Container_1->setVisibility();
 		$this->Nomor_Container_2->setVisibility();
 		$this->Keterangan->setVisibility();
@@ -852,6 +853,7 @@ class t101_tagihan_trucking_view extends t101_tagihan_trucking
 		$this->Shipper_id->setDbValue($row['Shipper_id']);
 		$this->Dari_Lokasi->setDbValue($row['Dari_Lokasi']);
 		$this->Ke_Lokasi->setDbValue($row['Ke_Lokasi']);
+		$this->Jenis_Container->setDbValue($row['Jenis_Container']);
 		$this->Nomor_Container_1->setDbValue($row['Nomor_Container_1']);
 		$this->Nomor_Container_2->setDbValue($row['Nomor_Container_2']);
 		$this->Keterangan->setDbValue($row['Keterangan']);
@@ -870,6 +872,7 @@ class t101_tagihan_trucking_view extends t101_tagihan_trucking
 		$row['Shipper_id'] = NULL;
 		$row['Dari_Lokasi'] = NULL;
 		$row['Ke_Lokasi'] = NULL;
+		$row['Jenis_Container'] = NULL;
 		$row['Nomor_Container_1'] = NULL;
 		$row['Nomor_Container_2'] = NULL;
 		$row['Keterangan'] = NULL;
@@ -906,6 +909,7 @@ class t101_tagihan_trucking_view extends t101_tagihan_trucking
 		// Shipper_id
 		// Dari_Lokasi
 		// Ke_Lokasi
+		// Jenis_Container
 		// Nomor_Container_1
 		// Nomor_Container_2
 		// Keterangan
@@ -964,6 +968,14 @@ class t101_tagihan_trucking_view extends t101_tagihan_trucking
 			$this->Ke_Lokasi->ViewValue = $this->Ke_Lokasi->CurrentValue;
 			$this->Ke_Lokasi->ViewCustomAttributes = "";
 
+			// Jenis_Container
+			if (strval($this->Jenis_Container->CurrentValue) <> "") {
+				$this->Jenis_Container->ViewValue = $this->Jenis_Container->optionCaption($this->Jenis_Container->CurrentValue);
+			} else {
+				$this->Jenis_Container->ViewValue = NULL;
+			}
+			$this->Jenis_Container->ViewCustomAttributes = "";
+
 			// Nomor_Container_1
 			$this->Nomor_Container_1->ViewValue = $this->Nomor_Container_1->CurrentValue;
 			$this->Nomor_Container_1->ViewCustomAttributes = "";
@@ -1016,6 +1028,11 @@ class t101_tagihan_trucking_view extends t101_tagihan_trucking
 			$this->Ke_Lokasi->LinkCustomAttributes = "";
 			$this->Ke_Lokasi->HrefValue = "";
 			$this->Ke_Lokasi->TooltipValue = "";
+
+			// Jenis_Container
+			$this->Jenis_Container->LinkCustomAttributes = "";
+			$this->Jenis_Container->HrefValue = "";
+			$this->Jenis_Container->TooltipValue = "";
 
 			// Nomor_Container_1
 			$this->Nomor_Container_1->LinkCustomAttributes = "";

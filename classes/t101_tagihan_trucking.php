@@ -33,6 +33,7 @@ class t101_tagihan_trucking extends DbTable
 	public $Shipper_id;
 	public $Dari_Lokasi;
 	public $Ke_Lokasi;
+	public $Jenis_Container;
 	public $Nomor_Container_1;
 	public $Nomor_Container_2;
 	public $Keterangan;
@@ -131,6 +132,14 @@ class t101_tagihan_trucking extends DbTable
 		$this->Ke_Lokasi->Required = TRUE; // Required field
 		$this->Ke_Lokasi->Sortable = TRUE; // Allow sort
 		$this->fields['Ke_Lokasi'] = &$this->Ke_Lokasi;
+
+		// Jenis_Container
+		$this->Jenis_Container = new DbField('t101_tagihan_trucking', 't101_tagihan_trucking', 'x_Jenis_Container', 'Jenis_Container', '`Jenis_Container`', '`Jenis_Container`', 202, -1, FALSE, '`Jenis_Container`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->Jenis_Container->Nullable = FALSE; // NOT NULL field
+		$this->Jenis_Container->Sortable = TRUE; // Allow sort
+		$this->Jenis_Container->Lookup = new Lookup('Jenis_Container', 't101_tagihan_trucking', FALSE, '', ["","","",""], [], [], [], [], [], [], '', '');
+		$this->Jenis_Container->OptionCount = 2;
+		$this->fields['Jenis_Container'] = &$this->Jenis_Container;
 
 		// Nomor_Container_1
 		$this->Nomor_Container_1 = new DbField('t101_tagihan_trucking', 't101_tagihan_trucking', 'x_Nomor_Container_1', 'Nomor_Container_1', '`Nomor_Container_1`', '`Nomor_Container_1`', 200, -1, FALSE, '`Nomor_Container_1`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
@@ -510,6 +519,7 @@ class t101_tagihan_trucking extends DbTable
 		$this->Shipper_id->DbValue = $row['Shipper_id'];
 		$this->Dari_Lokasi->DbValue = $row['Dari_Lokasi'];
 		$this->Ke_Lokasi->DbValue = $row['Ke_Lokasi'];
+		$this->Jenis_Container->DbValue = $row['Jenis_Container'];
 		$this->Nomor_Container_1->DbValue = $row['Nomor_Container_1'];
 		$this->Nomor_Container_2->DbValue = $row['Nomor_Container_2'];
 		$this->Keterangan->DbValue = $row['Keterangan'];
@@ -747,6 +757,7 @@ class t101_tagihan_trucking extends DbTable
 		$this->Shipper_id->setDbValue($rs->fields('Shipper_id'));
 		$this->Dari_Lokasi->setDbValue($rs->fields('Dari_Lokasi'));
 		$this->Ke_Lokasi->setDbValue($rs->fields('Ke_Lokasi'));
+		$this->Jenis_Container->setDbValue($rs->fields('Jenis_Container'));
 		$this->Nomor_Container_1->setDbValue($rs->fields('Nomor_Container_1'));
 		$this->Nomor_Container_2->setDbValue($rs->fields('Nomor_Container_2'));
 		$this->Keterangan->setDbValue($rs->fields('Keterangan'));
@@ -770,6 +781,7 @@ class t101_tagihan_trucking extends DbTable
 		// Shipper_id
 		// Dari_Lokasi
 		// Ke_Lokasi
+		// Jenis_Container
 		// Nomor_Container_1
 		// Nomor_Container_2
 		// Keterangan
@@ -825,6 +837,14 @@ class t101_tagihan_trucking extends DbTable
 		// Ke_Lokasi
 		$this->Ke_Lokasi->ViewValue = $this->Ke_Lokasi->CurrentValue;
 		$this->Ke_Lokasi->ViewCustomAttributes = "";
+
+		// Jenis_Container
+		if (strval($this->Jenis_Container->CurrentValue) <> "") {
+			$this->Jenis_Container->ViewValue = $this->Jenis_Container->optionCaption($this->Jenis_Container->CurrentValue);
+		} else {
+			$this->Jenis_Container->ViewValue = NULL;
+		}
+		$this->Jenis_Container->ViewCustomAttributes = "";
 
 		// Nomor_Container_1
 		$this->Nomor_Container_1->ViewValue = $this->Nomor_Container_1->CurrentValue;
@@ -883,6 +903,11 @@ class t101_tagihan_trucking extends DbTable
 		$this->Ke_Lokasi->LinkCustomAttributes = "";
 		$this->Ke_Lokasi->HrefValue = "";
 		$this->Ke_Lokasi->TooltipValue = "";
+
+		// Jenis_Container
+		$this->Jenis_Container->LinkCustomAttributes = "";
+		$this->Jenis_Container->HrefValue = "";
+		$this->Jenis_Container->TooltipValue = "";
 
 		// Nomor_Container_1
 		$this->Nomor_Container_1->LinkCustomAttributes = "";
@@ -975,6 +1000,10 @@ class t101_tagihan_trucking extends DbTable
 		$this->Ke_Lokasi->EditValue = $this->Ke_Lokasi->CurrentValue;
 		$this->Ke_Lokasi->PlaceHolder = RemoveHtml($this->Ke_Lokasi->caption());
 
+		// Jenis_Container
+		$this->Jenis_Container->EditCustomAttributes = "";
+		$this->Jenis_Container->EditValue = $this->Jenis_Container->options(FALSE);
+
 		// Nomor_Container_1
 		$this->Nomor_Container_1->EditAttrs["class"] = "form-control";
 		$this->Nomor_Container_1->EditCustomAttributes = "";
@@ -1041,6 +1070,7 @@ class t101_tagihan_trucking extends DbTable
 					$doc->exportCaption($this->Shipper_id);
 					$doc->exportCaption($this->Dari_Lokasi);
 					$doc->exportCaption($this->Ke_Lokasi);
+					$doc->exportCaption($this->Jenis_Container);
 					$doc->exportCaption($this->Nomor_Container_1);
 					$doc->exportCaption($this->Nomor_Container_2);
 					$doc->exportCaption($this->Keterangan);
@@ -1054,6 +1084,7 @@ class t101_tagihan_trucking extends DbTable
 					$doc->exportCaption($this->Shipper_id);
 					$doc->exportCaption($this->Dari_Lokasi);
 					$doc->exportCaption($this->Ke_Lokasi);
+					$doc->exportCaption($this->Jenis_Container);
 					$doc->exportCaption($this->Nomor_Container_1);
 					$doc->exportCaption($this->Nomor_Container_2);
 					$doc->exportCaption($this->Tagihan);
@@ -1095,6 +1126,7 @@ class t101_tagihan_trucking extends DbTable
 						$doc->exportField($this->Shipper_id);
 						$doc->exportField($this->Dari_Lokasi);
 						$doc->exportField($this->Ke_Lokasi);
+						$doc->exportField($this->Jenis_Container);
 						$doc->exportField($this->Nomor_Container_1);
 						$doc->exportField($this->Nomor_Container_2);
 						$doc->exportField($this->Keterangan);
@@ -1108,6 +1140,7 @@ class t101_tagihan_trucking extends DbTable
 						$doc->exportField($this->Shipper_id);
 						$doc->exportField($this->Dari_Lokasi);
 						$doc->exportField($this->Ke_Lokasi);
+						$doc->exportField($this->Jenis_Container);
 						$doc->exportField($this->Nomor_Container_1);
 						$doc->exportField($this->Nomor_Container_2);
 						$doc->exportField($this->Tagihan);
