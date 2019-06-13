@@ -58,6 +58,7 @@ var ft097_userlevelslistsrch = currentSearchForm = new ew.Form("ft097_userlevels
 // Filters
 ft097_userlevelslistsrch.filterList = <?php echo $t097_userlevels_list->getFilterList() ?>;
 </script>
+<script src="phpjs/ewscrolltable.js"></script>
 <script>
 
 // Write your client script here, no need to add script tags.
@@ -340,6 +341,11 @@ if (DEBUG_ENABLED)
 // document.write("page loaded");
 
 </script>
+<?php if (!$t097_userlevels->isExport()) { ?>
+<script>
+ew.scrollableTable("gmp_t097_userlevels", "100%", "");
+</script>
+<?php } ?>
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php

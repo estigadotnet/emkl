@@ -552,6 +552,7 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 		$CurrentForm = new HttpForm();
 		$this->CurrentAction = Param("action"); // Set up current action
 		$this->id->Visible = FALSE;
+		$this->JO_id->setVisibility();
 		$this->Nomor_Polisi_1->setVisibility();
 		$this->Nomor_Polisi_2->setVisibility();
 		$this->Nomor_Polisi_3->setVisibility();
@@ -585,6 +586,7 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 		$this->createToken();
 
 		// Set up lookup cache
+		$this->setupLookupOptions($this->JO_id);
 		$this->setupLookupOptions($this->Shipper_id);
 
 		// Check modal
@@ -737,6 +739,15 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 		// Load from form
 		global $CurrentForm;
 
+		// Check field name 'JO_id' first before field var 'x_JO_id'
+		$val = $CurrentForm->hasValue("JO_id") ? $CurrentForm->getValue("JO_id") : $CurrentForm->getValue("x_JO_id");
+		if (!$this->JO_id->IsDetailKey) {
+			if (IsApi() && $val == NULL)
+				$this->JO_id->Visible = FALSE; // Disable update for API request
+			else
+				$this->JO_id->setFormValue($val);
+		}
+
 		// Check field name 'Nomor_Polisi_1' first before field var 'x_Nomor_Polisi_1'
 		$val = $CurrentForm->hasValue("Nomor_Polisi_1") ? $CurrentForm->getValue("Nomor_Polisi_1") : $CurrentForm->getValue("x_Nomor_Polisi_1");
 		if (!$this->Nomor_Polisi_1->IsDetailKey) {
@@ -857,6 +868,7 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 	{
 		global $CurrentForm;
 		$this->id->CurrentValue = $this->id->FormValue;
+		$this->JO_id->CurrentValue = $this->JO_id->FormValue;
 		$this->Nomor_Polisi_1->CurrentValue = $this->Nomor_Polisi_1->FormValue;
 		$this->Nomor_Polisi_2->CurrentValue = $this->Nomor_Polisi_2->FormValue;
 		$this->Nomor_Polisi_3->CurrentValue = $this->Nomor_Polisi_3->FormValue;
@@ -908,6 +920,7 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
+		$this->JO_id->setDbValue($row['JO_id']);
 		$this->Nomor_Polisi_1->setDbValue($row['Nomor_Polisi_1']);
 		$this->Nomor_Polisi_2->setDbValue($row['Nomor_Polisi_2']);
 		$this->Nomor_Polisi_3->setDbValue($row['Nomor_Polisi_3']);
@@ -927,6 +940,7 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 	{
 		$row = [];
 		$row['id'] = NULL;
+		$row['JO_id'] = NULL;
 		$row['Nomor_Polisi_1'] = NULL;
 		$row['Nomor_Polisi_2'] = NULL;
 		$row['Nomor_Polisi_3'] = NULL;
@@ -981,6 +995,7 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 
 		// Common render codes for all row types
 		// id
+		// JO_id
 		// Nomor_Polisi_1
 		// Nomor_Polisi_2
 		// Nomor_Polisi_3
@@ -999,6 +1014,28 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 			// id
 			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
+
+			// JO_id
+			$curVal = strval($this->JO_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->JO_id->ViewValue = $this->JO_id->lookupCacheOption($curVal);
+				if ($this->JO_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->JO_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->JO_id->ViewValue = $this->JO_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->JO_id->ViewValue = $this->JO_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->JO_id->ViewValue = NULL;
+			}
+			$this->JO_id->ViewCustomAttributes = "";
 
 			// Nomor_Polisi_1
 			$this->Nomor_Polisi_1->ViewValue = $this->Nomor_Polisi_1->CurrentValue;
@@ -1073,6 +1110,11 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 			$this->Tagihan->CellCssStyle .= "text-align: right;";
 			$this->Tagihan->ViewCustomAttributes = "";
 
+			// JO_id
+			$this->JO_id->LinkCustomAttributes = "";
+			$this->JO_id->HrefValue = "";
+			$this->JO_id->TooltipValue = "";
+
 			// Nomor_Polisi_1
 			$this->Nomor_Polisi_1->LinkCustomAttributes = "";
 			$this->Nomor_Polisi_1->HrefValue = "";
@@ -1133,6 +1175,29 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 			$this->Tagihan->HrefValue = "";
 			$this->Tagihan->TooltipValue = "";
 		} elseif ($this->RowType == ROWTYPE_EDIT) { // Edit row
+
+			// JO_id
+			$this->JO_id->EditAttrs["class"] = "form-control";
+			$this->JO_id->EditCustomAttributes = "";
+			$curVal = trim(strval($this->JO_id->CurrentValue));
+			if ($curVal <> "")
+				$this->JO_id->ViewValue = $this->JO_id->lookupCacheOption($curVal);
+			else
+				$this->JO_id->ViewValue = $this->JO_id->Lookup !== NULL && is_array($this->JO_id->Lookup->Options) ? $curVal : NULL;
+			if ($this->JO_id->ViewValue !== NULL) { // Load from cache
+				$this->JO_id->EditValue = array_values($this->JO_id->Lookup->Options);
+			} else { // Lookup from database
+				if ($curVal == "") {
+					$filterWrk = "0=1";
+				} else {
+					$filterWrk = "`id`" . SearchString("=", $this->JO_id->CurrentValue, DATATYPE_NUMBER, "");
+				}
+				$sqlWrk = $this->JO_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+				if ($rswrk) $rswrk->Close();
+				$this->JO_id->EditValue = $arwrk;
+			}
 
 			// Nomor_Polisi_1
 			$this->Nomor_Polisi_1->EditAttrs["class"] = "form-control";
@@ -1238,8 +1303,12 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 				$this->Tagihan->EditValue = FormatNumber($this->Tagihan->EditValue, -2, -2, -2, -2);
 
 			// Edit refer script
-			// Nomor_Polisi_1
+			// JO_id
 
+			$this->JO_id->LinkCustomAttributes = "";
+			$this->JO_id->HrefValue = "";
+
+			// Nomor_Polisi_1
 			$this->Nomor_Polisi_1->LinkCustomAttributes = "";
 			$this->Nomor_Polisi_1->HrefValue = "";
 
@@ -1309,6 +1378,11 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 		if ($this->id->Required) {
 			if (!$this->id->IsDetailKey && $this->id->FormValue != NULL && $this->id->FormValue == "") {
 				AddMessage($FormError, str_replace("%s", $this->id->caption(), $this->id->RequiredErrorMessage));
+			}
+		}
+		if ($this->JO_id->Required) {
+			if (!$this->JO_id->IsDetailKey && $this->JO_id->FormValue != NULL && $this->JO_id->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->JO_id->caption(), $this->JO_id->RequiredErrorMessage));
 			}
 		}
 		if ($this->Nomor_Polisi_1->Required) {
@@ -1413,6 +1487,9 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 			$rsold = &$rs->fields;
 			$this->loadDbValues($rsold);
 			$rsnew = [];
+
+			// JO_id
+			$this->JO_id->setDbValueDef($rsnew, $this->JO_id->CurrentValue, NULL, $this->JO_id->ReadOnly);
 
 			// Nomor_Polisi_1
 			$this->Nomor_Polisi_1->setDbValueDef($rsnew, $this->Nomor_Polisi_1->CurrentValue, "", $this->Nomor_Polisi_1->ReadOnly);
@@ -1530,6 +1607,8 @@ class t101_tagihan_trucking_edit extends t101_tagihan_trucking
 
 					// Format the field values
 					switch ($fld->FieldVar) {
+						case "x_JO_id":
+							break;
 						case "x_Shipper_id":
 							break;
 					}

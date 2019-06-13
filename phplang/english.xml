@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2019/6/11" version="15.0.0.1" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2019/6/13" version="15.0.0.1" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -699,11 +699,41 @@
   <project>
     <phrase id="bodytitle" value="EMKL - SISTEM INFORMASI" />
     <phrase id="footertext" value="&amp;copy;2019 ESTIGA. All rights reserved." />
+    <menu id="14">
+      <phrase id="menutext" value="Setup" />
+    </menu>
     <menu id="6">
-      <phrase id="menutext" value="t 001 shipper" />
+      <phrase id="menutext" value="Shipper" />
+    </menu>
+    <menu id="15">
+      <phrase id="menutext" value="Destination" />
+    </menu>
+    <menu id="16">
+      <phrase id="menutext" value="Feeder" />
+    </menu>
+    <menu id="17">
+      <phrase id="menutext" value="Liner" />
+    </menu>
+    <menu id="18">
+      <phrase id="menutext" value="Vendor Trucking" />
+    </menu>
+    <menu id="19">
+      <phrase id="menutext" value="Driver" />
+    </menu>
+    <menu id="20">
+      <phrase id="menutext" value="Transaksi" />
+    </menu>
+    <menu id="7">
+      <phrase id="menutext" value="JO" />
+    </menu>
+    <menu id="21">
+      <phrase id="menutext" value="Trucking" />
     </menu>
     <menu id="1">
       <phrase id="menutext" value="Tagihan Trucking" />
+    </menu>
+    <menu id="22">
+      <phrase id="menutext" value="General" />
     </menu>
     <menu id="2">
       <phrase id="menutext" value="t 399 audit trail" />
@@ -718,7 +748,61 @@
       <phrase id="menutext" value="t 098 userlevelpermissions" />
     </menu>
     <table id="t001_shipper">
-      <phrase id="tblcaption" value="t 001 shipper" />
+      <phrase id="tblcaption" value="Shipper" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="nama">
+        <phrase id="fldcaption" value="Nama" />
+      </field>
+    </table>
+    <table id="t002_destination">
+      <phrase id="tblcaption" value="Destination" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="nama">
+        <phrase id="fldcaption" value="Nama" />
+      </field>
+    </table>
+    <table id="t003_feeder">
+      <phrase id="tblcaption" value="Feeder" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="nama">
+        <phrase id="fldcaption" value="Nama" />
+      </field>
+    </table>
+    <table id="t004_liner">
+      <phrase id="tblcaption" value="Liner" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="nama">
+        <phrase id="fldcaption" value="Nama" />
+      </field>
+    </table>
+    <table id="t005_driver">
+      <phrase id="tblcaption" value="Driver" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="truckingvendor_id">
+        <phrase id="fldcaption" value="Trucking Vendor id" />
+      </field>
+      <field id="nama">
+        <phrase id="fldcaption" value="Nama" />
+      </field>
+      <field id="no_hp_1">
+        <phrase id="fldcaption" value="No HP 1" />
+      </field>
+      <field id="no_hp_2">
+        <phrase id="fldcaption" value="No HP 2" />
+      </field>
+    </table>
+    <table id="t006_trucking_vendor">
+      <phrase id="tblcaption" value="Vendor Trucking" />
       <field id="id">
         <phrase id="fldcaption" value="id" />
       </field>
@@ -828,6 +912,9 @@
       <field id="id">
         <phrase id="fldcaption" value="id" />
       </field>
+      <field id="jo_id">
+        <phrase id="fldcaption" value="Nomor JO" />
+      </field>
       <field id="nomor_polisi_1">
         <phrase id="fldcaption" value="Nomor Polisi 1" />
       </field>
@@ -867,6 +954,80 @@
       </field>
       <field id="tagihan">
         <phrase id="fldcaption" value="Tagihan" />
+      </field>
+    </table>
+    <table id="t102_jo">
+      <phrase id="tblcaption" value="JO" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="nomor_jo">
+        <phrase id="fldcaption" value="Nomor JO" />
+      </field>
+    </table>
+    <table id="t103_trucking">
+      <phrase id="tblcaption" value="Trucking" />
+      <field id="id">
+        <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="ei">
+        <phrase id="fldcaption" value="EI" />
+        <phrase id="fldtagvalue1" value="Export" />
+        <phrase id="fldtagcaption1" value="Export" />
+        <phrase id="fldtagvalue2" value="Import" />
+        <phrase id="fldtagcaption2" value="Import" />
+      </field>
+      <field id="shipper_id">
+        <phrase id="fldcaption" value="Shipper id" />
+      </field>
+      <field id="party">
+        <phrase id="fldcaption" value="Party" />
+      </field>
+      <field id="jenis_container">
+        <phrase id="fldcaption" value="Jenis Container" />
+        <phrase id="fldtagvalue1" value="40" />
+        <phrase id="fldtagcaption1" value="40" />
+        <phrase id="fldtagvalue2" value="20" />
+        <phrase id="fldtagcaption2" value="20" />
+      </field>
+      <field id="tgl_stuffing">
+        <phrase id="fldcaption" value="Tgl Stuffing" />
+      </field>
+      <field id="destination_id">
+        <phrase id="fldcaption" value="Destination id" />
+      </field>
+      <field id="feeder_id">
+        <phrase id="fldcaption" value="Feeder id" />
+      </field>
+      <field id="eta_etd">
+        <phrase id="fldcaption" value="ETA ETD" />
+      </field>
+      <field id="liner_id">
+        <phrase id="fldcaption" value="Liner id" />
+      </field>
+      <field id="remark">
+        <phrase id="fldcaption" value="Remark" />
+      </field>
+      <field id="truckingvendor_id">
+        <phrase id="fldcaption" value="Trucking Vendor id" />
+      </field>
+      <field id="driver_id">
+        <phrase id="fldcaption" value="Driver id" />
+      </field>
+      <field id="no_pol_1">
+        <phrase id="fldcaption" value="No Pol 1" />
+      </field>
+      <field id="no_pol_2">
+        <phrase id="fldcaption" value="No Pol 2" />
+      </field>
+      <field id="no_pol_3">
+        <phrase id="fldcaption" value="No Pol 3" />
+      </field>
+      <field id="nomor_container_1">
+        <phrase id="fldcaption" value="Nomor Container 1" />
+      </field>
+      <field id="nomor_container_2">
+        <phrase id="fldcaption" value="Nomor Container 2" />
       </field>
     </table>
     <table id="t399_audit_trail">

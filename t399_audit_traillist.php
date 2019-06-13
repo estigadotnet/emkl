@@ -58,6 +58,7 @@ var ft399_audit_traillistsrch = currentSearchForm = new ew.Form("ft399_audit_tra
 // Filters
 ft399_audit_traillistsrch.filterList = <?php echo $t399_audit_trail_list->getFilterList() ?>;
 </script>
+<script src="phpjs/ewscrolltable.js"></script>
 <script>
 
 // Write your client script here, no need to add script tags.
@@ -425,6 +426,11 @@ if (DEBUG_ENABLED)
 // document.write("page loaded");
 
 </script>
+<?php if (!$t399_audit_trail->isExport()) { ?>
+<script>
+ew.scrollableTable("gmp_t399_audit_trail", "100%", "");
+</script>
+<?php } ?>
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php

@@ -58,6 +58,11 @@ ft101_tagihan_truckinglist.validate = function() {
 		var checkrow = (gridinsert) ? !this.emptyRow(infix) : true;
 		if (checkrow) {
 			addcnt++;
+		<?php if ($t101_tagihan_trucking_list->JO_id->Required) { ?>
+			elm = this.getElements("x" + infix + "_JO_id");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_tagihan_trucking->JO_id->caption(), $t101_tagihan_trucking->JO_id->RequiredErrorMessage)) ?>");
+		<?php } ?>
 		<?php if ($t101_tagihan_trucking_list->Nomor_Polisi_1->Required) { ?>
 			elm = this.getElements("x" + infix + "_Nomor_Polisi_1");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -111,6 +116,11 @@ ft101_tagihan_truckinglist.validate = function() {
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
 				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_tagihan_trucking->Nomor_Container_2->caption(), $t101_tagihan_trucking->Nomor_Container_2->RequiredErrorMessage)) ?>");
 		<?php } ?>
+		<?php if ($t101_tagihan_trucking_list->Keterangan->Required) { ?>
+			elm = this.getElements("x" + infix + "_Keterangan");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_tagihan_trucking->Keterangan->caption(), $t101_tagihan_trucking->Keterangan->RequiredErrorMessage)) ?>");
+		<?php } ?>
 		<?php if ($t101_tagihan_trucking_list->Tagihan->Required) { ?>
 			elm = this.getElements("x" + infix + "_Tagihan");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -135,6 +145,7 @@ ft101_tagihan_truckinglist.validate = function() {
 // Check empty row
 ft101_tagihan_truckinglist.emptyRow = function(infix) {
 	var fobj = this._form;
+	if (ew.valueChanged(fobj, infix, "JO_id", false)) return false;
 	if (ew.valueChanged(fobj, infix, "Nomor_Polisi_1", false)) return false;
 	if (ew.valueChanged(fobj, infix, "Nomor_Polisi_2", false)) return false;
 	if (ew.valueChanged(fobj, infix, "Nomor_Polisi_3", false)) return false;
@@ -145,6 +156,7 @@ ft101_tagihan_truckinglist.emptyRow = function(infix) {
 	if (ew.valueChanged(fobj, infix, "Jenis_Container", false)) return false;
 	if (ew.valueChanged(fobj, infix, "Nomor_Container_1", false)) return false;
 	if (ew.valueChanged(fobj, infix, "Nomor_Container_2", false)) return false;
+	if (ew.valueChanged(fobj, infix, "Keterangan", false)) return false;
 	if (ew.valueChanged(fobj, infix, "Tagihan", false)) return false;
 	return true;
 }
@@ -160,6 +172,8 @@ ft101_tagihan_truckinglist.Form_CustomValidate = function(fobj) { // DO NOT CHAN
 ft101_tagihan_truckinglist.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+ft101_tagihan_truckinglist.lists["x_JO_id"] = <?php echo $t101_tagihan_trucking_list->JO_id->Lookup->toClientList() ?>;
+ft101_tagihan_truckinglist.lists["x_JO_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_list->JO_id->lookupOptions()) ?>;
 ft101_tagihan_truckinglist.lists["x_Shipper_id"] = <?php echo $t101_tagihan_trucking_list->Shipper_id->Lookup->toClientList() ?>;
 ft101_tagihan_truckinglist.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_list->Shipper_id->lookupOptions()) ?>;
 ft101_tagihan_truckinglist.lists["x_Jenis_Container"] = <?php echo $t101_tagihan_trucking_list->Jenis_Container->Lookup->toClientList() ?>;
@@ -192,12 +206,15 @@ ft101_tagihan_truckinglistsrch.Form_CustomValidate = function(fobj) { // DO NOT 
 ft101_tagihan_truckinglistsrch.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+ft101_tagihan_truckinglistsrch.lists["x_JO_id"] = <?php echo $t101_tagihan_trucking_list->JO_id->Lookup->toClientList() ?>;
+ft101_tagihan_truckinglistsrch.lists["x_JO_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_list->JO_id->lookupOptions()) ?>;
 ft101_tagihan_truckinglistsrch.lists["x_Shipper_id"] = <?php echo $t101_tagihan_trucking_list->Shipper_id->Lookup->toClientList() ?>;
 ft101_tagihan_truckinglistsrch.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_list->Shipper_id->lookupOptions()) ?>;
 
 // Filters
 ft101_tagihan_truckinglistsrch.filterList = <?php echo $t101_tagihan_trucking_list->getFilterList() ?>;
 </script>
+<script src="phpjs/ewscrolltable.js"></script>
 <script>
 
 // Write your client script here, no need to add script tags.
@@ -242,6 +259,22 @@ $t101_tagihan_trucking->resetAttributes();
 $t101_tagihan_trucking_list->renderRow();
 ?>
 <div id="xsr_1" class="ew-row d-sm-flex">
+<?php if ($t101_tagihan_trucking->JO_id->Visible) { // JO_id ?>
+	<div id="xsc_JO_id" class="ew-cell form-group">
+		<label for="x_JO_id" class="ew-search-caption ew-label"><?php echo $t101_tagihan_trucking->JO_id->caption() ?></label>
+		<span class="ew-search-operator"><?php echo $Language->phrase("=") ?><input type="hidden" name="z_JO_id" id="z_JO_id" value="="></span>
+		<span class="ew-search-field">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t101_tagihan_trucking" data-field="x_JO_id" data-value-separator="<?php echo $t101_tagihan_trucking->JO_id->displayValueSeparatorAttribute() ?>" id="x_JO_id" name="x_JO_id"<?php echo $t101_tagihan_trucking->JO_id->editAttributes() ?>>
+		<?php echo $t101_tagihan_trucking->JO_id->selectOptionListHtml("x_JO_id") ?>
+	</select>
+</div>
+<?php echo $t101_tagihan_trucking->JO_id->Lookup->getParamTag("p_x_JO_id") ?>
+</span>
+	</div>
+<?php } ?>
+</div>
+<div id="xsr_2" class="ew-row d-sm-flex">
 <?php if ($t101_tagihan_trucking->Shipper_id->Visible) { // Shipper_id ?>
 	<div id="xsc_Shipper_id" class="ew-cell form-group">
 		<label for="x_Shipper_id" class="ew-search-caption ew-label"><?php echo $t101_tagihan_trucking->Shipper_id->caption() ?></label>
@@ -257,8 +290,21 @@ $t101_tagihan_trucking_list->renderRow();
 	</div>
 <?php } ?>
 </div>
-<div id="xsr_2" class="ew-row d-sm-flex">
-	<button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit"><?php echo $Language->phrase("SearchBtn") ?></button>
+<div id="xsr_3" class="ew-row d-sm-flex">
+	<div class="ew-quick-search input-group">
+		<input type="text" name="<?php echo TABLE_BASIC_SEARCH ?>" id="<?php echo TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo HtmlEncode($t101_tagihan_trucking_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo HtmlEncode($Language->phrase("Search")) ?>">
+		<input type="hidden" name="<?php echo TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo HtmlEncode($t101_tagihan_trucking_list->BasicSearch->getType()) ?>">
+		<div class="input-group-append">
+			<button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit"><?php echo $Language->phrase("SearchBtn") ?></button>
+			<button type="button" data-toggle="dropdown" class="btn btn-primary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false"><span id="searchtype"><?php echo $t101_tagihan_trucking_list->BasicSearch->getTypeNameShort() ?></span></button>
+			<div class="dropdown-menu dropdown-menu-right">
+				<a class="dropdown-item<?php if ($t101_tagihan_trucking_list->BasicSearch->getType() == "") echo " active"; ?>" href="javascript:void(0);" onclick="ew.setSearchType(this)"><?php echo $Language->phrase("QuickSearchAuto") ?></a>
+				<a class="dropdown-item<?php if ($t101_tagihan_trucking_list->BasicSearch->getType() == "=") echo " active"; ?>" href="javascript:void(0);" onclick="ew.setSearchType(this,'=')"><?php echo $Language->phrase("QuickSearchExact") ?></a>
+				<a class="dropdown-item<?php if ($t101_tagihan_trucking_list->BasicSearch->getType() == "AND") echo " active"; ?>" href="javascript:void(0);" onclick="ew.setSearchType(this,'AND')"><?php echo $Language->phrase("QuickSearchAll") ?></a>
+				<a class="dropdown-item<?php if ($t101_tagihan_trucking_list->BasicSearch->getType() == "OR") echo " active"; ?>" href="javascript:void(0);" onclick="ew.setSearchType(this,'OR')"><?php echo $Language->phrase("QuickSearchAny") ?></a>
+			</div>
+		</div>
+	</div>
 </div>
 	</div>
 </div>
@@ -291,12 +337,21 @@ $t101_tagihan_trucking_list->renderListOptions();
 // Render list options (header, left)
 $t101_tagihan_trucking_list->ListOptions->render("header", "left");
 ?>
+<?php if ($t101_tagihan_trucking->JO_id->Visible) { // JO_id ?>
+	<?php if ($t101_tagihan_trucking->sortUrl($t101_tagihan_trucking->JO_id) == "") { ?>
+		<th data-name="JO_id" class="<?php echo $t101_tagihan_trucking->JO_id->headerCellClass() ?>"><div id="elh_t101_tagihan_trucking_JO_id" class="t101_tagihan_trucking_JO_id"><div class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->JO_id->caption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="JO_id" class="<?php echo $t101_tagihan_trucking->JO_id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_tagihan_trucking->SortUrl($t101_tagihan_trucking->JO_id) ?>',1);"><div id="elh_t101_tagihan_trucking_JO_id" class="t101_tagihan_trucking_JO_id">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->JO_id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->JO_id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->JO_id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
 <?php if ($t101_tagihan_trucking->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
 	<?php if ($t101_tagihan_trucking->sortUrl($t101_tagihan_trucking->Nomor_Polisi_1) == "") { ?>
 		<th data-name="Nomor_Polisi_1" class="<?php echo $t101_tagihan_trucking->Nomor_Polisi_1->headerCellClass() ?>"><div id="elh_t101_tagihan_trucking_Nomor_Polisi_1" class="t101_tagihan_trucking_Nomor_Polisi_1"><div class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Polisi_1->caption() ?></div></div></th>
 	<?php } else { ?>
 		<th data-name="Nomor_Polisi_1" class="<?php echo $t101_tagihan_trucking->Nomor_Polisi_1->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_tagihan_trucking->SortUrl($t101_tagihan_trucking->Nomor_Polisi_1) ?>',1);"><div id="elh_t101_tagihan_trucking_Nomor_Polisi_1" class="t101_tagihan_trucking_Nomor_Polisi_1">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Polisi_1->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Nomor_Polisi_1->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Nomor_Polisi_1->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Polisi_1->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Nomor_Polisi_1->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Nomor_Polisi_1->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -305,7 +360,7 @@ $t101_tagihan_trucking_list->ListOptions->render("header", "left");
 		<th data-name="Nomor_Polisi_2" class="<?php echo $t101_tagihan_trucking->Nomor_Polisi_2->headerCellClass() ?>"><div id="elh_t101_tagihan_trucking_Nomor_Polisi_2" class="t101_tagihan_trucking_Nomor_Polisi_2"><div class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Polisi_2->caption() ?></div></div></th>
 	<?php } else { ?>
 		<th data-name="Nomor_Polisi_2" class="<?php echo $t101_tagihan_trucking->Nomor_Polisi_2->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_tagihan_trucking->SortUrl($t101_tagihan_trucking->Nomor_Polisi_2) ?>',1);"><div id="elh_t101_tagihan_trucking_Nomor_Polisi_2" class="t101_tagihan_trucking_Nomor_Polisi_2">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Polisi_2->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Nomor_Polisi_2->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Nomor_Polisi_2->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Polisi_2->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Nomor_Polisi_2->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Nomor_Polisi_2->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -314,7 +369,7 @@ $t101_tagihan_trucking_list->ListOptions->render("header", "left");
 		<th data-name="Nomor_Polisi_3" class="<?php echo $t101_tagihan_trucking->Nomor_Polisi_3->headerCellClass() ?>"><div id="elh_t101_tagihan_trucking_Nomor_Polisi_3" class="t101_tagihan_trucking_Nomor_Polisi_3"><div class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Polisi_3->caption() ?></div></div></th>
 	<?php } else { ?>
 		<th data-name="Nomor_Polisi_3" class="<?php echo $t101_tagihan_trucking->Nomor_Polisi_3->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_tagihan_trucking->SortUrl($t101_tagihan_trucking->Nomor_Polisi_3) ?>',1);"><div id="elh_t101_tagihan_trucking_Nomor_Polisi_3" class="t101_tagihan_trucking_Nomor_Polisi_3">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Polisi_3->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Nomor_Polisi_3->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Nomor_Polisi_3->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Polisi_3->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Nomor_Polisi_3->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Nomor_Polisi_3->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -323,7 +378,7 @@ $t101_tagihan_trucking_list->ListOptions->render("header", "left");
 		<th data-name="Tanggal" class="<?php echo $t101_tagihan_trucking->Tanggal->headerCellClass() ?>"><div id="elh_t101_tagihan_trucking_Tanggal" class="t101_tagihan_trucking_Tanggal"><div class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Tanggal->caption() ?></div></div></th>
 	<?php } else { ?>
 		<th data-name="Tanggal" class="<?php echo $t101_tagihan_trucking->Tanggal->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_tagihan_trucking->SortUrl($t101_tagihan_trucking->Tanggal) ?>',1);"><div id="elh_t101_tagihan_trucking_Tanggal" class="t101_tagihan_trucking_Tanggal">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Tanggal->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Tanggal->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Tanggal->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Tanggal->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Tanggal->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Tanggal->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -341,7 +396,7 @@ $t101_tagihan_trucking_list->ListOptions->render("header", "left");
 		<th data-name="Dari_Lokasi" class="<?php echo $t101_tagihan_trucking->Dari_Lokasi->headerCellClass() ?>"><div id="elh_t101_tagihan_trucking_Dari_Lokasi" class="t101_tagihan_trucking_Dari_Lokasi"><div class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Dari_Lokasi->caption() ?></div></div></th>
 	<?php } else { ?>
 		<th data-name="Dari_Lokasi" class="<?php echo $t101_tagihan_trucking->Dari_Lokasi->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_tagihan_trucking->SortUrl($t101_tagihan_trucking->Dari_Lokasi) ?>',1);"><div id="elh_t101_tagihan_trucking_Dari_Lokasi" class="t101_tagihan_trucking_Dari_Lokasi">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Dari_Lokasi->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Dari_Lokasi->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Dari_Lokasi->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Dari_Lokasi->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Dari_Lokasi->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Dari_Lokasi->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -350,7 +405,7 @@ $t101_tagihan_trucking_list->ListOptions->render("header", "left");
 		<th data-name="Ke_Lokasi" class="<?php echo $t101_tagihan_trucking->Ke_Lokasi->headerCellClass() ?>"><div id="elh_t101_tagihan_trucking_Ke_Lokasi" class="t101_tagihan_trucking_Ke_Lokasi"><div class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Ke_Lokasi->caption() ?></div></div></th>
 	<?php } else { ?>
 		<th data-name="Ke_Lokasi" class="<?php echo $t101_tagihan_trucking->Ke_Lokasi->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_tagihan_trucking->SortUrl($t101_tagihan_trucking->Ke_Lokasi) ?>',1);"><div id="elh_t101_tagihan_trucking_Ke_Lokasi" class="t101_tagihan_trucking_Ke_Lokasi">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Ke_Lokasi->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Ke_Lokasi->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Ke_Lokasi->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Ke_Lokasi->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Ke_Lokasi->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Ke_Lokasi->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -359,7 +414,7 @@ $t101_tagihan_trucking_list->ListOptions->render("header", "left");
 		<th data-name="Jenis_Container" class="<?php echo $t101_tagihan_trucking->Jenis_Container->headerCellClass() ?>"><div id="elh_t101_tagihan_trucking_Jenis_Container" class="t101_tagihan_trucking_Jenis_Container"><div class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Jenis_Container->caption() ?></div></div></th>
 	<?php } else { ?>
 		<th data-name="Jenis_Container" class="<?php echo $t101_tagihan_trucking->Jenis_Container->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_tagihan_trucking->SortUrl($t101_tagihan_trucking->Jenis_Container) ?>',1);"><div id="elh_t101_tagihan_trucking_Jenis_Container" class="t101_tagihan_trucking_Jenis_Container">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Jenis_Container->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Jenis_Container->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Jenis_Container->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Jenis_Container->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Jenis_Container->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Jenis_Container->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -368,7 +423,7 @@ $t101_tagihan_trucking_list->ListOptions->render("header", "left");
 		<th data-name="Nomor_Container_1" class="<?php echo $t101_tagihan_trucking->Nomor_Container_1->headerCellClass() ?>"><div id="elh_t101_tagihan_trucking_Nomor_Container_1" class="t101_tagihan_trucking_Nomor_Container_1"><div class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Container_1->caption() ?></div></div></th>
 	<?php } else { ?>
 		<th data-name="Nomor_Container_1" class="<?php echo $t101_tagihan_trucking->Nomor_Container_1->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_tagihan_trucking->SortUrl($t101_tagihan_trucking->Nomor_Container_1) ?>',1);"><div id="elh_t101_tagihan_trucking_Nomor_Container_1" class="t101_tagihan_trucking_Nomor_Container_1">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Container_1->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Nomor_Container_1->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Nomor_Container_1->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Container_1->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Nomor_Container_1->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Nomor_Container_1->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -377,7 +432,16 @@ $t101_tagihan_trucking_list->ListOptions->render("header", "left");
 		<th data-name="Nomor_Container_2" class="<?php echo $t101_tagihan_trucking->Nomor_Container_2->headerCellClass() ?>"><div id="elh_t101_tagihan_trucking_Nomor_Container_2" class="t101_tagihan_trucking_Nomor_Container_2"><div class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Container_2->caption() ?></div></div></th>
 	<?php } else { ?>
 		<th data-name="Nomor_Container_2" class="<?php echo $t101_tagihan_trucking->Nomor_Container_2->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_tagihan_trucking->SortUrl($t101_tagihan_trucking->Nomor_Container_2) ?>',1);"><div id="elh_t101_tagihan_trucking_Nomor_Container_2" class="t101_tagihan_trucking_Nomor_Container_2">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Container_2->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Nomor_Container_2->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Nomor_Container_2->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Nomor_Container_2->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Nomor_Container_2->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Nomor_Container_2->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($t101_tagihan_trucking->Keterangan->Visible) { // Keterangan ?>
+	<?php if ($t101_tagihan_trucking->sortUrl($t101_tagihan_trucking->Keterangan) == "") { ?>
+		<th data-name="Keterangan" class="<?php echo $t101_tagihan_trucking->Keterangan->headerCellClass() ?>"><div id="elh_t101_tagihan_trucking_Keterangan" class="t101_tagihan_trucking_Keterangan"><div class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Keterangan->caption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="Keterangan" class="<?php echo $t101_tagihan_trucking->Keterangan->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_tagihan_trucking->SortUrl($t101_tagihan_trucking->Keterangan) ?>',1);"><div id="elh_t101_tagihan_trucking_Keterangan" class="t101_tagihan_trucking_Keterangan">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Keterangan->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Keterangan->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Keterangan->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -386,7 +450,7 @@ $t101_tagihan_trucking_list->ListOptions->render("header", "left");
 		<th data-name="Tagihan" class="<?php echo $t101_tagihan_trucking->Tagihan->headerCellClass() ?>"><div id="elh_t101_tagihan_trucking_Tagihan" class="t101_tagihan_trucking_Tagihan"><div class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Tagihan->caption() ?></div></div></th>
 	<?php } else { ?>
 		<th data-name="Tagihan" class="<?php echo $t101_tagihan_trucking->Tagihan->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_tagihan_trucking->SortUrl($t101_tagihan_trucking->Tagihan) ?>',1);"><div id="elh_t101_tagihan_trucking_Tagihan" class="t101_tagihan_trucking_Tagihan">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Tagihan->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Tagihan->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Tagihan->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_tagihan_trucking->Tagihan->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t101_tagihan_trucking->Tagihan->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_tagihan_trucking->Tagihan->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -427,6 +491,20 @@ $t101_tagihan_trucking_list->ListOptions->render("header", "right");
 // Render list options (body, left)
 $t101_tagihan_trucking_list->ListOptions->render("body", "left", $t101_tagihan_trucking_list->RowCnt);
 ?>
+	<?php if ($t101_tagihan_trucking->JO_id->Visible) { // JO_id ?>
+		<td data-name="JO_id">
+<span id="el<?php echo $t101_tagihan_trucking_list->RowCnt ?>_t101_tagihan_trucking_JO_id" class="form-group t101_tagihan_trucking_JO_id">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t101_tagihan_trucking" data-field="x_JO_id" data-value-separator="<?php echo $t101_tagihan_trucking->JO_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id"<?php echo $t101_tagihan_trucking->JO_id->editAttributes() ?>>
+		<?php echo $t101_tagihan_trucking->JO_id->selectOptionListHtml("x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id") ?>
+	</select>
+<div class="input-group-append"><button type="button" class="btn btn-default ew-add-opt-btn" id="aol_x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" title="<?php echo HtmlTitle($Language->phrase("AddLink")) . "&nbsp;" . $t101_tagihan_trucking->JO_id->caption() ?>" data-title="<?php echo $t101_tagihan_trucking->JO_id->caption() ?>" onclick="ew.addOptionDialogShow({lnk:this,el:'x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id',url:'t102_joaddopt.php'});"><i class="fa fa-plus ew-icon"></i></button></div>
+</div>
+<?php echo $t101_tagihan_trucking->JO_id->Lookup->getParamTag("p_x" . $t101_tagihan_trucking_list->RowIndex . "_JO_id") ?>
+</span>
+<input type="hidden" data-table="t101_tagihan_trucking" data-field="x_JO_id" name="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" id="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" value="<?php echo HtmlEncode($t101_tagihan_trucking->JO_id->OldValue) ?>">
+</td>
+	<?php } ?>
 	<?php if ($t101_tagihan_trucking->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
 		<td data-name="Nomor_Polisi_1">
 <span id="el<?php echo $t101_tagihan_trucking_list->RowCnt ?>_t101_tagihan_trucking_Nomor_Polisi_1" class="form-group t101_tagihan_trucking_Nomor_Polisi_1">
@@ -519,6 +597,14 @@ ew.createDateTimePicker("ft101_tagihan_truckinglist", "x<?php echo $t101_tagihan
 <input type="text" data-table="t101_tagihan_trucking" data-field="x_Nomor_Container_2" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Nomor_Container_2" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Nomor_Container_2" size="30" maxlength="10" placeholder="<?php echo HtmlEncode($t101_tagihan_trucking->Nomor_Container_2->getPlaceHolder()) ?>" value="<?php echo $t101_tagihan_trucking->Nomor_Container_2->EditValue ?>"<?php echo $t101_tagihan_trucking->Nomor_Container_2->editAttributes() ?>>
 </span>
 <input type="hidden" data-table="t101_tagihan_trucking" data-field="x_Nomor_Container_2" name="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Nomor_Container_2" id="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Nomor_Container_2" value="<?php echo HtmlEncode($t101_tagihan_trucking->Nomor_Container_2->OldValue) ?>">
+</td>
+	<?php } ?>
+	<?php if ($t101_tagihan_trucking->Keterangan->Visible) { // Keterangan ?>
+		<td data-name="Keterangan">
+<span id="el<?php echo $t101_tagihan_trucking_list->RowCnt ?>_t101_tagihan_trucking_Keterangan" class="form-group t101_tagihan_trucking_Keterangan">
+<textarea data-table="t101_tagihan_trucking" data-field="x_Keterangan" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" cols="35" rows="4" placeholder="<?php echo HtmlEncode($t101_tagihan_trucking->Keterangan->getPlaceHolder()) ?>"<?php echo $t101_tagihan_trucking->Keterangan->editAttributes() ?>><?php echo $t101_tagihan_trucking->Keterangan->EditValue ?></textarea>
+</span>
+<input type="hidden" data-table="t101_tagihan_trucking" data-field="x_Keterangan" name="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" id="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" value="<?php echo HtmlEncode($t101_tagihan_trucking->Keterangan->OldValue) ?>">
 </td>
 	<?php } ?>
 	<?php if ($t101_tagihan_trucking->Tagihan->Visible) { // Tagihan ?>
@@ -653,6 +739,46 @@ while ($t101_tagihan_trucking_list->RecCnt < $t101_tagihan_trucking_list->StopRe
 // Render list options (body, left)
 $t101_tagihan_trucking_list->ListOptions->render("body", "left", $t101_tagihan_trucking_list->RowCnt);
 ?>
+	<?php if ($t101_tagihan_trucking->JO_id->Visible) { // JO_id ?>
+		<td data-name="JO_id"<?php echo $t101_tagihan_trucking->JO_id->cellAttributes() ?>>
+<?php if ($t101_tagihan_trucking->RowType == ROWTYPE_ADD) { // Add record ?>
+<span id="el<?php echo $t101_tagihan_trucking_list->RowCnt ?>_t101_tagihan_trucking_JO_id" class="form-group t101_tagihan_trucking_JO_id">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t101_tagihan_trucking" data-field="x_JO_id" data-value-separator="<?php echo $t101_tagihan_trucking->JO_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id"<?php echo $t101_tagihan_trucking->JO_id->editAttributes() ?>>
+		<?php echo $t101_tagihan_trucking->JO_id->selectOptionListHtml("x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id") ?>
+	</select>
+<div class="input-group-append"><button type="button" class="btn btn-default ew-add-opt-btn" id="aol_x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" title="<?php echo HtmlTitle($Language->phrase("AddLink")) . "&nbsp;" . $t101_tagihan_trucking->JO_id->caption() ?>" data-title="<?php echo $t101_tagihan_trucking->JO_id->caption() ?>" onclick="ew.addOptionDialogShow({lnk:this,el:'x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id',url:'t102_joaddopt.php'});"><i class="fa fa-plus ew-icon"></i></button></div>
+</div>
+<?php echo $t101_tagihan_trucking->JO_id->Lookup->getParamTag("p_x" . $t101_tagihan_trucking_list->RowIndex . "_JO_id") ?>
+</span>
+<input type="hidden" data-table="t101_tagihan_trucking" data-field="x_JO_id" name="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" id="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" value="<?php echo HtmlEncode($t101_tagihan_trucking->JO_id->OldValue) ?>">
+<?php } ?>
+<?php if ($t101_tagihan_trucking->RowType == ROWTYPE_EDIT) { // Edit record ?>
+<span id="el<?php echo $t101_tagihan_trucking_list->RowCnt ?>_t101_tagihan_trucking_JO_id" class="form-group t101_tagihan_trucking_JO_id">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t101_tagihan_trucking" data-field="x_JO_id" data-value-separator="<?php echo $t101_tagihan_trucking->JO_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id"<?php echo $t101_tagihan_trucking->JO_id->editAttributes() ?>>
+		<?php echo $t101_tagihan_trucking->JO_id->selectOptionListHtml("x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id") ?>
+	</select>
+<div class="input-group-append"><button type="button" class="btn btn-default ew-add-opt-btn" id="aol_x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" title="<?php echo HtmlTitle($Language->phrase("AddLink")) . "&nbsp;" . $t101_tagihan_trucking->JO_id->caption() ?>" data-title="<?php echo $t101_tagihan_trucking->JO_id->caption() ?>" onclick="ew.addOptionDialogShow({lnk:this,el:'x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id',url:'t102_joaddopt.php'});"><i class="fa fa-plus ew-icon"></i></button></div>
+</div>
+<?php echo $t101_tagihan_trucking->JO_id->Lookup->getParamTag("p_x" . $t101_tagihan_trucking_list->RowIndex . "_JO_id") ?>
+</span>
+<?php } ?>
+<?php if ($t101_tagihan_trucking->RowType == ROWTYPE_VIEW) { // View record ?>
+<span id="el<?php echo $t101_tagihan_trucking_list->RowCnt ?>_t101_tagihan_trucking_JO_id" class="t101_tagihan_trucking_JO_id">
+<span<?php echo $t101_tagihan_trucking->JO_id->viewAttributes() ?>>
+<?php echo $t101_tagihan_trucking->JO_id->getViewValue() ?></span>
+</span>
+<?php } ?>
+</td>
+	<?php } ?>
+<?php if ($t101_tagihan_trucking->RowType == ROWTYPE_ADD) { // Add record ?>
+<input type="hidden" data-table="t101_tagihan_trucking" data-field="x_id" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_id" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_id" value="<?php echo HtmlEncode($t101_tagihan_trucking->id->CurrentValue) ?>">
+<input type="hidden" data-table="t101_tagihan_trucking" data-field="x_id" name="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_id" id="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_id" value="<?php echo HtmlEncode($t101_tagihan_trucking->id->OldValue) ?>">
+<?php } ?>
+<?php if ($t101_tagihan_trucking->RowType == ROWTYPE_EDIT || $t101_tagihan_trucking->CurrentMode == "edit") { ?>
+<input type="hidden" data-table="t101_tagihan_trucking" data-field="x_id" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_id" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_id" value="<?php echo HtmlEncode($t101_tagihan_trucking->id->CurrentValue) ?>">
+<?php } ?>
 	<?php if ($t101_tagihan_trucking->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
 		<td data-name="Nomor_Polisi_1"<?php echo $t101_tagihan_trucking->Nomor_Polisi_1->cellAttributes() ?>>
 <?php if ($t101_tagihan_trucking->RowType == ROWTYPE_ADD) { // Add record ?>
@@ -674,13 +800,6 @@ $t101_tagihan_trucking_list->ListOptions->render("body", "left", $t101_tagihan_t
 <?php } ?>
 </td>
 	<?php } ?>
-<?php if ($t101_tagihan_trucking->RowType == ROWTYPE_ADD) { // Add record ?>
-<input type="hidden" data-table="t101_tagihan_trucking" data-field="x_id" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_id" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_id" value="<?php echo HtmlEncode($t101_tagihan_trucking->id->CurrentValue) ?>">
-<input type="hidden" data-table="t101_tagihan_trucking" data-field="x_id" name="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_id" id="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_id" value="<?php echo HtmlEncode($t101_tagihan_trucking->id->OldValue) ?>">
-<?php } ?>
-<?php if ($t101_tagihan_trucking->RowType == ROWTYPE_EDIT || $t101_tagihan_trucking->CurrentMode == "edit") { ?>
-<input type="hidden" data-table="t101_tagihan_trucking" data-field="x_id" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_id" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_id" value="<?php echo HtmlEncode($t101_tagihan_trucking->id->CurrentValue) ?>">
-<?php } ?>
 	<?php if ($t101_tagihan_trucking->Nomor_Polisi_2->Visible) { // Nomor_Polisi_2 ?>
 		<td data-name="Nomor_Polisi_2"<?php echo $t101_tagihan_trucking->Nomor_Polisi_2->cellAttributes() ?>>
 <?php if ($t101_tagihan_trucking->RowType == ROWTYPE_ADD) { // Add record ?>
@@ -898,6 +1017,27 @@ ew.createDateTimePicker("ft101_tagihan_truckinglist", "x<?php echo $t101_tagihan
 <?php } ?>
 </td>
 	<?php } ?>
+	<?php if ($t101_tagihan_trucking->Keterangan->Visible) { // Keterangan ?>
+		<td data-name="Keterangan"<?php echo $t101_tagihan_trucking->Keterangan->cellAttributes() ?>>
+<?php if ($t101_tagihan_trucking->RowType == ROWTYPE_ADD) { // Add record ?>
+<span id="el<?php echo $t101_tagihan_trucking_list->RowCnt ?>_t101_tagihan_trucking_Keterangan" class="form-group t101_tagihan_trucking_Keterangan">
+<textarea data-table="t101_tagihan_trucking" data-field="x_Keterangan" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" cols="35" rows="4" placeholder="<?php echo HtmlEncode($t101_tagihan_trucking->Keterangan->getPlaceHolder()) ?>"<?php echo $t101_tagihan_trucking->Keterangan->editAttributes() ?>><?php echo $t101_tagihan_trucking->Keterangan->EditValue ?></textarea>
+</span>
+<input type="hidden" data-table="t101_tagihan_trucking" data-field="x_Keterangan" name="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" id="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" value="<?php echo HtmlEncode($t101_tagihan_trucking->Keterangan->OldValue) ?>">
+<?php } ?>
+<?php if ($t101_tagihan_trucking->RowType == ROWTYPE_EDIT) { // Edit record ?>
+<span id="el<?php echo $t101_tagihan_trucking_list->RowCnt ?>_t101_tagihan_trucking_Keterangan" class="form-group t101_tagihan_trucking_Keterangan">
+<textarea data-table="t101_tagihan_trucking" data-field="x_Keterangan" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" cols="35" rows="4" placeholder="<?php echo HtmlEncode($t101_tagihan_trucking->Keterangan->getPlaceHolder()) ?>"<?php echo $t101_tagihan_trucking->Keterangan->editAttributes() ?>><?php echo $t101_tagihan_trucking->Keterangan->EditValue ?></textarea>
+</span>
+<?php } ?>
+<?php if ($t101_tagihan_trucking->RowType == ROWTYPE_VIEW) { // View record ?>
+<span id="el<?php echo $t101_tagihan_trucking_list->RowCnt ?>_t101_tagihan_trucking_Keterangan" class="t101_tagihan_trucking_Keterangan">
+<span<?php echo $t101_tagihan_trucking->Keterangan->viewAttributes() ?>>
+<?php echo $t101_tagihan_trucking->Keterangan->getViewValue() ?></span>
+</span>
+<?php } ?>
+</td>
+	<?php } ?>
 	<?php if ($t101_tagihan_trucking->Tagihan->Visible) { // Tagihan ?>
 		<td data-name="Tagihan"<?php echo $t101_tagihan_trucking->Tagihan->cellAttributes() ?>>
 <?php if ($t101_tagihan_trucking->RowType == ROWTYPE_ADD) { // Add record ?>
@@ -962,6 +1102,20 @@ ft101_tagihan_truckinglist.updateLists(<?php echo $t101_tagihan_trucking_list->R
 // Render list options (body, left)
 $t101_tagihan_trucking_list->ListOptions->render("body", "left", $t101_tagihan_trucking_list->RowIndex);
 ?>
+	<?php if ($t101_tagihan_trucking->JO_id->Visible) { // JO_id ?>
+		<td data-name="JO_id">
+<span id="el$rowindex$_t101_tagihan_trucking_JO_id" class="form-group t101_tagihan_trucking_JO_id">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t101_tagihan_trucking" data-field="x_JO_id" data-value-separator="<?php echo $t101_tagihan_trucking->JO_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id"<?php echo $t101_tagihan_trucking->JO_id->editAttributes() ?>>
+		<?php echo $t101_tagihan_trucking->JO_id->selectOptionListHtml("x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id") ?>
+	</select>
+<div class="input-group-append"><button type="button" class="btn btn-default ew-add-opt-btn" id="aol_x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" title="<?php echo HtmlTitle($Language->phrase("AddLink")) . "&nbsp;" . $t101_tagihan_trucking->JO_id->caption() ?>" data-title="<?php echo $t101_tagihan_trucking->JO_id->caption() ?>" onclick="ew.addOptionDialogShow({lnk:this,el:'x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id',url:'t102_joaddopt.php'});"><i class="fa fa-plus ew-icon"></i></button></div>
+</div>
+<?php echo $t101_tagihan_trucking->JO_id->Lookup->getParamTag("p_x" . $t101_tagihan_trucking_list->RowIndex . "_JO_id") ?>
+</span>
+<input type="hidden" data-table="t101_tagihan_trucking" data-field="x_JO_id" name="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" id="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_JO_id" value="<?php echo HtmlEncode($t101_tagihan_trucking->JO_id->OldValue) ?>">
+</td>
+	<?php } ?>
 	<?php if ($t101_tagihan_trucking->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
 		<td data-name="Nomor_Polisi_1">
 <span id="el$rowindex$_t101_tagihan_trucking_Nomor_Polisi_1" class="form-group t101_tagihan_trucking_Nomor_Polisi_1">
@@ -1054,6 +1208,14 @@ ew.createDateTimePicker("ft101_tagihan_truckinglist", "x<?php echo $t101_tagihan
 <input type="text" data-table="t101_tagihan_trucking" data-field="x_Nomor_Container_2" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Nomor_Container_2" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Nomor_Container_2" size="30" maxlength="10" placeholder="<?php echo HtmlEncode($t101_tagihan_trucking->Nomor_Container_2->getPlaceHolder()) ?>" value="<?php echo $t101_tagihan_trucking->Nomor_Container_2->EditValue ?>"<?php echo $t101_tagihan_trucking->Nomor_Container_2->editAttributes() ?>>
 </span>
 <input type="hidden" data-table="t101_tagihan_trucking" data-field="x_Nomor_Container_2" name="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Nomor_Container_2" id="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Nomor_Container_2" value="<?php echo HtmlEncode($t101_tagihan_trucking->Nomor_Container_2->OldValue) ?>">
+</td>
+	<?php } ?>
+	<?php if ($t101_tagihan_trucking->Keterangan->Visible) { // Keterangan ?>
+		<td data-name="Keterangan">
+<span id="el$rowindex$_t101_tagihan_trucking_Keterangan" class="form-group t101_tagihan_trucking_Keterangan">
+<textarea data-table="t101_tagihan_trucking" data-field="x_Keterangan" name="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" id="x<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" cols="35" rows="4" placeholder="<?php echo HtmlEncode($t101_tagihan_trucking->Keterangan->getPlaceHolder()) ?>"<?php echo $t101_tagihan_trucking->Keterangan->editAttributes() ?>><?php echo $t101_tagihan_trucking->Keterangan->EditValue ?></textarea>
+</span>
+<input type="hidden" data-table="t101_tagihan_trucking" data-field="x_Keterangan" name="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" id="o<?php echo $t101_tagihan_trucking_list->RowIndex ?>_Keterangan" value="<?php echo HtmlEncode($t101_tagihan_trucking->Keterangan->OldValue) ?>">
 </td>
 	<?php } ?>
 	<?php if ($t101_tagihan_trucking->Tagihan->Visible) { // Tagihan ?>
@@ -1184,6 +1346,11 @@ if (DEBUG_ENABLED)
 // document.write("page loaded");
 
 </script>
+<?php if (!$t101_tagihan_trucking->isExport()) { ?>
+<script>
+ew.scrollableTable("gmp_t101_tagihan_trucking", "100%", "");
+</script>
+<?php } ?>
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php

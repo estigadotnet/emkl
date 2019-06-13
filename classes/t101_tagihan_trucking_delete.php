@@ -532,6 +532,7 @@ class t101_tagihan_trucking_delete extends t101_tagihan_trucking
 		}
 		$this->CurrentAction = Param("action"); // Set up current action
 		$this->id->Visible = FALSE;
+		$this->JO_id->setVisibility();
 		$this->Nomor_Polisi_1->setVisibility();
 		$this->Nomor_Polisi_2->setVisibility();
 		$this->Nomor_Polisi_3->setVisibility();
@@ -542,7 +543,7 @@ class t101_tagihan_trucking_delete extends t101_tagihan_trucking
 		$this->Jenis_Container->setVisibility();
 		$this->Nomor_Container_1->setVisibility();
 		$this->Nomor_Container_2->setVisibility();
-		$this->Keterangan->Visible = FALSE;
+		$this->Keterangan->setVisibility();
 		$this->Tagihan->setVisibility();
 		$this->hideFieldsForAddEdit();
 
@@ -565,6 +566,7 @@ class t101_tagihan_trucking_delete extends t101_tagihan_trucking
 		$this->createToken();
 
 		// Set up lookup cache
+		$this->setupLookupOptions($this->JO_id);
 		$this->setupLookupOptions($this->Shipper_id);
 
 		// Set up Breadcrumb
@@ -684,6 +686,7 @@ class t101_tagihan_trucking_delete extends t101_tagihan_trucking
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
+		$this->JO_id->setDbValue($row['JO_id']);
 		$this->Nomor_Polisi_1->setDbValue($row['Nomor_Polisi_1']);
 		$this->Nomor_Polisi_2->setDbValue($row['Nomor_Polisi_2']);
 		$this->Nomor_Polisi_3->setDbValue($row['Nomor_Polisi_3']);
@@ -703,6 +706,7 @@ class t101_tagihan_trucking_delete extends t101_tagihan_trucking
 	{
 		$row = [];
 		$row['id'] = NULL;
+		$row['JO_id'] = NULL;
 		$row['Nomor_Polisi_1'] = NULL;
 		$row['Nomor_Polisi_2'] = NULL;
 		$row['Nomor_Polisi_3'] = NULL;
@@ -734,6 +738,7 @@ class t101_tagihan_trucking_delete extends t101_tagihan_trucking
 
 		// Common render codes for all row types
 		// id
+		// JO_id
 		// Nomor_Polisi_1
 		// Nomor_Polisi_2
 		// Nomor_Polisi_3
@@ -752,6 +757,28 @@ class t101_tagihan_trucking_delete extends t101_tagihan_trucking
 			// id
 			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
+
+			// JO_id
+			$curVal = strval($this->JO_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->JO_id->ViewValue = $this->JO_id->lookupCacheOption($curVal);
+				if ($this->JO_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->JO_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->JO_id->ViewValue = $this->JO_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->JO_id->ViewValue = $this->JO_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->JO_id->ViewValue = NULL;
+			}
+			$this->JO_id->ViewCustomAttributes = "";
 
 			// Nomor_Polisi_1
 			$this->Nomor_Polisi_1->ViewValue = $this->Nomor_Polisi_1->CurrentValue;
@@ -816,11 +843,20 @@ class t101_tagihan_trucking_delete extends t101_tagihan_trucking
 			$this->Nomor_Container_2->ViewValue = $this->Nomor_Container_2->CurrentValue;
 			$this->Nomor_Container_2->ViewCustomAttributes = "";
 
+			// Keterangan
+			$this->Keterangan->ViewValue = $this->Keterangan->CurrentValue;
+			$this->Keterangan->ViewCustomAttributes = "";
+
 			// Tagihan
 			$this->Tagihan->ViewValue = $this->Tagihan->CurrentValue;
 			$this->Tagihan->ViewValue = FormatNumber($this->Tagihan->ViewValue, 2, -2, -2, -2);
 			$this->Tagihan->CellCssStyle .= "text-align: right;";
 			$this->Tagihan->ViewCustomAttributes = "";
+
+			// JO_id
+			$this->JO_id->LinkCustomAttributes = "";
+			$this->JO_id->HrefValue = "";
+			$this->JO_id->TooltipValue = "";
 
 			// Nomor_Polisi_1
 			$this->Nomor_Polisi_1->LinkCustomAttributes = "";
@@ -871,6 +907,11 @@ class t101_tagihan_trucking_delete extends t101_tagihan_trucking
 			$this->Nomor_Container_2->LinkCustomAttributes = "";
 			$this->Nomor_Container_2->HrefValue = "";
 			$this->Nomor_Container_2->TooltipValue = "";
+
+			// Keterangan
+			$this->Keterangan->LinkCustomAttributes = "";
+			$this->Keterangan->HrefValue = "";
+			$this->Keterangan->TooltipValue = "";
 
 			// Tagihan
 			$this->Tagihan->LinkCustomAttributes = "";
@@ -1011,6 +1052,8 @@ class t101_tagihan_trucking_delete extends t101_tagihan_trucking
 
 					// Format the field values
 					switch ($fld->FieldVar) {
+						case "x_JO_id":
+							break;
 						case "x_Shipper_id":
 							break;
 					}

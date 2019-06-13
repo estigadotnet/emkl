@@ -26,6 +26,7 @@ class t101_tagihan_trucking extends DbTable
 
 	// Fields
 	public $id;
+	public $JO_id;
 	public $Nomor_Polisi_1;
 	public $Nomor_Polisi_2;
 	public $Nomor_Polisi_3;
@@ -70,6 +71,7 @@ class t101_tagihan_trucking extends DbTable
 		$this->AllowAddDeleteRow = TRUE; // Allow add/delete row
 		$this->UserIDAllowSecurity = 0; // User ID Allow
 		$this->BasicSearch = new BasicSearch($this->TableVar);
+		$this->BasicSearch->TypeDefault = "OR";
 
 		// id
 		$this->id = new DbField('t101_tagihan_trucking', 't101_tagihan_trucking', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
@@ -78,6 +80,15 @@ class t101_tagihan_trucking extends DbTable
 		$this->id->Sortable = TRUE; // Allow sort
 		$this->id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
 		$this->fields['id'] = &$this->id;
+
+		// JO_id
+		$this->JO_id = new DbField('t101_tagihan_trucking', 't101_tagihan_trucking', 'x_JO_id', 'JO_id', '`JO_id`', '`JO_id`', 3, -1, FALSE, '`JO_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->JO_id->Sortable = TRUE; // Allow sort
+		$this->JO_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->JO_id->PleaseSelectText = $Language->phrase("PleaseSelect"); // PleaseSelect text
+		$this->JO_id->Lookup = new Lookup('JO_id', 't102_jo', FALSE, 'id', ["Nomor_JO","","",""], [], [], [], [], [], [], '', '');
+		$this->JO_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
+		$this->fields['JO_id'] = &$this->JO_id;
 
 		// Nomor_Polisi_1
 		$this->Nomor_Polisi_1 = new DbField('t101_tagihan_trucking', 't101_tagihan_trucking', 'x_Nomor_Polisi_1', 'Nomor_Polisi_1', '`Nomor_Polisi_1`', '`Nomor_Polisi_1`', 200, -1, FALSE, '`Nomor_Polisi_1`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
@@ -512,6 +523,7 @@ class t101_tagihan_trucking extends DbTable
 			return;
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
+		$this->JO_id->DbValue = $row['JO_id'];
 		$this->Nomor_Polisi_1->DbValue = $row['Nomor_Polisi_1'];
 		$this->Nomor_Polisi_2->DbValue = $row['Nomor_Polisi_2'];
 		$this->Nomor_Polisi_3->DbValue = $row['Nomor_Polisi_3'];
@@ -750,6 +762,7 @@ class t101_tagihan_trucking extends DbTable
 	public function loadListRowValues(&$rs)
 	{
 		$this->id->setDbValue($rs->fields('id'));
+		$this->JO_id->setDbValue($rs->fields('JO_id'));
 		$this->Nomor_Polisi_1->setDbValue($rs->fields('Nomor_Polisi_1'));
 		$this->Nomor_Polisi_2->setDbValue($rs->fields('Nomor_Polisi_2'));
 		$this->Nomor_Polisi_3->setDbValue($rs->fields('Nomor_Polisi_3'));
@@ -774,6 +787,7 @@ class t101_tagihan_trucking extends DbTable
 
 		// Common render codes
 		// id
+		// JO_id
 		// Nomor_Polisi_1
 		// Nomor_Polisi_2
 		// Nomor_Polisi_3
@@ -790,6 +804,28 @@ class t101_tagihan_trucking extends DbTable
 
 		$this->id->ViewValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
+
+		// JO_id
+		$curVal = strval($this->JO_id->CurrentValue);
+		if ($curVal <> "") {
+			$this->JO_id->ViewValue = $this->JO_id->lookupCacheOption($curVal);
+			if ($this->JO_id->ViewValue === NULL) { // Lookup from database
+				$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+				$sqlWrk = $this->JO_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = $rswrk->fields('df');
+					$this->JO_id->ViewValue = $this->JO_id->displayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->JO_id->ViewValue = $this->JO_id->CurrentValue;
+				}
+			}
+		} else {
+			$this->JO_id->ViewValue = NULL;
+		}
+		$this->JO_id->ViewCustomAttributes = "";
 
 		// Nomor_Polisi_1
 		$this->Nomor_Polisi_1->ViewValue = $this->Nomor_Polisi_1->CurrentValue;
@@ -868,6 +904,11 @@ class t101_tagihan_trucking extends DbTable
 		$this->id->LinkCustomAttributes = "";
 		$this->id->HrefValue = "";
 		$this->id->TooltipValue = "";
+
+		// JO_id
+		$this->JO_id->LinkCustomAttributes = "";
+		$this->JO_id->HrefValue = "";
+		$this->JO_id->TooltipValue = "";
 
 		// Nomor_Polisi_1
 		$this->Nomor_Polisi_1->LinkCustomAttributes = "";
@@ -949,6 +990,10 @@ class t101_tagihan_trucking extends DbTable
 		$this->id->EditCustomAttributes = "";
 		$this->id->EditValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
+
+		// JO_id
+		$this->JO_id->EditAttrs["class"] = "form-control";
+		$this->JO_id->EditCustomAttributes = "";
 
 		// Nomor_Polisi_1
 		$this->Nomor_Polisi_1->EditAttrs["class"] = "form-control";
@@ -1063,6 +1108,7 @@ class t101_tagihan_trucking extends DbTable
 			if ($doc->Horizontal) { // Horizontal format, write header
 				$doc->beginExportRow();
 				if ($exportPageType == "view") {
+					$doc->exportCaption($this->JO_id);
 					$doc->exportCaption($this->Nomor_Polisi_1);
 					$doc->exportCaption($this->Nomor_Polisi_2);
 					$doc->exportCaption($this->Nomor_Polisi_3);
@@ -1077,6 +1123,7 @@ class t101_tagihan_trucking extends DbTable
 					$doc->exportCaption($this->Tagihan);
 				} else {
 					$doc->exportCaption($this->id);
+					$doc->exportCaption($this->JO_id);
 					$doc->exportCaption($this->Nomor_Polisi_1);
 					$doc->exportCaption($this->Nomor_Polisi_2);
 					$doc->exportCaption($this->Nomor_Polisi_3);
@@ -1087,6 +1134,7 @@ class t101_tagihan_trucking extends DbTable
 					$doc->exportCaption($this->Jenis_Container);
 					$doc->exportCaption($this->Nomor_Container_1);
 					$doc->exportCaption($this->Nomor_Container_2);
+					$doc->exportCaption($this->Keterangan);
 					$doc->exportCaption($this->Tagihan);
 				}
 				$doc->endExportRow();
@@ -1119,6 +1167,7 @@ class t101_tagihan_trucking extends DbTable
 				if (!$doc->ExportCustom) {
 					$doc->beginExportRow($rowCnt); // Allow CSS styles if enabled
 					if ($exportPageType == "view") {
+						$doc->exportField($this->JO_id);
 						$doc->exportField($this->Nomor_Polisi_1);
 						$doc->exportField($this->Nomor_Polisi_2);
 						$doc->exportField($this->Nomor_Polisi_3);
@@ -1133,6 +1182,7 @@ class t101_tagihan_trucking extends DbTable
 						$doc->exportField($this->Tagihan);
 					} else {
 						$doc->exportField($this->id);
+						$doc->exportField($this->JO_id);
 						$doc->exportField($this->Nomor_Polisi_1);
 						$doc->exportField($this->Nomor_Polisi_2);
 						$doc->exportField($this->Nomor_Polisi_3);
@@ -1143,6 +1193,7 @@ class t101_tagihan_trucking extends DbTable
 						$doc->exportField($this->Jenis_Container);
 						$doc->exportField($this->Nomor_Container_1);
 						$doc->exportField($this->Nomor_Container_2);
+						$doc->exportField($this->Keterangan);
 						$doc->exportField($this->Tagihan);
 					}
 					$doc->endExportRow($rowCnt);

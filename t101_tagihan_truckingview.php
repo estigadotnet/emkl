@@ -50,6 +50,8 @@ ft101_tagihan_truckingview.Form_CustomValidate = function(fobj) { // DO NOT CHAN
 ft101_tagihan_truckingview.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+ft101_tagihan_truckingview.lists["x_JO_id"] = <?php echo $t101_tagihan_trucking_view->JO_id->Lookup->toClientList() ?>;
+ft101_tagihan_truckingview.lists["x_JO_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_view->JO_id->lookupOptions()) ?>;
 ft101_tagihan_truckingview.lists["x_Shipper_id"] = <?php echo $t101_tagihan_trucking_view->Shipper_id->Lookup->toClientList() ?>;
 ft101_tagihan_truckingview.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_view->Shipper_id->lookupOptions()) ?>;
 ft101_tagihan_truckingview.lists["x_Jenis_Container"] = <?php echo $t101_tagihan_trucking_view->Jenis_Container->Lookup->toClientList() ?>;
@@ -80,6 +82,17 @@ $t101_tagihan_trucking_view->showMessage();
 <input type="hidden" name="t" value="t101_tagihan_trucking">
 <input type="hidden" name="modal" value="<?php echo (int)$t101_tagihan_trucking_view->IsModal ?>">
 <table class="table table-striped table-sm ew-view-table">
+<?php if ($t101_tagihan_trucking->JO_id->Visible) { // JO_id ?>
+	<tr id="r_JO_id">
+		<td class="<?php echo $t101_tagihan_trucking_view->TableLeftColumnClass ?>"><span id="elh_t101_tagihan_trucking_JO_id"><?php echo $t101_tagihan_trucking->JO_id->caption() ?></span></td>
+		<td data-name="JO_id"<?php echo $t101_tagihan_trucking->JO_id->cellAttributes() ?>>
+<span id="el_t101_tagihan_trucking_JO_id">
+<span<?php echo $t101_tagihan_trucking->JO_id->viewAttributes() ?>>
+<?php echo $t101_tagihan_trucking->JO_id->getViewValue() ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
 <?php if ($t101_tagihan_trucking->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
 	<tr id="r_Nomor_Polisi_1">
 		<td class="<?php echo $t101_tagihan_trucking_view->TableLeftColumnClass ?>"><span id="elh_t101_tagihan_trucking_Nomor_Polisi_1"><?php echo $t101_tagihan_trucking->Nomor_Polisi_1->caption() ?></span></td>

@@ -53,6 +53,11 @@ ft101_tagihan_truckingadd.validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
+		<?php if ($t101_tagihan_trucking_add->JO_id->Required) { ?>
+			elm = this.getElements("x" + infix + "_JO_id");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_tagihan_trucking->JO_id->caption(), $t101_tagihan_trucking->JO_id->RequiredErrorMessage)) ?>");
+		<?php } ?>
 		<?php if ($t101_tagihan_trucking_add->Nomor_Polisi_1->Required) { ?>
 			elm = this.getElements("x" + infix + "_Nomor_Polisi_1");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -147,6 +152,8 @@ ft101_tagihan_truckingadd.Form_CustomValidate = function(fobj) { // DO NOT CHANG
 ft101_tagihan_truckingadd.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+ft101_tagihan_truckingadd.lists["x_JO_id"] = <?php echo $t101_tagihan_trucking_add->JO_id->Lookup->toClientList() ?>;
+ft101_tagihan_truckingadd.lists["x_JO_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_add->JO_id->lookupOptions()) ?>;
 ft101_tagihan_truckingadd.lists["x_Shipper_id"] = <?php echo $t101_tagihan_trucking_add->Shipper_id->Lookup->toClientList() ?>;
 ft101_tagihan_truckingadd.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_add->Shipper_id->lookupOptions()) ?>;
 ft101_tagihan_truckingadd.lists["x_Jenis_Container"] = <?php echo $t101_tagihan_trucking_add->Jenis_Container->Lookup->toClientList() ?>;
@@ -170,6 +177,22 @@ $t101_tagihan_trucking_add->showMessage();
 <input type="hidden" name="action" id="action" value="insert">
 <input type="hidden" name="modal" value="<?php echo (int)$t101_tagihan_trucking_add->IsModal ?>">
 <div class="ew-add-div"><!-- page* -->
+<?php if ($t101_tagihan_trucking->JO_id->Visible) { // JO_id ?>
+	<div id="r_JO_id" class="form-group row">
+		<label id="elh_t101_tagihan_trucking_JO_id" for="x_JO_id" class="<?php echo $t101_tagihan_trucking_add->LeftColumnClass ?>"><?php echo $t101_tagihan_trucking->JO_id->caption() ?><?php echo ($t101_tagihan_trucking->JO_id->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
+		<div class="<?php echo $t101_tagihan_trucking_add->RightColumnClass ?>"><div<?php echo $t101_tagihan_trucking->JO_id->cellAttributes() ?>>
+<span id="el_t101_tagihan_trucking_JO_id">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t101_tagihan_trucking" data-field="x_JO_id" data-value-separator="<?php echo $t101_tagihan_trucking->JO_id->displayValueSeparatorAttribute() ?>" id="x_JO_id" name="x_JO_id"<?php echo $t101_tagihan_trucking->JO_id->editAttributes() ?>>
+		<?php echo $t101_tagihan_trucking->JO_id->selectOptionListHtml("x_JO_id") ?>
+	</select>
+<div class="input-group-append"><button type="button" class="btn btn-default ew-add-opt-btn" id="aol_x_JO_id" title="<?php echo HtmlTitle($Language->phrase("AddLink")) . "&nbsp;" . $t101_tagihan_trucking->JO_id->caption() ?>" data-title="<?php echo $t101_tagihan_trucking->JO_id->caption() ?>" onclick="ew.addOptionDialogShow({lnk:this,el:'x_JO_id',url:'t102_joaddopt.php'});"><i class="fa fa-plus ew-icon"></i></button></div>
+</div>
+<?php echo $t101_tagihan_trucking->JO_id->Lookup->getParamTag("p_x_JO_id") ?>
+</span>
+<?php echo $t101_tagihan_trucking->JO_id->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
 <?php if ($t101_tagihan_trucking->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
 	<div id="r_Nomor_Polisi_1" class="form-group row">
 		<label id="elh_t101_tagihan_trucking_Nomor_Polisi_1" for="x_Nomor_Polisi_1" class="<?php echo $t101_tagihan_trucking_add->LeftColumnClass ?>"><?php echo $t101_tagihan_trucking->Nomor_Polisi_1->caption() ?><?php echo ($t101_tagihan_trucking->Nomor_Polisi_1->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>

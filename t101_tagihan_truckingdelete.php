@@ -49,6 +49,8 @@ ft101_tagihan_truckingdelete.Form_CustomValidate = function(fobj) { // DO NOT CH
 ft101_tagihan_truckingdelete.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+ft101_tagihan_truckingdelete.lists["x_JO_id"] = <?php echo $t101_tagihan_trucking_delete->JO_id->Lookup->toClientList() ?>;
+ft101_tagihan_truckingdelete.lists["x_JO_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_delete->JO_id->lookupOptions()) ?>;
 ft101_tagihan_truckingdelete.lists["x_Shipper_id"] = <?php echo $t101_tagihan_trucking_delete->Shipper_id->Lookup->toClientList() ?>;
 ft101_tagihan_truckingdelete.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_delete->Shipper_id->lookupOptions()) ?>;
 ft101_tagihan_truckingdelete.lists["x_Jenis_Container"] = <?php echo $t101_tagihan_trucking_delete->Jenis_Container->Lookup->toClientList() ?>;
@@ -79,6 +81,9 @@ $t101_tagihan_trucking_delete->showMessage();
 <table class="table ew-table">
 	<thead>
 	<tr class="ew-table-header">
+<?php if ($t101_tagihan_trucking->JO_id->Visible) { // JO_id ?>
+		<th class="<?php echo $t101_tagihan_trucking->JO_id->headerCellClass() ?>"><span id="elh_t101_tagihan_trucking_JO_id" class="t101_tagihan_trucking_JO_id"><?php echo $t101_tagihan_trucking->JO_id->caption() ?></span></th>
+<?php } ?>
 <?php if ($t101_tagihan_trucking->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
 		<th class="<?php echo $t101_tagihan_trucking->Nomor_Polisi_1->headerCellClass() ?>"><span id="elh_t101_tagihan_trucking_Nomor_Polisi_1" class="t101_tagihan_trucking_Nomor_Polisi_1"><?php echo $t101_tagihan_trucking->Nomor_Polisi_1->caption() ?></span></th>
 <?php } ?>
@@ -109,6 +114,9 @@ $t101_tagihan_trucking_delete->showMessage();
 <?php if ($t101_tagihan_trucking->Nomor_Container_2->Visible) { // Nomor_Container_2 ?>
 		<th class="<?php echo $t101_tagihan_trucking->Nomor_Container_2->headerCellClass() ?>"><span id="elh_t101_tagihan_trucking_Nomor_Container_2" class="t101_tagihan_trucking_Nomor_Container_2"><?php echo $t101_tagihan_trucking->Nomor_Container_2->caption() ?></span></th>
 <?php } ?>
+<?php if ($t101_tagihan_trucking->Keterangan->Visible) { // Keterangan ?>
+		<th class="<?php echo $t101_tagihan_trucking->Keterangan->headerCellClass() ?>"><span id="elh_t101_tagihan_trucking_Keterangan" class="t101_tagihan_trucking_Keterangan"><?php echo $t101_tagihan_trucking->Keterangan->caption() ?></span></th>
+<?php } ?>
 <?php if ($t101_tagihan_trucking->Tagihan->Visible) { // Tagihan ?>
 		<th class="<?php echo $t101_tagihan_trucking->Tagihan->headerCellClass() ?>"><span id="elh_t101_tagihan_trucking_Tagihan" class="t101_tagihan_trucking_Tagihan"><?php echo $t101_tagihan_trucking->Tagihan->caption() ?></span></th>
 <?php } ?>
@@ -133,6 +141,14 @@ while (!$t101_tagihan_trucking_delete->Recordset->EOF) {
 	$t101_tagihan_trucking_delete->renderRow();
 ?>
 	<tr<?php echo $t101_tagihan_trucking->rowAttributes() ?>>
+<?php if ($t101_tagihan_trucking->JO_id->Visible) { // JO_id ?>
+		<td<?php echo $t101_tagihan_trucking->JO_id->cellAttributes() ?>>
+<span id="el<?php echo $t101_tagihan_trucking_delete->RowCnt ?>_t101_tagihan_trucking_JO_id" class="t101_tagihan_trucking_JO_id">
+<span<?php echo $t101_tagihan_trucking->JO_id->viewAttributes() ?>>
+<?php echo $t101_tagihan_trucking->JO_id->getViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
 <?php if ($t101_tagihan_trucking->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
 		<td<?php echo $t101_tagihan_trucking->Nomor_Polisi_1->cellAttributes() ?>>
 <span id="el<?php echo $t101_tagihan_trucking_delete->RowCnt ?>_t101_tagihan_trucking_Nomor_Polisi_1" class="t101_tagihan_trucking_Nomor_Polisi_1">
@@ -210,6 +226,14 @@ while (!$t101_tagihan_trucking_delete->Recordset->EOF) {
 <span id="el<?php echo $t101_tagihan_trucking_delete->RowCnt ?>_t101_tagihan_trucking_Nomor_Container_2" class="t101_tagihan_trucking_Nomor_Container_2">
 <span<?php echo $t101_tagihan_trucking->Nomor_Container_2->viewAttributes() ?>>
 <?php echo $t101_tagihan_trucking->Nomor_Container_2->getViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($t101_tagihan_trucking->Keterangan->Visible) { // Keterangan ?>
+		<td<?php echo $t101_tagihan_trucking->Keterangan->cellAttributes() ?>>
+<span id="el<?php echo $t101_tagihan_trucking_delete->RowCnt ?>_t101_tagihan_trucking_Keterangan" class="t101_tagihan_trucking_Keterangan">
+<span<?php echo $t101_tagihan_trucking->Keterangan->viewAttributes() ?>>
+<?php echo $t101_tagihan_trucking->Keterangan->getViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

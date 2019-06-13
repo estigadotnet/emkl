@@ -58,6 +58,7 @@ var ft098_userlevelpermissionslistsrch = currentSearchForm = new ew.Form("ft098_
 // Filters
 ft098_userlevelpermissionslistsrch.filterList = <?php echo $t098_userlevelpermissions_list->getFilterList() ?>;
 </script>
+<script src="phpjs/ewscrolltable.js"></script>
 <script>
 
 // Write your client script here, no need to add script tags.
@@ -357,6 +358,11 @@ if (DEBUG_ENABLED)
 // document.write("page loaded");
 
 </script>
+<?php if (!$t098_userlevelpermissions->isExport()) { ?>
+<script>
+ew.scrollableTable("gmp_t098_userlevelpermissions", "100%", "");
+</script>
+<?php } ?>
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php

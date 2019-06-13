@@ -87,6 +87,7 @@ ft096_employeeslistsrch.lists["x_Activated[]"].options = <?php echo JsonEncode($
 // Filters
 ft096_employeeslistsrch.filterList = <?php echo $t096_employees_list->getFilterList() ?>;
 </script>
+<script src="phpjs/ewscrolltable.js"></script>
 <script>
 
 // Write your client script here, no need to add script tags.
@@ -722,6 +723,11 @@ if (DEBUG_ENABLED)
 // document.write("page loaded");
 
 </script>
+<?php if (!$t096_employees->isExport()) { ?>
+<script>
+ew.scrollableTable("gmp_t096_employees", "100%", "");
+</script>
+<?php } ?>
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php

@@ -58,6 +58,7 @@ var ft001_shipperlistsrch = currentSearchForm = new ew.Form("ft001_shipperlistsr
 // Filters
 ft001_shipperlistsrch.filterList = <?php echo $t001_shipper_list->getFilterList() ?>;
 </script>
+<script src="phpjs/ewscrolltable.js"></script>
 <script>
 
 // Write your client script here, no need to add script tags.
@@ -340,6 +341,11 @@ if (DEBUG_ENABLED)
 // document.write("page loaded");
 
 </script>
+<?php if (!$t001_shipper->isExport()) { ?>
+<script>
+ew.scrollableTable("gmp_t001_shipper", "100%", "");
+</script>
+<?php } ?>
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php
