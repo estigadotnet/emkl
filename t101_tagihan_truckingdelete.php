@@ -49,8 +49,6 @@ ft101_tagihan_truckingdelete.Form_CustomValidate = function(fobj) { // DO NOT CH
 ft101_tagihan_truckingdelete.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-ft101_tagihan_truckingdelete.lists["x_JO_id"] = <?php echo $t101_tagihan_trucking_delete->JO_id->Lookup->toClientList() ?>;
-ft101_tagihan_truckingdelete.lists["x_JO_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_delete->JO_id->lookupOptions()) ?>;
 ft101_tagihan_truckingdelete.lists["x_Shipper_id"] = <?php echo $t101_tagihan_trucking_delete->Shipper_id->Lookup->toClientList() ?>;
 ft101_tagihan_truckingdelete.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_delete->Shipper_id->lookupOptions()) ?>;
 ft101_tagihan_truckingdelete.lists["x_Jenis_Container"] = <?php echo $t101_tagihan_trucking_delete->Jenis_Container->Lookup->toClientList() ?>;

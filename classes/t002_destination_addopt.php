@@ -4,20 +4,20 @@ namespace PHPMaker2019\emkl_prj;
 /**
  * Page class
  */
-class t102_jo_add extends t102_jo
+class t002_destination_addopt extends t002_destination
 {
 
 	// Page ID
-	public $PageID = "add";
+	public $PageID = "addopt";
 
 	// Project ID
 	public $ProjectID = "{D4B21A3D-A1C8-4ED3-BA65-212E10E691E7}";
 
 	// Table name
-	public $TableName = 't102_jo';
+	public $TableName = 't002_destination';
 
 	// Page object name
-	public $PageObjName = "t102_jo_add";
+	public $PageObjName = "t002_destination_addopt";
 
 	// Page headings
 	public $Heading = "";
@@ -342,20 +342,20 @@ class t102_jo_add extends t102_jo
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (t102_jo)
-		if (!isset($GLOBALS["t102_jo"]) || get_class($GLOBALS["t102_jo"]) == PROJECT_NAMESPACE . "t102_jo") {
-			$GLOBALS["t102_jo"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["t102_jo"];
+		// Table object (t002_destination)
+		if (!isset($GLOBALS["t002_destination"]) || get_class($GLOBALS["t002_destination"]) == PROJECT_NAMESPACE . "t002_destination") {
+			$GLOBALS["t002_destination"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["t002_destination"];
 		}
 		$this->CancelUrl = $this->pageUrl() . "action=cancel";
 
 		// Page ID
 		if (!defined(PROJECT_NAMESPACE . "PAGE_ID"))
-			define(PROJECT_NAMESPACE . "PAGE_ID", 'add');
+			define(PROJECT_NAMESPACE . "PAGE_ID", 'addopt');
 
 		// Table name (for backward compatibility)
 		if (!defined(PROJECT_NAMESPACE . "TABLE_NAME"))
-			define(PROJECT_NAMESPACE . "TABLE_NAME", 't102_jo');
+			define(PROJECT_NAMESPACE . "TABLE_NAME", 't002_destination');
 
 		// Start timer
 		if (!isset($GLOBALS["DebugTimer"]))
@@ -381,14 +381,14 @@ class t102_jo_add extends t102_jo
 		Page_Unloaded();
 
 		// Export
-		global $EXPORT, $t102_jo;
+		global $EXPORT, $t002_destination;
 		if ($this->CustomExport && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EXPORT)) {
 				$content = ob_get_contents();
 			if ($ExportFileName == "")
 				$ExportFileName = $this->TableVar;
 			$class = PROJECT_NAMESPACE . $EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($t102_jo);
+				$doc = new $class($t002_destination);
 				$doc->Text = @$content;
 				if ($this->isExport("email"))
 					echo $this->exportEmail($doc->Text);
@@ -416,24 +416,8 @@ class t102_jo_add extends t102_jo
 		if ($url <> "") {
 			if (!DEBUG_ENABLED && ob_get_length())
 				ob_end_clean();
-
-			// Handle modal response
-			if ($this->IsModal) { // Show as modal
-				$row = array("url" => $url, "modal" => "1");
-				$pageName = GetPageName($url);
-				if ($pageName != $this->getListUrl()) { // Not List page
-					$row["caption"] = $this->getModalCaption($pageName);
-					if ($pageName == "t102_joview.php")
-						$row["view"] = "1";
-				} else { // List page should not be shown as modal => error
-					$row["error"] = $this->getFailureMessage();
-					$this->clearFailureMessage();
-				}
-				WriteJson($row);
-			} else {
-				SaveDebugMessage();
-				AddHeader("Location", $url);
-			}
+			SaveDebugMessage();
+			AddHeader("Location", $url);
 		}
 		exit();
 	}
@@ -523,15 +507,6 @@ class t102_jo_add extends t102_jo
 		if ($this->isAdd() || $this->isCopy() || $this->isGridAdd())
 			$this->id->Visible = FALSE;
 	}
-	public $FormClassName = "ew-horizontal ew-form ew-add-form";
-	public $IsModal = FALSE;
-	public $IsMobileOrModal = FALSE;
-	public $DbMasterFilter = "";
-	public $DbDetailFilter = "";
-	public $StartRec;
-	public $Priv = 0;
-	public $OldRecordset;
-	public $CopyRecord;
 
 	//
 	// Page run
@@ -540,7 +515,7 @@ class t102_jo_add extends t102_jo
 	public function run()
 	{
 		global $ExportType, $CustomExportType, $ExportFileName, $UserProfile, $Language, $Security, $RequestSecurity, $CurrentForm,
-			$FormError, $SkipHeaderFooter;
+			$FormError;
 
 		// Init Session data for API request if token found
 		if (IsApi() && session_status() !== PHP_SESSION_ACTIVE) {
@@ -549,14 +524,11 @@ class t102_jo_add extends t102_jo
 				session_start();
 		}
 
-		// Is modal
-		$this->IsModal = (Param("modal") == "1");
-
 		// Create form object
 		$CurrentForm = new HttpForm();
 		$this->CurrentAction = Param("action"); // Set up current action
 		$this->id->Visible = FALSE;
-		$this->Nomor_JO->setVisibility();
+		$this->Nama->setVisibility();
 		$this->hideFieldsForAddEdit();
 
 		// Do not use lookup cache
@@ -578,103 +550,15 @@ class t102_jo_add extends t102_jo
 		$this->createToken();
 
 		// Set up lookup cache
-		// Check modal
-
-		if ($this->IsModal)
-			$SkipHeaderFooter = TRUE;
-		$this->IsMobileOrModal = IsMobile() || $this->IsModal;
-		$this->FormClassName = "ew-form ew-add-form ew-horizontal";
-		$postBack = FALSE;
-
-		// Set up current action
-		if (IsApi()) {
-			$this->CurrentAction = "insert"; // Add record directly
-			$postBack = TRUE;
-		} elseif (Post("action") !== NULL) {
-			$this->CurrentAction = Post("action"); // Get form action
-			$postBack = TRUE;
-		} else { // Not post back
-
-			// Load key values from QueryString
-			$this->CopyRecord = TRUE;
-			if (Get("id") !== NULL) {
-				$this->id->setQueryStringValue(Get("id"));
-				$this->setKey("id", $this->id->CurrentValue); // Set up key
-			} else {
-				$this->setKey("id", ""); // Clear key
-				$this->CopyRecord = FALSE;
-			}
-			if ($this->CopyRecord) {
-				$this->CurrentAction = "copy"; // Copy record
-			} else {
-				$this->CurrentAction = "show"; // Display blank record
-			}
-		}
-
-		// Load old record / default values
-		$loaded = $this->loadOldRecord();
-
-		// Load form values
-		if ($postBack) {
-			$this->loadFormValues(); // Load form values
-		}
-
-		// Validate form if post back
-		if ($postBack) {
-			if (!$this->validateForm()) {
-				$this->EventCancelled = TRUE; // Event cancelled
-				$this->restoreFormValues(); // Restore form values
-				$this->setFailureMessage($FormError);
-				if (IsApi()) {
-					$this->terminate();
-					return;
-				} else {
-					$this->CurrentAction = "show"; // Form error, reset action
-				}
-			}
-		}
-
-		// Perform current action
-		switch ($this->CurrentAction) {
-			case "copy": // Copy an existing record
-				if (!$loaded) { // Record not loaded
-					if ($this->getFailureMessage() == "")
-						$this->setFailureMessage($Language->phrase("NoRecord")); // No record found
-					$this->terminate("t102_jolist.php"); // No matching record, return to list
-				}
-				break;
-			case "insert": // Add new record
-				$this->SendEmail = TRUE; // Send email on add success
-				if ($this->addRow($this->OldRecordset)) { // Add successful
-					if ($this->getSuccessMessage() == "")
-						$this->setSuccessMessage($Language->phrase("AddSuccess")); // Set up success message
-					$returnUrl = $this->getReturnUrl();
-					if (GetPageName($returnUrl) == "t102_jolist.php")
-						$returnUrl = $this->addMasterUrl($returnUrl); // List page, return to List page with correct master key if necessary
-					elseif (GetPageName($returnUrl) == "t102_joview.php")
-						$returnUrl = $this->getViewUrl(); // View page, return to View page with keyurl directly
-					if (IsApi()) { // Return to caller
-						$this->terminate(TRUE);
-						return;
-					} else {
-						$this->terminate($returnUrl);
-					}
-				} elseif (IsApi()) { // API request, return
-					$this->terminate();
-					return;
-				} else {
-					$this->EventCancelled = TRUE; // Event cancelled
-					$this->restoreFormValues(); // Add failed, restore form values
-				}
-		}
+		set_error_handler(PROJECT_NAMESPACE . "ErrorHandler");
 
 		// Set up Breadcrumb
-		$this->setupBreadcrumb();
+		//$this->setupBreadcrumb(); // Not used
 
-		// Render row based on row type
-		$this->RowType = ROWTYPE_ADD; // Render add type
+		$this->loadRowValues(); // Load default values
 
 		// Render row
+		$this->RowType = ROWTYPE_ADD; // Render add type
 		$this->resetAttributes();
 		$this->renderRow();
 	}
@@ -690,8 +574,8 @@ class t102_jo_add extends t102_jo
 	{
 		$this->id->CurrentValue = NULL;
 		$this->id->OldValue = $this->id->CurrentValue;
-		$this->Nomor_JO->CurrentValue = NULL;
-		$this->Nomor_JO->OldValue = $this->Nomor_JO->CurrentValue;
+		$this->Nama->CurrentValue = NULL;
+		$this->Nama->OldValue = $this->Nama->CurrentValue;
 	}
 
 	// Load form values
@@ -701,13 +585,10 @@ class t102_jo_add extends t102_jo
 		// Load from form
 		global $CurrentForm;
 
-		// Check field name 'Nomor_JO' first before field var 'x_Nomor_JO'
-		$val = $CurrentForm->hasValue("Nomor_JO") ? $CurrentForm->getValue("Nomor_JO") : $CurrentForm->getValue("x_Nomor_JO");
-		if (!$this->Nomor_JO->IsDetailKey) {
-			if (IsApi() && $val == NULL)
-				$this->Nomor_JO->Visible = FALSE; // Disable update for API request
-			else
-				$this->Nomor_JO->setFormValue($val);
+		// Check field name 'Nama' first before field var 'x_Nama'
+		$val = $CurrentForm->hasValue("Nama") ? $CurrentForm->getValue("Nama") : $CurrentForm->getValue("x_Nama");
+		if (!$this->Nama->IsDetailKey) {
+			$this->Nama->setFormValue(ConvertFromUtf8($val));
 		}
 
 		// Check field name 'id' first before field var 'x_id'
@@ -718,7 +599,7 @@ class t102_jo_add extends t102_jo
 	public function restoreFormValues()
 	{
 		global $CurrentForm;
-		$this->Nomor_JO->CurrentValue = $this->Nomor_JO->FormValue;
+		$this->Nama->CurrentValue = ConvertToUtf8($this->Nama->FormValue);
 	}
 
 	// Load row based on key values
@@ -757,7 +638,7 @@ class t102_jo_add extends t102_jo
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
-		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
+		$this->Nama->setDbValue($row['Nama']);
 	}
 
 	// Return a row with default values
@@ -766,31 +647,8 @@ class t102_jo_add extends t102_jo
 		$this->loadDefaultValues();
 		$row = [];
 		$row['id'] = $this->id->CurrentValue;
-		$row['Nomor_JO'] = $this->Nomor_JO->CurrentValue;
+		$row['Nama'] = $this->Nama->CurrentValue;
 		return $row;
-	}
-
-	// Load old record
-	protected function loadOldRecord()
-	{
-
-		// Load key values from Session
-		$validKey = TRUE;
-		if (strval($this->getKey("id")) <> "")
-			$this->id->CurrentValue = $this->getKey("id"); // id
-		else
-			$validKey = FALSE;
-
-		// Load old record
-		$this->OldRecordset = NULL;
-		if ($validKey) {
-			$this->CurrentFilter = $this->getRecordFilter();
-			$sql = $this->getCurrentSql();
-			$conn = &$this->getConnection();
-			$this->OldRecordset = LoadRecordset($sql, $conn);
-		}
-		$this->loadRowValues($this->OldRecordset); // Load row values
-		return $validKey;
 	}
 
 	// Render row values based on field settings
@@ -805,7 +663,7 @@ class t102_jo_add extends t102_jo
 
 		// Common render codes for all row types
 		// id
-		// Nomor_JO
+		// Nama
 
 		if ($this->RowType == ROWTYPE_VIEW) { // View row
 
@@ -813,29 +671,29 @@ class t102_jo_add extends t102_jo
 			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
 
-			// Nomor_JO
-			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
-			$this->Nomor_JO->ViewCustomAttributes = "";
+			// Nama
+			$this->Nama->ViewValue = $this->Nama->CurrentValue;
+			$this->Nama->ViewCustomAttributes = "";
 
-			// Nomor_JO
-			$this->Nomor_JO->LinkCustomAttributes = "";
-			$this->Nomor_JO->HrefValue = "";
-			$this->Nomor_JO->TooltipValue = "";
+			// Nama
+			$this->Nama->LinkCustomAttributes = "";
+			$this->Nama->HrefValue = "";
+			$this->Nama->TooltipValue = "";
 		} elseif ($this->RowType == ROWTYPE_ADD) { // Add row
 
-			// Nomor_JO
-			$this->Nomor_JO->EditAttrs["class"] = "form-control";
-			$this->Nomor_JO->EditCustomAttributes = "";
+			// Nama
+			$this->Nama->EditAttrs["class"] = "form-control";
+			$this->Nama->EditCustomAttributes = "";
 			if (REMOVE_XSS)
-				$this->Nomor_JO->CurrentValue = HtmlDecode($this->Nomor_JO->CurrentValue);
-			$this->Nomor_JO->EditValue = HtmlEncode($this->Nomor_JO->CurrentValue);
-			$this->Nomor_JO->PlaceHolder = RemoveHtml($this->Nomor_JO->caption());
+				$this->Nama->CurrentValue = HtmlDecode($this->Nama->CurrentValue);
+			$this->Nama->EditValue = HtmlEncode($this->Nama->CurrentValue);
+			$this->Nama->PlaceHolder = RemoveHtml($this->Nama->caption());
 
 			// Add refer script
-			// Nomor_JO
+			// Nama
 
-			$this->Nomor_JO->LinkCustomAttributes = "";
-			$this->Nomor_JO->HrefValue = "";
+			$this->Nama->LinkCustomAttributes = "";
+			$this->Nama->HrefValue = "";
 		}
 		if ($this->RowType == ROWTYPE_ADD || $this->RowType == ROWTYPE_EDIT || $this->RowType == ROWTYPE_SEARCH) // Add/Edit/Search row
 			$this->setupFieldTitles();
@@ -861,9 +719,9 @@ class t102_jo_add extends t102_jo
 				AddMessage($FormError, str_replace("%s", $this->id->caption(), $this->id->RequiredErrorMessage));
 			}
 		}
-		if ($this->Nomor_JO->Required) {
-			if (!$this->Nomor_JO->IsDetailKey && $this->Nomor_JO->FormValue != NULL && $this->Nomor_JO->FormValue == "") {
-				AddMessage($FormError, str_replace("%s", $this->Nomor_JO->caption(), $this->Nomor_JO->RequiredErrorMessage));
+		if ($this->Nama->Required) {
+			if (!$this->Nama->IsDetailKey && $this->Nama->FormValue != NULL && $this->Nama->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->Nama->caption(), $this->Nama->RequiredErrorMessage));
 			}
 		}
 
@@ -891,8 +749,8 @@ class t102_jo_add extends t102_jo
 		}
 		$rsnew = [];
 
-		// Nomor_JO
-		$this->Nomor_JO->setDbValueDef($rsnew, $this->Nomor_JO->CurrentValue, "", FALSE);
+		// Nama
+		$this->Nama->setDbValueDef($rsnew, $this->Nama->CurrentValue, "", FALSE);
 
 		// Call Row Inserting event
 		$rs = ($rsold) ? $rsold->fields : NULL;
@@ -936,9 +794,9 @@ class t102_jo_add extends t102_jo
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new Breadcrumb();
 		$url = substr(CurrentUrl(), strrpos(CurrentUrl(), "/")+1);
-		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t102_jolist.php"), "", $this->TableVar, TRUE);
-		$pageId = ($this->isCopy()) ? "Copy" : "Add";
-		$Breadcrumb->add("add", $pageId, $url);
+		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t002_destinationlist.php"), "", $this->TableVar, TRUE);
+		$pageId = "addopt";
+		$Breadcrumb->add("addopt", $pageId, $url);
 	}
 
 	// Setup lookup options
@@ -1041,13 +899,6 @@ class t102_jo_add extends t102_jo
 		// Example:
 		//$footer = "your footer";
 
-	}
-
-	// Form Custom Validate event
-	function Form_CustomValidate(&$customError) {
-
-		// Return error message in CustomError
-		return TRUE;
 	}
 }
 ?>

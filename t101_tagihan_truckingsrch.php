@@ -53,8 +53,6 @@ ft101_tagihan_truckingsearch.Form_CustomValidate = function(fobj) { // DO NOT CH
 ft101_tagihan_truckingsearch.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-ft101_tagihan_truckingsearch.lists["x_JO_id"] = <?php echo $t101_tagihan_trucking_search->JO_id->Lookup->toClientList() ?>;
-ft101_tagihan_truckingsearch.lists["x_JO_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_search->JO_id->lookupOptions()) ?>;
 ft101_tagihan_truckingsearch.lists["x_Shipper_id"] = <?php echo $t101_tagihan_trucking_search->Shipper_id->Lookup->toClientList() ?>;
 ft101_tagihan_truckingsearch.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_search->Shipper_id->lookupOptions()) ?>;
 ft101_tagihan_truckingsearch.lists["x_Jenis_Container"] = <?php echo $t101_tagihan_trucking_search->Jenis_Container->Lookup->toClientList() ?>;
@@ -71,6 +69,9 @@ ft101_tagihan_truckingsearch.validate = function(fobj) {
 	elm = this.getElements("x" + infix + "_id");
 	if (elm && !ew.checkInteger(elm.value))
 		return this.onError(elm, "<?php echo JsEncode($t101_tagihan_trucking->id->errorMessage()) ?>");
+	elm = this.getElements("x" + infix + "_JO_id");
+	if (elm && !ew.checkInteger(elm.value))
+		return this.onError(elm, "<?php echo JsEncode($t101_tagihan_trucking->JO_id->errorMessage()) ?>");
 	elm = this.getElements("x" + infix + "_Tanggal");
 	if (elm && !ew.checkEuroDate(elm.value))
 		return this.onError(elm, "<?php echo JsEncode($t101_tagihan_trucking->Tanggal->errorMessage()) ?>");
@@ -119,12 +120,7 @@ $t101_tagihan_trucking_search->showMessage();
 		</label>
 		<div class="<?php echo $t101_tagihan_trucking_search->RightColumnClass ?>"><div<?php echo $t101_tagihan_trucking->JO_id->cellAttributes() ?>>
 			<span id="el_t101_tagihan_trucking_JO_id">
-<div class="input-group">
-	<select class="custom-select ew-custom-select" data-table="t101_tagihan_trucking" data-field="x_JO_id" data-value-separator="<?php echo $t101_tagihan_trucking->JO_id->displayValueSeparatorAttribute() ?>" id="x_JO_id" name="x_JO_id"<?php echo $t101_tagihan_trucking->JO_id->editAttributes() ?>>
-		<?php echo $t101_tagihan_trucking->JO_id->selectOptionListHtml("x_JO_id") ?>
-	</select>
-</div>
-<?php echo $t101_tagihan_trucking->JO_id->Lookup->getParamTag("p_x_JO_id") ?>
+<input type="text" data-table="t101_tagihan_trucking" data-field="x_JO_id" name="x_JO_id" id="x_JO_id" size="30" placeholder="<?php echo HtmlEncode($t101_tagihan_trucking->JO_id->getPlaceHolder()) ?>" value="<?php echo $t101_tagihan_trucking->JO_id->EditValue ?>"<?php echo $t101_tagihan_trucking->JO_id->editAttributes() ?>>
 </span>
 		</div></div>
 	</div>

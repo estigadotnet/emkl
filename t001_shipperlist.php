@@ -142,7 +142,7 @@ $t001_shipper_list->ListOptions->render("header", "left");
 	<?php if ($t001_shipper->sortUrl($t001_shipper->id) == "") { ?>
 		<th data-name="id" class="<?php echo $t001_shipper->id->headerCellClass() ?>"><div id="elh_t001_shipper_id" class="t001_shipper_id"><div class="ew-table-header-caption"><?php echo $t001_shipper->id->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="id" class="<?php echo $t001_shipper->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t001_shipper->SortUrl($t001_shipper->id) ?>',1);"><div id="elh_t001_shipper_id" class="t001_shipper_id">
+		<th data-name="id" class="<?php echo $t001_shipper->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t001_shipper->SortUrl($t001_shipper->id) ?>',2);"><div id="elh_t001_shipper_id" class="t001_shipper_id">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t001_shipper->id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t001_shipper->id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t001_shipper->id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -151,7 +151,7 @@ $t001_shipper_list->ListOptions->render("header", "left");
 	<?php if ($t001_shipper->sortUrl($t001_shipper->Nama) == "") { ?>
 		<th data-name="Nama" class="<?php echo $t001_shipper->Nama->headerCellClass() ?>"><div id="elh_t001_shipper_Nama" class="t001_shipper_Nama"><div class="ew-table-header-caption"><?php echo $t001_shipper->Nama->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Nama" class="<?php echo $t001_shipper->Nama->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t001_shipper->SortUrl($t001_shipper->Nama) ?>',1);"><div id="elh_t001_shipper_Nama" class="t001_shipper_Nama">
+		<th data-name="Nama" class="<?php echo $t001_shipper->Nama->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t001_shipper->SortUrl($t001_shipper->Nama) ?>',2);"><div id="elh_t001_shipper_Nama" class="t001_shipper_Nama">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t001_shipper->Nama->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t001_shipper->Nama->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t001_shipper->Nama->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>

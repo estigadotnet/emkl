@@ -619,6 +619,9 @@ class t006_trucking_vendor_add extends t006_trucking_vendor
 			$this->loadFormValues(); // Load form values
 		}
 
+		// Set up detail parameters
+		$this->setupDetailParms();
+
 		// Validate form if post back
 		if ($postBack) {
 			if (!$this->validateForm()) {
@@ -642,13 +645,19 @@ class t006_trucking_vendor_add extends t006_trucking_vendor
 						$this->setFailureMessage($Language->phrase("NoRecord")); // No record found
 					$this->terminate("t006_trucking_vendorlist.php"); // No matching record, return to list
 				}
+
+				// Set up detail parameters
+				$this->setupDetailParms();
 				break;
 			case "insert": // Add new record
 				$this->SendEmail = TRUE; // Send email on add success
 				if ($this->addRow($this->OldRecordset)) { // Add successful
 					if ($this->getSuccessMessage() == "")
 						$this->setSuccessMessage($Language->phrase("AddSuccess")); // Set up success message
-					$returnUrl = $this->getReturnUrl();
+					if ($this->getCurrentDetailTable() <> "") // Master/detail add
+						$returnUrl = $this->getDetailUrl();
+					else
+						$returnUrl = $this->getReturnUrl();
 					if (GetPageName($returnUrl) == "t006_trucking_vendorlist.php")
 						$returnUrl = $this->addMasterUrl($returnUrl); // List page, return to List page with correct master key if necessary
 					elseif (GetPageName($returnUrl) == "t006_trucking_vendorview.php")
@@ -665,6 +674,9 @@ class t006_trucking_vendor_add extends t006_trucking_vendor
 				} else {
 					$this->EventCancelled = TRUE; // Event cancelled
 					$this->restoreFormValues(); // Add failed, restore form values
+
+					// Set up detail parameters
+					$this->setupDetailParms();
 				}
 		}
 
@@ -867,6 +879,14 @@ class t006_trucking_vendor_add extends t006_trucking_vendor
 			}
 		}
 
+		// Validate detail grid
+		$detailTblVar = explode(",", $this->getCurrentDetailTable());
+		if (in_array("t005_driver", $detailTblVar) && $GLOBALS["t005_driver"]->DetailAdd) {
+			if (!isset($GLOBALS["t005_driver_grid"]))
+				$GLOBALS["t005_driver_grid"] = new t005_driver_grid(); // Get detail page object
+			$GLOBALS["t005_driver_grid"]->validateGridForm();
+		}
+
 		// Return validate result
 		$validateForm = ($FormError == "");
 
@@ -884,6 +904,10 @@ class t006_trucking_vendor_add extends t006_trucking_vendor
 	{
 		global $Language, $Security;
 		$conn = &$this->getConnection();
+
+		// Begin transaction
+		if ($this->getCurrentDetailTable() <> "")
+			$conn->beginTrans();
 
 		// Load db values from rsold
 		$this->loadDbValues($rsold);
@@ -915,6 +939,28 @@ class t006_trucking_vendor_add extends t006_trucking_vendor
 			}
 			$addRow = FALSE;
 		}
+
+		// Add detail records
+		if ($addRow) {
+			$detailTblVar = explode(",", $this->getCurrentDetailTable());
+			if (in_array("t005_driver", $detailTblVar) && $GLOBALS["t005_driver"]->DetailAdd) {
+				$GLOBALS["t005_driver"]->TruckingVendor_id->setSessionValue($this->id->CurrentValue); // Set master key
+				if (!isset($GLOBALS["t005_driver_grid"]))
+					$GLOBALS["t005_driver_grid"] = new t005_driver_grid(); // Get detail page object
+				$addRow = $GLOBALS["t005_driver_grid"]->gridInsert();
+				if (!$addRow)
+					$GLOBALS["t005_driver"]->TruckingVendor_id->setSessionValue(""); // Clear master key if insert failed
+			}
+		}
+
+		// Commit/Rollback transaction
+		if ($this->getCurrentDetailTable() <> "") {
+			if ($addRow) {
+				$conn->commitTrans(); // Commit transaction
+			} else {
+				$conn->rollbackTrans(); // Rollback transaction
+			}
+		}
 		if ($addRow) {
 
 			// Call Row Inserted event
@@ -928,6 +974,40 @@ class t006_trucking_vendor_add extends t006_trucking_vendor
 			WriteJson(["success" => TRUE, $this->TableVar => $row]);
 		}
 		return $addRow;
+	}
+
+	// Set up detail parms based on QueryString
+	protected function setupDetailParms()
+	{
+
+		// Get the keys for master table
+		if (Get(TABLE_SHOW_DETAIL) !== NULL) {
+			$detailTblVar = Get(TABLE_SHOW_DETAIL);
+			$this->setCurrentDetailTable($detailTblVar);
+		} else {
+			$detailTblVar = $this->getCurrentDetailTable();
+		}
+		if ($detailTblVar <> "") {
+			$detailTblVar = explode(",", $detailTblVar);
+			if (in_array("t005_driver", $detailTblVar)) {
+				if (!isset($GLOBALS["t005_driver_grid"]))
+					$GLOBALS["t005_driver_grid"] = new t005_driver_grid();
+				if ($GLOBALS["t005_driver_grid"]->DetailAdd) {
+					if ($this->CopyRecord)
+						$GLOBALS["t005_driver_grid"]->CurrentMode = "copy";
+					else
+						$GLOBALS["t005_driver_grid"]->CurrentMode = "add";
+					$GLOBALS["t005_driver_grid"]->CurrentAction = "gridadd";
+
+					// Save current master table to detail table
+					$GLOBALS["t005_driver_grid"]->setCurrentMasterTable($this->TableVar);
+					$GLOBALS["t005_driver_grid"]->setStartRecordNumber(1);
+					$GLOBALS["t005_driver_grid"]->TruckingVendor_id->IsDetailKey = TRUE;
+					$GLOBALS["t005_driver_grid"]->TruckingVendor_id->CurrentValue = $this->id->CurrentValue;
+					$GLOBALS["t005_driver_grid"]->TruckingVendor_id->setSessionValue($GLOBALS["t005_driver_grid"]->TruckingVendor_id->CurrentValue);
+				}
+			}
+		}
 	}
 
 	// Set up Breadcrumb

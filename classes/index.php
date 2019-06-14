@@ -384,7 +384,7 @@ class index
 		// If session expired, show session expired message
 		if (Get("expired") == "1")
 			$this->setFailureMessage($Language->phrase("SessionExpired"));
-		$this->terminate("t101_tagihan_truckinglist.php"); // Exit and go to default page
+		$this->terminate("cf301_home.php"); // Exit and go to default page
 	}
 
 	// Page Load event

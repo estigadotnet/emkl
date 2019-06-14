@@ -4,7 +4,7 @@ namespace PHPMaker2019\emkl_prj;
 /**
  * Page class
  */
-class t103_trucking_list extends t103_trucking
+class t101_jo_head_list extends t101_jo_head
 {
 
 	// Page ID
@@ -14,13 +14,13 @@ class t103_trucking_list extends t103_trucking
 	public $ProjectID = "{D4B21A3D-A1C8-4ED3-BA65-212E10E691E7}";
 
 	// Table name
-	public $TableName = 't103_trucking';
+	public $TableName = 't101_jo_head';
 
 	// Page object name
-	public $PageObjName = "t103_trucking_list";
+	public $PageObjName = "t101_jo_head_list";
 
 	// Grid form hidden field names
-	public $FormName = "ft103_truckinglist";
+	public $FormName = "ft101_jo_headlist";
 	public $FormActionName = "k_action";
 	public $FormKeyName = "k_key";
 	public $FormOldKeyName = "k_oldkey";
@@ -383,10 +383,10 @@ class t103_trucking_list extends t103_trucking
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (t103_trucking)
-		if (!isset($GLOBALS["t103_trucking"]) || get_class($GLOBALS["t103_trucking"]) == PROJECT_NAMESPACE . "t103_trucking") {
-			$GLOBALS["t103_trucking"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["t103_trucking"];
+		// Table object (t101_jo_head)
+		if (!isset($GLOBALS["t101_jo_head"]) || get_class($GLOBALS["t101_jo_head"]) == PROJECT_NAMESPACE . "t101_jo_head") {
+			$GLOBALS["t101_jo_head"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["t101_jo_head"];
 		}
 
 		// Initialize URLs
@@ -397,12 +397,12 @@ class t103_trucking_list extends t103_trucking
 		$this->ExportXmlUrl = $this->pageUrl() . "export=xml";
 		$this->ExportCsvUrl = $this->pageUrl() . "export=csv";
 		$this->ExportPdfUrl = $this->pageUrl() . "export=pdf";
-		$this->AddUrl = "t103_truckingadd.php";
+		$this->AddUrl = "t101_jo_headadd.php?" . TABLE_SHOW_DETAIL . "=";
 		$this->InlineAddUrl = $this->pageUrl() . "action=add";
 		$this->GridAddUrl = $this->pageUrl() . "action=gridadd";
 		$this->GridEditUrl = $this->pageUrl() . "action=gridedit";
-		$this->MultiDeleteUrl = "t103_truckingdelete.php";
-		$this->MultiUpdateUrl = "t103_truckingupdate.php";
+		$this->MultiDeleteUrl = "t101_jo_headdelete.php";
+		$this->MultiUpdateUrl = "t101_jo_headupdate.php";
 		$this->CancelUrl = $this->pageUrl() . "action=cancel";
 
 		// Page ID
@@ -411,7 +411,7 @@ class t103_trucking_list extends t103_trucking
 
 		// Table name (for backward compatibility)
 		if (!defined(PROJECT_NAMESPACE . "TABLE_NAME"))
-			define(PROJECT_NAMESPACE . "TABLE_NAME", 't103_trucking');
+			define(PROJECT_NAMESPACE . "TABLE_NAME", 't101_jo_head');
 
 		// Start timer
 		if (!isset($GLOBALS["DebugTimer"]))
@@ -454,7 +454,7 @@ class t103_trucking_list extends t103_trucking
 		// Filter options
 		$this->FilterOptions = new ListOptions();
 		$this->FilterOptions->Tag = "div";
-		$this->FilterOptions->TagClassName = "ew-filter-option ft103_truckinglistsrch";
+		$this->FilterOptions->TagClassName = "ew-filter-option ft101_jo_headlistsrch";
 
 		// List actions
 		$this->ListActions = new ListActions();
@@ -472,14 +472,14 @@ class t103_trucking_list extends t103_trucking
 		Page_Unloaded();
 
 		// Export
-		global $EXPORT, $t103_trucking;
+		global $EXPORT, $t101_jo_head;
 		if ($this->CustomExport && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EXPORT)) {
 				$content = ob_get_contents();
 			if ($ExportFileName == "")
 				$ExportFileName = $this->TableVar;
 			$class = PROJECT_NAMESPACE . $EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($t103_trucking);
+				$doc = new $class($t101_jo_head);
 				$doc->Text = @$content;
 				if ($this->isExport("email"))
 					echo $this->exportEmail($doc->Text);
@@ -664,23 +664,13 @@ class t103_trucking_list extends t103_trucking
 		// Set up list options
 		$this->setupListOptions();
 		$this->id->setVisibility();
-		$this->EI->setVisibility();
+		$this->Nomor_JO->setVisibility();
 		$this->Shipper_id->setVisibility();
 		$this->Party->setVisibility();
-		$this->Jenis_Container->setVisibility();
-		$this->Tgl_Stuffing->setVisibility();
+		$this->Container->setVisibility();
+		$this->Tanggal_Stuffing->setVisibility();
 		$this->Destination_id->setVisibility();
 		$this->Feeder_id->setVisibility();
-		$this->ETA_ETD->setVisibility();
-		$this->Liner_id->setVisibility();
-		$this->Remark->Visible = FALSE;
-		$this->TruckingVendor_id->setVisibility();
-		$this->Driver_id->setVisibility();
-		$this->No_Pol_1->setVisibility();
-		$this->No_Pol_2->setVisibility();
-		$this->No_Pol_3->setVisibility();
-		$this->Nomor_Container_1->setVisibility();
-		$this->Nomor_Container_2->setVisibility();
 		$this->hideFieldsForAddEdit();
 
 		// Global Page Loading event (in userfn*.php)
@@ -714,8 +704,11 @@ class t103_trucking_list extends t103_trucking
 		}
 
 		// Set up lookup cache
-		// Search filters
+		$this->setupLookupOptions($this->Shipper_id);
+		$this->setupLookupOptions($this->Destination_id);
+		$this->setupLookupOptions($this->Feeder_id);
 
+		// Search filters
 		$srchAdvanced = ""; // Advanced search filter
 		$srchBasic = ""; // Basic search filter
 		$filter = "";
@@ -759,19 +752,13 @@ class t103_trucking_list extends t103_trucking
 
 			// Get default search criteria
 			AddFilter($this->DefaultSearchWhere, $this->basicSearchWhere(TRUE));
-			AddFilter($this->DefaultSearchWhere, $this->advancedSearchWhere(TRUE));
 
 			// Get basic search values
 			$this->loadBasicSearchValues();
 
-			// Get and validate search values for advanced search
-			$this->loadSearchValues(); // Get search values
-
 			// Process filter list
 			if ($this->processFilterList())
 				$this->terminate();
-			if (!$this->validateSearch())
-				$this->setFailureMessage($SearchError);
 
 			// Restore search parms from Session if not searching / reset / export
 			if (($this->isExport() || $this->Command <> "search" && $this->Command <> "reset" && $this->Command <> "resetall") && $this->Command <> "json" && $this->checkSearchParms())
@@ -786,10 +773,6 @@ class t103_trucking_list extends t103_trucking
 			// Get basic search criteria
 			if ($SearchError == "")
 				$srchBasic = $this->basicSearchWhere();
-
-			// Get search criteria for advanced search
-			if ($SearchError == "")
-				$srchAdvanced = $this->advancedSearchWhere();
 		}
 
 		// Restore display records
@@ -810,11 +793,6 @@ class t103_trucking_list extends t103_trucking
 			$this->BasicSearch->loadDefault();
 			if ($this->BasicSearch->Keyword != "")
 				$srchBasic = $this->basicSearchWhere();
-
-			// Load advanced search from default
-			if ($this->loadAdvancedSearchDefault()) {
-				$srchAdvanced = $this->advancedSearchWhere();
-			}
 		}
 
 		// Build search criteria
@@ -939,23 +917,13 @@ class t103_trucking_list extends t103_trucking
 		$filterList = "";
 		$savedFilterList = "";
 		$filterList = Concat($filterList, $this->id->AdvancedSearch->toJson(), ","); // Field id
-		$filterList = Concat($filterList, $this->EI->AdvancedSearch->toJson(), ","); // Field EI
+		$filterList = Concat($filterList, $this->Nomor_JO->AdvancedSearch->toJson(), ","); // Field Nomor_JO
 		$filterList = Concat($filterList, $this->Shipper_id->AdvancedSearch->toJson(), ","); // Field Shipper_id
 		$filterList = Concat($filterList, $this->Party->AdvancedSearch->toJson(), ","); // Field Party
-		$filterList = Concat($filterList, $this->Jenis_Container->AdvancedSearch->toJson(), ","); // Field Jenis_Container
-		$filterList = Concat($filterList, $this->Tgl_Stuffing->AdvancedSearch->toJson(), ","); // Field Tgl_Stuffing
+		$filterList = Concat($filterList, $this->Container->AdvancedSearch->toJson(), ","); // Field Container
+		$filterList = Concat($filterList, $this->Tanggal_Stuffing->AdvancedSearch->toJson(), ","); // Field Tanggal_Stuffing
 		$filterList = Concat($filterList, $this->Destination_id->AdvancedSearch->toJson(), ","); // Field Destination_id
 		$filterList = Concat($filterList, $this->Feeder_id->AdvancedSearch->toJson(), ","); // Field Feeder_id
-		$filterList = Concat($filterList, $this->ETA_ETD->AdvancedSearch->toJson(), ","); // Field ETA_ETD
-		$filterList = Concat($filterList, $this->Liner_id->AdvancedSearch->toJson(), ","); // Field Liner_id
-		$filterList = Concat($filterList, $this->Remark->AdvancedSearch->toJson(), ","); // Field Remark
-		$filterList = Concat($filterList, $this->TruckingVendor_id->AdvancedSearch->toJson(), ","); // Field TruckingVendor_id
-		$filterList = Concat($filterList, $this->Driver_id->AdvancedSearch->toJson(), ","); // Field Driver_id
-		$filterList = Concat($filterList, $this->No_Pol_1->AdvancedSearch->toJson(), ","); // Field No_Pol_1
-		$filterList = Concat($filterList, $this->No_Pol_2->AdvancedSearch->toJson(), ","); // Field No_Pol_2
-		$filterList = Concat($filterList, $this->No_Pol_3->AdvancedSearch->toJson(), ","); // Field No_Pol_3
-		$filterList = Concat($filterList, $this->Nomor_Container_1->AdvancedSearch->toJson(), ","); // Field Nomor_Container_1
-		$filterList = Concat($filterList, $this->Nomor_Container_2->AdvancedSearch->toJson(), ","); // Field Nomor_Container_2
 		if ($this->BasicSearch->Keyword <> "") {
 			$wrk = "\"" . TABLE_BASIC_SEARCH . "\":\"" . JsEncode($this->BasicSearch->Keyword) . "\",\"" . TABLE_BASIC_SEARCH_TYPE . "\":\"" . JsEncode($this->BasicSearch->Type) . "\"";
 			$filterList = Concat($filterList, $wrk, ",");
@@ -975,7 +943,7 @@ class t103_trucking_list extends t103_trucking
 		global $UserProfile;
 		if (Post("ajax") == "savefilters") { // Save filter request (Ajax)
 			$filters = Post("filters");
-			$UserProfile->setSearchFilters(CurrentUserName(), "ft103_truckinglistsrch", $filters);
+			$UserProfile->setSearchFilters(CurrentUserName(), "ft101_jo_headlistsrch", $filters);
 			WriteJson([["success" => TRUE]]); // Success
 			return TRUE;
 		} elseif (Post("cmd") == "resetfilter") {
@@ -1002,13 +970,13 @@ class t103_trucking_list extends t103_trucking
 		$this->id->AdvancedSearch->SearchOperator2 = @$filter["w_id"];
 		$this->id->AdvancedSearch->save();
 
-		// Field EI
-		$this->EI->AdvancedSearch->SearchValue = @$filter["x_EI"];
-		$this->EI->AdvancedSearch->SearchOperator = @$filter["z_EI"];
-		$this->EI->AdvancedSearch->SearchCondition = @$filter["v_EI"];
-		$this->EI->AdvancedSearch->SearchValue2 = @$filter["y_EI"];
-		$this->EI->AdvancedSearch->SearchOperator2 = @$filter["w_EI"];
-		$this->EI->AdvancedSearch->save();
+		// Field Nomor_JO
+		$this->Nomor_JO->AdvancedSearch->SearchValue = @$filter["x_Nomor_JO"];
+		$this->Nomor_JO->AdvancedSearch->SearchOperator = @$filter["z_Nomor_JO"];
+		$this->Nomor_JO->AdvancedSearch->SearchCondition = @$filter["v_Nomor_JO"];
+		$this->Nomor_JO->AdvancedSearch->SearchValue2 = @$filter["y_Nomor_JO"];
+		$this->Nomor_JO->AdvancedSearch->SearchOperator2 = @$filter["w_Nomor_JO"];
+		$this->Nomor_JO->AdvancedSearch->save();
 
 		// Field Shipper_id
 		$this->Shipper_id->AdvancedSearch->SearchValue = @$filter["x_Shipper_id"];
@@ -1026,21 +994,21 @@ class t103_trucking_list extends t103_trucking
 		$this->Party->AdvancedSearch->SearchOperator2 = @$filter["w_Party"];
 		$this->Party->AdvancedSearch->save();
 
-		// Field Jenis_Container
-		$this->Jenis_Container->AdvancedSearch->SearchValue = @$filter["x_Jenis_Container"];
-		$this->Jenis_Container->AdvancedSearch->SearchOperator = @$filter["z_Jenis_Container"];
-		$this->Jenis_Container->AdvancedSearch->SearchCondition = @$filter["v_Jenis_Container"];
-		$this->Jenis_Container->AdvancedSearch->SearchValue2 = @$filter["y_Jenis_Container"];
-		$this->Jenis_Container->AdvancedSearch->SearchOperator2 = @$filter["w_Jenis_Container"];
-		$this->Jenis_Container->AdvancedSearch->save();
+		// Field Container
+		$this->Container->AdvancedSearch->SearchValue = @$filter["x_Container"];
+		$this->Container->AdvancedSearch->SearchOperator = @$filter["z_Container"];
+		$this->Container->AdvancedSearch->SearchCondition = @$filter["v_Container"];
+		$this->Container->AdvancedSearch->SearchValue2 = @$filter["y_Container"];
+		$this->Container->AdvancedSearch->SearchOperator2 = @$filter["w_Container"];
+		$this->Container->AdvancedSearch->save();
 
-		// Field Tgl_Stuffing
-		$this->Tgl_Stuffing->AdvancedSearch->SearchValue = @$filter["x_Tgl_Stuffing"];
-		$this->Tgl_Stuffing->AdvancedSearch->SearchOperator = @$filter["z_Tgl_Stuffing"];
-		$this->Tgl_Stuffing->AdvancedSearch->SearchCondition = @$filter["v_Tgl_Stuffing"];
-		$this->Tgl_Stuffing->AdvancedSearch->SearchValue2 = @$filter["y_Tgl_Stuffing"];
-		$this->Tgl_Stuffing->AdvancedSearch->SearchOperator2 = @$filter["w_Tgl_Stuffing"];
-		$this->Tgl_Stuffing->AdvancedSearch->save();
+		// Field Tanggal_Stuffing
+		$this->Tanggal_Stuffing->AdvancedSearch->SearchValue = @$filter["x_Tanggal_Stuffing"];
+		$this->Tanggal_Stuffing->AdvancedSearch->SearchOperator = @$filter["z_Tanggal_Stuffing"];
+		$this->Tanggal_Stuffing->AdvancedSearch->SearchCondition = @$filter["v_Tanggal_Stuffing"];
+		$this->Tanggal_Stuffing->AdvancedSearch->SearchValue2 = @$filter["y_Tanggal_Stuffing"];
+		$this->Tanggal_Stuffing->AdvancedSearch->SearchOperator2 = @$filter["w_Tanggal_Stuffing"];
+		$this->Tanggal_Stuffing->AdvancedSearch->save();
 
 		// Field Destination_id
 		$this->Destination_id->AdvancedSearch->SearchValue = @$filter["x_Destination_id"];
@@ -1057,203 +1025,15 @@ class t103_trucking_list extends t103_trucking
 		$this->Feeder_id->AdvancedSearch->SearchValue2 = @$filter["y_Feeder_id"];
 		$this->Feeder_id->AdvancedSearch->SearchOperator2 = @$filter["w_Feeder_id"];
 		$this->Feeder_id->AdvancedSearch->save();
-
-		// Field ETA_ETD
-		$this->ETA_ETD->AdvancedSearch->SearchValue = @$filter["x_ETA_ETD"];
-		$this->ETA_ETD->AdvancedSearch->SearchOperator = @$filter["z_ETA_ETD"];
-		$this->ETA_ETD->AdvancedSearch->SearchCondition = @$filter["v_ETA_ETD"];
-		$this->ETA_ETD->AdvancedSearch->SearchValue2 = @$filter["y_ETA_ETD"];
-		$this->ETA_ETD->AdvancedSearch->SearchOperator2 = @$filter["w_ETA_ETD"];
-		$this->ETA_ETD->AdvancedSearch->save();
-
-		// Field Liner_id
-		$this->Liner_id->AdvancedSearch->SearchValue = @$filter["x_Liner_id"];
-		$this->Liner_id->AdvancedSearch->SearchOperator = @$filter["z_Liner_id"];
-		$this->Liner_id->AdvancedSearch->SearchCondition = @$filter["v_Liner_id"];
-		$this->Liner_id->AdvancedSearch->SearchValue2 = @$filter["y_Liner_id"];
-		$this->Liner_id->AdvancedSearch->SearchOperator2 = @$filter["w_Liner_id"];
-		$this->Liner_id->AdvancedSearch->save();
-
-		// Field Remark
-		$this->Remark->AdvancedSearch->SearchValue = @$filter["x_Remark"];
-		$this->Remark->AdvancedSearch->SearchOperator = @$filter["z_Remark"];
-		$this->Remark->AdvancedSearch->SearchCondition = @$filter["v_Remark"];
-		$this->Remark->AdvancedSearch->SearchValue2 = @$filter["y_Remark"];
-		$this->Remark->AdvancedSearch->SearchOperator2 = @$filter["w_Remark"];
-		$this->Remark->AdvancedSearch->save();
-
-		// Field TruckingVendor_id
-		$this->TruckingVendor_id->AdvancedSearch->SearchValue = @$filter["x_TruckingVendor_id"];
-		$this->TruckingVendor_id->AdvancedSearch->SearchOperator = @$filter["z_TruckingVendor_id"];
-		$this->TruckingVendor_id->AdvancedSearch->SearchCondition = @$filter["v_TruckingVendor_id"];
-		$this->TruckingVendor_id->AdvancedSearch->SearchValue2 = @$filter["y_TruckingVendor_id"];
-		$this->TruckingVendor_id->AdvancedSearch->SearchOperator2 = @$filter["w_TruckingVendor_id"];
-		$this->TruckingVendor_id->AdvancedSearch->save();
-
-		// Field Driver_id
-		$this->Driver_id->AdvancedSearch->SearchValue = @$filter["x_Driver_id"];
-		$this->Driver_id->AdvancedSearch->SearchOperator = @$filter["z_Driver_id"];
-		$this->Driver_id->AdvancedSearch->SearchCondition = @$filter["v_Driver_id"];
-		$this->Driver_id->AdvancedSearch->SearchValue2 = @$filter["y_Driver_id"];
-		$this->Driver_id->AdvancedSearch->SearchOperator2 = @$filter["w_Driver_id"];
-		$this->Driver_id->AdvancedSearch->save();
-
-		// Field No_Pol_1
-		$this->No_Pol_1->AdvancedSearch->SearchValue = @$filter["x_No_Pol_1"];
-		$this->No_Pol_1->AdvancedSearch->SearchOperator = @$filter["z_No_Pol_1"];
-		$this->No_Pol_1->AdvancedSearch->SearchCondition = @$filter["v_No_Pol_1"];
-		$this->No_Pol_1->AdvancedSearch->SearchValue2 = @$filter["y_No_Pol_1"];
-		$this->No_Pol_1->AdvancedSearch->SearchOperator2 = @$filter["w_No_Pol_1"];
-		$this->No_Pol_1->AdvancedSearch->save();
-
-		// Field No_Pol_2
-		$this->No_Pol_2->AdvancedSearch->SearchValue = @$filter["x_No_Pol_2"];
-		$this->No_Pol_2->AdvancedSearch->SearchOperator = @$filter["z_No_Pol_2"];
-		$this->No_Pol_2->AdvancedSearch->SearchCondition = @$filter["v_No_Pol_2"];
-		$this->No_Pol_2->AdvancedSearch->SearchValue2 = @$filter["y_No_Pol_2"];
-		$this->No_Pol_2->AdvancedSearch->SearchOperator2 = @$filter["w_No_Pol_2"];
-		$this->No_Pol_2->AdvancedSearch->save();
-
-		// Field No_Pol_3
-		$this->No_Pol_3->AdvancedSearch->SearchValue = @$filter["x_No_Pol_3"];
-		$this->No_Pol_3->AdvancedSearch->SearchOperator = @$filter["z_No_Pol_3"];
-		$this->No_Pol_3->AdvancedSearch->SearchCondition = @$filter["v_No_Pol_3"];
-		$this->No_Pol_3->AdvancedSearch->SearchValue2 = @$filter["y_No_Pol_3"];
-		$this->No_Pol_3->AdvancedSearch->SearchOperator2 = @$filter["w_No_Pol_3"];
-		$this->No_Pol_3->AdvancedSearch->save();
-
-		// Field Nomor_Container_1
-		$this->Nomor_Container_1->AdvancedSearch->SearchValue = @$filter["x_Nomor_Container_1"];
-		$this->Nomor_Container_1->AdvancedSearch->SearchOperator = @$filter["z_Nomor_Container_1"];
-		$this->Nomor_Container_1->AdvancedSearch->SearchCondition = @$filter["v_Nomor_Container_1"];
-		$this->Nomor_Container_1->AdvancedSearch->SearchValue2 = @$filter["y_Nomor_Container_1"];
-		$this->Nomor_Container_1->AdvancedSearch->SearchOperator2 = @$filter["w_Nomor_Container_1"];
-		$this->Nomor_Container_1->AdvancedSearch->save();
-
-		// Field Nomor_Container_2
-		$this->Nomor_Container_2->AdvancedSearch->SearchValue = @$filter["x_Nomor_Container_2"];
-		$this->Nomor_Container_2->AdvancedSearch->SearchOperator = @$filter["z_Nomor_Container_2"];
-		$this->Nomor_Container_2->AdvancedSearch->SearchCondition = @$filter["v_Nomor_Container_2"];
-		$this->Nomor_Container_2->AdvancedSearch->SearchValue2 = @$filter["y_Nomor_Container_2"];
-		$this->Nomor_Container_2->AdvancedSearch->SearchOperator2 = @$filter["w_Nomor_Container_2"];
-		$this->Nomor_Container_2->AdvancedSearch->save();
 		$this->BasicSearch->setKeyword(@$filter[TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[TABLE_BASIC_SEARCH_TYPE]);
-	}
-
-	// Advanced search WHERE clause based on QueryString
-	protected function advancedSearchWhere($default = FALSE)
-	{
-		global $Security;
-		$where = "";
-		$this->buildSearchSql($where, $this->id, $default, FALSE); // id
-		$this->buildSearchSql($where, $this->EI, $default, FALSE); // EI
-		$this->buildSearchSql($where, $this->Shipper_id, $default, FALSE); // Shipper_id
-		$this->buildSearchSql($where, $this->Party, $default, FALSE); // Party
-		$this->buildSearchSql($where, $this->Jenis_Container, $default, FALSE); // Jenis_Container
-		$this->buildSearchSql($where, $this->Tgl_Stuffing, $default, FALSE); // Tgl_Stuffing
-		$this->buildSearchSql($where, $this->Destination_id, $default, FALSE); // Destination_id
-		$this->buildSearchSql($where, $this->Feeder_id, $default, FALSE); // Feeder_id
-		$this->buildSearchSql($where, $this->ETA_ETD, $default, FALSE); // ETA_ETD
-		$this->buildSearchSql($where, $this->Liner_id, $default, FALSE); // Liner_id
-		$this->buildSearchSql($where, $this->Remark, $default, FALSE); // Remark
-		$this->buildSearchSql($where, $this->TruckingVendor_id, $default, FALSE); // TruckingVendor_id
-		$this->buildSearchSql($where, $this->Driver_id, $default, FALSE); // Driver_id
-		$this->buildSearchSql($where, $this->No_Pol_1, $default, FALSE); // No_Pol_1
-		$this->buildSearchSql($where, $this->No_Pol_2, $default, FALSE); // No_Pol_2
-		$this->buildSearchSql($where, $this->No_Pol_3, $default, FALSE); // No_Pol_3
-		$this->buildSearchSql($where, $this->Nomor_Container_1, $default, FALSE); // Nomor_Container_1
-		$this->buildSearchSql($where, $this->Nomor_Container_2, $default, FALSE); // Nomor_Container_2
-
-		// Set up search parm
-		if (!$default && $where <> "" && in_array($this->Command, array("", "reset", "resetall"))) {
-			$this->Command = "search";
-		}
-		if (!$default && $this->Command == "search") {
-			$this->id->AdvancedSearch->save(); // id
-			$this->EI->AdvancedSearch->save(); // EI
-			$this->Shipper_id->AdvancedSearch->save(); // Shipper_id
-			$this->Party->AdvancedSearch->save(); // Party
-			$this->Jenis_Container->AdvancedSearch->save(); // Jenis_Container
-			$this->Tgl_Stuffing->AdvancedSearch->save(); // Tgl_Stuffing
-			$this->Destination_id->AdvancedSearch->save(); // Destination_id
-			$this->Feeder_id->AdvancedSearch->save(); // Feeder_id
-			$this->ETA_ETD->AdvancedSearch->save(); // ETA_ETD
-			$this->Liner_id->AdvancedSearch->save(); // Liner_id
-			$this->Remark->AdvancedSearch->save(); // Remark
-			$this->TruckingVendor_id->AdvancedSearch->save(); // TruckingVendor_id
-			$this->Driver_id->AdvancedSearch->save(); // Driver_id
-			$this->No_Pol_1->AdvancedSearch->save(); // No_Pol_1
-			$this->No_Pol_2->AdvancedSearch->save(); // No_Pol_2
-			$this->No_Pol_3->AdvancedSearch->save(); // No_Pol_3
-			$this->Nomor_Container_1->AdvancedSearch->save(); // Nomor_Container_1
-			$this->Nomor_Container_2->AdvancedSearch->save(); // Nomor_Container_2
-		}
-		return $where;
-	}
-
-	// Build search SQL
-	protected function buildSearchSql(&$where, &$fld, $default, $multiValue)
-	{
-		$fldParm = $fld->Param;
-		$fldVal = ($default) ? $fld->AdvancedSearch->SearchValueDefault : $fld->AdvancedSearch->SearchValue;
-		$fldOpr = ($default) ? $fld->AdvancedSearch->SearchOperatorDefault : $fld->AdvancedSearch->SearchOperator;
-		$fldCond = ($default) ? $fld->AdvancedSearch->SearchConditionDefault : $fld->AdvancedSearch->SearchCondition;
-		$fldVal2 = ($default) ? $fld->AdvancedSearch->SearchValue2Default : $fld->AdvancedSearch->SearchValue2;
-		$fldOpr2 = ($default) ? $fld->AdvancedSearch->SearchOperator2Default : $fld->AdvancedSearch->SearchOperator2;
-		$wrk = "";
-		if (is_array($fldVal))
-			$fldVal = implode(",", $fldVal);
-		if (is_array($fldVal2))
-			$fldVal2 = implode(",", $fldVal2);
-		$fldOpr = strtoupper(trim($fldOpr));
-		if ($fldOpr == "")
-			$fldOpr = "=";
-		$fldOpr2 = strtoupper(trim($fldOpr2));
-		if ($fldOpr2 == "")
-			$fldOpr2 = "=";
-		if (SEARCH_MULTI_VALUE_OPTION == 1)
-			$multiValue = FALSE;
-		if ($multiValue) {
-			$wrk1 = ($fldVal <> "") ? GetMultiSearchSql($fld, $fldOpr, $fldVal, $this->Dbid) : ""; // Field value 1
-			$wrk2 = ($fldVal2 <> "") ? GetMultiSearchSql($fld, $fldOpr2, $fldVal2, $this->Dbid) : ""; // Field value 2
-			$wrk = $wrk1; // Build final SQL
-			if ($wrk2 <> "")
-				$wrk = ($wrk <> "") ? "($wrk) $fldCond ($wrk2)" : $wrk2;
-		} else {
-			$fldVal = $this->convertSearchValue($fld, $fldVal);
-			$fldVal2 = $this->convertSearchValue($fld, $fldVal2);
-			$wrk = GetSearchSql($fld, $fldVal, $fldOpr, $fldCond, $fldVal2, $fldOpr2, $this->Dbid);
-		}
-		AddFilter($where, $wrk);
-	}
-
-	// Convert search value
-	protected function convertSearchValue(&$fld, $fldVal)
-	{
-		if ($fldVal == NULL_VALUE || $fldVal == NOT_NULL_VALUE)
-			return $fldVal;
-		$value = $fldVal;
-		if ($fld->DataType == DATATYPE_BOOLEAN) {
-			if ($fldVal <> "")
-				$value = (SameText($fldVal, "1") || SameText($fldVal, "y") || SameText($fldVal, "t")) ? $fld->TrueValue : $fld->FalseValue;
-		} elseif ($fld->DataType == DATATYPE_DATE || $fld->DataType == DATATYPE_TIME) {
-			if ($fldVal <> "")
-				$value = UnFormatDateTime($fldVal, $fld->DateTimeFormat);
-		}
-		return $value;
 	}
 
 	// Return basic search SQL
 	protected function basicSearchSql($arKeywords, $type)
 	{
 		$where = "";
-		$this->buildBasicSearchSql($where, $this->Remark, $arKeywords, $type);
-		$this->buildBasicSearchSql($where, $this->No_Pol_1, $arKeywords, $type);
-		$this->buildBasicSearchSql($where, $this->No_Pol_2, $arKeywords, $type);
-		$this->buildBasicSearchSql($where, $this->No_Pol_3, $arKeywords, $type);
-		$this->buildBasicSearchSql($where, $this->Nomor_Container_1, $arKeywords, $type);
-		$this->buildBasicSearchSql($where, $this->Nomor_Container_2, $arKeywords, $type);
+		$this->buildBasicSearchSql($where, $this->Nomor_JO, $arKeywords, $type);
 		return $where;
 	}
 
@@ -1367,42 +1147,6 @@ class t103_trucking_list extends t103_trucking
 		// Check basic search
 		if ($this->BasicSearch->issetSession())
 			return TRUE;
-		if ($this->id->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->EI->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->Shipper_id->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->Party->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->Jenis_Container->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->Tgl_Stuffing->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->Destination_id->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->Feeder_id->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->ETA_ETD->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->Liner_id->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->Remark->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->TruckingVendor_id->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->Driver_id->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->No_Pol_1->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->No_Pol_2->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->No_Pol_3->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->Nomor_Container_1->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->Nomor_Container_2->AdvancedSearch->issetSession())
-			return TRUE;
 		return FALSE;
 	}
 
@@ -1416,9 +1160,6 @@ class t103_trucking_list extends t103_trucking
 
 		// Clear basic search parameters
 		$this->resetBasicSearchParms();
-
-		// Clear advanced search parameters
-		$this->resetAdvancedSearchParms();
 	}
 
 	// Load advanced search default values
@@ -1433,29 +1174,6 @@ class t103_trucking_list extends t103_trucking
 		$this->BasicSearch->unsetSession();
 	}
 
-	// Clear all advanced search parameters
-	protected function resetAdvancedSearchParms()
-	{
-		$this->id->AdvancedSearch->unsetSession();
-		$this->EI->AdvancedSearch->unsetSession();
-		$this->Shipper_id->AdvancedSearch->unsetSession();
-		$this->Party->AdvancedSearch->unsetSession();
-		$this->Jenis_Container->AdvancedSearch->unsetSession();
-		$this->Tgl_Stuffing->AdvancedSearch->unsetSession();
-		$this->Destination_id->AdvancedSearch->unsetSession();
-		$this->Feeder_id->AdvancedSearch->unsetSession();
-		$this->ETA_ETD->AdvancedSearch->unsetSession();
-		$this->Liner_id->AdvancedSearch->unsetSession();
-		$this->Remark->AdvancedSearch->unsetSession();
-		$this->TruckingVendor_id->AdvancedSearch->unsetSession();
-		$this->Driver_id->AdvancedSearch->unsetSession();
-		$this->No_Pol_1->AdvancedSearch->unsetSession();
-		$this->No_Pol_2->AdvancedSearch->unsetSession();
-		$this->No_Pol_3->AdvancedSearch->unsetSession();
-		$this->Nomor_Container_1->AdvancedSearch->unsetSession();
-		$this->Nomor_Container_2->AdvancedSearch->unsetSession();
-	}
-
 	// Restore all search parameters
 	protected function restoreSearchParms()
 	{
@@ -1463,53 +1181,27 @@ class t103_trucking_list extends t103_trucking
 
 		// Restore basic search values
 		$this->BasicSearch->load();
-
-		// Restore advanced search values
-		$this->id->AdvancedSearch->load();
-		$this->EI->AdvancedSearch->load();
-		$this->Shipper_id->AdvancedSearch->load();
-		$this->Party->AdvancedSearch->load();
-		$this->Jenis_Container->AdvancedSearch->load();
-		$this->Tgl_Stuffing->AdvancedSearch->load();
-		$this->Destination_id->AdvancedSearch->load();
-		$this->Feeder_id->AdvancedSearch->load();
-		$this->ETA_ETD->AdvancedSearch->load();
-		$this->Liner_id->AdvancedSearch->load();
-		$this->Remark->AdvancedSearch->load();
-		$this->TruckingVendor_id->AdvancedSearch->load();
-		$this->Driver_id->AdvancedSearch->load();
-		$this->No_Pol_1->AdvancedSearch->load();
-		$this->No_Pol_2->AdvancedSearch->load();
-		$this->No_Pol_3->AdvancedSearch->load();
-		$this->Nomor_Container_1->AdvancedSearch->load();
-		$this->Nomor_Container_2->AdvancedSearch->load();
 	}
 
 	// Set up sort parameters
 	protected function setupSortOrder()
 	{
 
+		// Check for Ctrl pressed
+		$ctrl = Get("ctrl") !== NULL;
+
 		// Check for "order" parameter
 		if (Get("order") !== NULL) {
 			$this->CurrentOrder = Get("order");
 			$this->CurrentOrderType = Get("ordertype", "");
-			$this->updateSort($this->id); // id
-			$this->updateSort($this->EI); // EI
-			$this->updateSort($this->Shipper_id); // Shipper_id
-			$this->updateSort($this->Party); // Party
-			$this->updateSort($this->Jenis_Container); // Jenis_Container
-			$this->updateSort($this->Tgl_Stuffing); // Tgl_Stuffing
-			$this->updateSort($this->Destination_id); // Destination_id
-			$this->updateSort($this->Feeder_id); // Feeder_id
-			$this->updateSort($this->ETA_ETD); // ETA_ETD
-			$this->updateSort($this->Liner_id); // Liner_id
-			$this->updateSort($this->TruckingVendor_id); // TruckingVendor_id
-			$this->updateSort($this->Driver_id); // Driver_id
-			$this->updateSort($this->No_Pol_1); // No_Pol_1
-			$this->updateSort($this->No_Pol_2); // No_Pol_2
-			$this->updateSort($this->No_Pol_3); // No_Pol_3
-			$this->updateSort($this->Nomor_Container_1); // Nomor_Container_1
-			$this->updateSort($this->Nomor_Container_2); // Nomor_Container_2
+			$this->updateSort($this->id, $ctrl); // id
+			$this->updateSort($this->Nomor_JO, $ctrl); // Nomor_JO
+			$this->updateSort($this->Shipper_id, $ctrl); // Shipper_id
+			$this->updateSort($this->Party, $ctrl); // Party
+			$this->updateSort($this->Container, $ctrl); // Container
+			$this->updateSort($this->Tanggal_Stuffing, $ctrl); // Tanggal_Stuffing
+			$this->updateSort($this->Destination_id, $ctrl); // Destination_id
+			$this->updateSort($this->Feeder_id, $ctrl); // Feeder_id
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1546,22 +1238,13 @@ class t103_trucking_list extends t103_trucking
 				$orderBy = "";
 				$this->setSessionOrderBy($orderBy);
 				$this->id->setSort("");
-				$this->EI->setSort("");
+				$this->Nomor_JO->setSort("");
 				$this->Shipper_id->setSort("");
 				$this->Party->setSort("");
-				$this->Jenis_Container->setSort("");
-				$this->Tgl_Stuffing->setSort("");
+				$this->Container->setSort("");
+				$this->Tanggal_Stuffing->setSort("");
 				$this->Destination_id->setSort("");
 				$this->Feeder_id->setSort("");
-				$this->ETA_ETD->setSort("");
-				$this->Liner_id->setSort("");
-				$this->TruckingVendor_id->setSort("");
-				$this->Driver_id->setSort("");
-				$this->No_Pol_1->setSort("");
-				$this->No_Pol_2->setSort("");
-				$this->No_Pol_3->setSort("");
-				$this->Nomor_Container_1->setSort("");
-				$this->Nomor_Container_2->setSort("");
 			}
 
 			// Reset start position
@@ -1578,37 +1261,60 @@ class t103_trucking_list extends t103_trucking
 		// Add group option item
 		$item = &$this->ListOptions->add($this->ListOptions->GroupOptionName);
 		$item->Body = "";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 
 		// "view"
 		$item = &$this->ListOptions->add("view");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "edit"
 		$item = &$this->ListOptions->add("edit");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "copy"
 		$item = &$this->ListOptions->add("copy");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "delete"
 		$item = &$this->ListOptions->add("delete");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
+
+		// "detail_t101_jo_detail"
+		$item = &$this->ListOptions->add("detail_t101_jo_detail");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = TRUE && !$this->ShowMultipleDetails;
+		$item->OnLeft = FALSE;
+		$item->ShowInButtonGroup = FALSE;
+		if (!isset($GLOBALS["t101_jo_detail_grid"]))
+			$GLOBALS["t101_jo_detail_grid"] = new t101_jo_detail_grid();
+
+		// Multiple details
+		if ($this->ShowMultipleDetails) {
+			$item = &$this->ListOptions->add("details");
+			$item->CssClass = "text-nowrap";
+			$item->Visible = $this->ShowMultipleDetails;
+			$item->OnLeft = FALSE;
+			$item->ShowInButtonGroup = FALSE;
+		}
+
+		// Set up detail pages
+		$pages = new SubPages();
+		$pages->add("t101_jo_detail");
+		$this->DetailPages = $pages;
 
 		// List actions
 		$item = &$this->ListOptions->add("listactions");
 		$item->CssClass = "text-nowrap";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 		$item->ShowInDropDown = FALSE;
@@ -1616,9 +1322,16 @@ class t103_trucking_list extends t103_trucking
 		// "checkbox"
 		$item = &$this->ListOptions->add("checkbox");
 		$item->Visible = FALSE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Header = "<input type=\"checkbox\" name=\"key\" id=\"key\" onclick=\"ew.selectAllKey(this);\">";
-		$item->moveTo(0);
+		$item->ShowInDropDown = FALSE;
+		$item->ShowInButtonGroup = FALSE;
+
+		// "sequence"
+		$item = &$this->ListOptions->add("sequence");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = TRUE;
+		$item->OnLeft = TRUE; // Always on left
 		$item->ShowInDropDown = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 
@@ -1646,6 +1359,10 @@ class t103_trucking_list extends t103_trucking
 
 		// Call ListOptions_Rendering event
 		$this->ListOptions_Rendering();
+
+		// "sequence"
+		$opt = &$this->ListOptions->Items["sequence"];
+		$opt->Body = FormatSequenceNumber($this->RecCnt);
 
 		// "view"
 		$opt = &$this->ListOptions->Items["view"];
@@ -1709,6 +1426,71 @@ class t103_trucking_list extends t103_trucking
 				$opt->Visible = TRUE;
 			}
 		}
+		$detailViewTblVar = "";
+		$detailCopyTblVar = "";
+		$detailEditTblVar = "";
+
+		// "detail_t101_jo_detail"
+		$opt = &$this->ListOptions->Items["detail_t101_jo_detail"];
+		if (TRUE) {
+			$body = $Language->phrase("DetailLink") . $Language->TablePhrase("t101_jo_detail", "TblCaption");
+			$body = "<a class=\"btn btn-default ew-row-link ew-detail\" data-action=\"list\" href=\"" . HtmlEncode("t101_jo_detaillist.php?" . TABLE_SHOW_MASTER . "=t101_jo_head&fk_id=" . urlencode(strval($this->id->CurrentValue)) . "") . "\">" . $body . "</a>";
+			$links = "";
+			if ($GLOBALS["t101_jo_detail_grid"]->DetailView) {
+				$caption = $Language->phrase("MasterDetailViewLink");
+				$url = $this->getViewUrl(TABLE_SHOW_DETAIL . "=t101_jo_detail");
+				$links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-view\" data-action=\"view\" data-caption=\"" . HtmlTitle($caption) . "\" href=\"" . HtmlEncode($url) . "\">" . HtmlImageAndText($caption) . "</a></li>";
+				if ($detailViewTblVar <> "")
+					$detailViewTblVar .= ",";
+				$detailViewTblVar .= "t101_jo_detail";
+			}
+			if ($GLOBALS["t101_jo_detail_grid"]->DetailEdit) {
+				$caption = $Language->phrase("MasterDetailEditLink");
+				$url = $this->getEditUrl(TABLE_SHOW_DETAIL . "=t101_jo_detail");
+				$links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-edit\" data-action=\"edit\" data-caption=\"" . HtmlTitle($caption) . "\" href=\"" . HtmlEncode($url) . "\">" . HtmlImageAndText($caption) . "</a></li>";
+				if ($detailEditTblVar <> "")
+					$detailEditTblVar .= ",";
+				$detailEditTblVar .= "t101_jo_detail";
+			}
+			if ($GLOBALS["t101_jo_detail_grid"]->DetailAdd) {
+				$caption = $Language->phrase("MasterDetailCopyLink");
+				$url = $this->getCopyUrl(TABLE_SHOW_DETAIL . "=t101_jo_detail");
+				$links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-copy\" data-action=\"add\" data-caption=\"" . HtmlTitle($caption) . "\" href=\"" . HtmlEncode($url) . "\">" . HtmlImageAndText($caption) . "</a></li>";
+				if ($detailCopyTblVar <> "")
+					$detailCopyTblVar .= ",";
+				$detailCopyTblVar .= "t101_jo_detail";
+			}
+			if ($links <> "") {
+				$body .= "<button class=\"dropdown-toggle btn btn-default ew-detail\" data-toggle=\"dropdown\"></button>";
+				$body .= "<ul class=\"dropdown-menu\">". $links . "</ul>";
+			}
+			$body = "<div class=\"btn-group btn-group-sm ew-btn-group\">" . $body . "</div>";
+			$opt->Body = $body;
+			if ($this->ShowMultipleDetails)
+				$opt->Visible = FALSE;
+		}
+		if ($this->ShowMultipleDetails) {
+			$body = "<div class=\"btn-group btn-group-sm ew-btn-group\">";
+			$links = "";
+			if ($detailViewTblVar <> "") {
+				$links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-view\" data-action=\"view\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailViewLink")) . "\" href=\"" . HtmlEncode($this->getViewUrl(TABLE_SHOW_DETAIL . "=" . $detailViewTblVar)) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailViewLink")) . "</a></li>";
+			}
+			if ($detailEditTblVar <> "") {
+				$links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-edit\" data-action=\"edit\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailEditLink")) . "\" href=\"" . HtmlEncode($this->getEditUrl(TABLE_SHOW_DETAIL . "=" . $detailEditTblVar)) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailEditLink")) . "</a></li>";
+			}
+			if ($detailCopyTblVar <> "") {
+				$links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-copy\" data-action=\"add\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailCopyLink")) . "\" href=\"" . HtmlEncode($this->GetCopyUrl(TABLE_SHOW_DETAIL . "=" . $detailCopyTblVar)) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailCopyLink")) . "</a></li>";
+			}
+			if ($links <> "") {
+				$body .= "<button class=\"dropdown-toggle btn btn-default ew-master-detail\" title=\"" . HtmlTitle($Language->phrase("MultipleMasterDetails")) . "\" data-toggle=\"dropdown\">" . $Language->phrase("MultipleMasterDetails") . "</button>";
+				$body .= "<ul class=\"dropdown-menu ew-menu\">". $links . "</ul>";
+			}
+			$body .= "</div>";
+
+			// Multiple details
+			$opt = &$this->ListOptions->Items["details"];
+			$opt->Body = $body;
+		}
 
 		// "checkbox"
 		$opt = &$this->ListOptions->Items["checkbox"];
@@ -1731,6 +1513,35 @@ class t103_trucking_list extends t103_trucking
 		$addcaption = HtmlTitle($Language->phrase("AddLink"));
 		$item->Body = "<a class=\"ew-add-edit ew-add\" title=\"" . $addcaption . "\" data-caption=\"" . $addcaption . "\" href=\"" . HtmlEncode($this->AddUrl) . "\">" . $Language->phrase("AddLink") . "</a>";
 		$item->Visible = ($this->AddUrl <> "");
+		$option = $options["detail"];
+		$detailTableLink = "";
+		$item = &$option->add("detailadd_t101_jo_detail");
+		$url = $this->getAddUrl(TABLE_SHOW_DETAIL . "=t101_jo_detail");
+		$caption = $Language->phrase("Add") . "&nbsp;" . $this->tableCaption() . "/" . $GLOBALS["t101_jo_detail"]->tableCaption();
+		$item->Body = "<a class=\"ew-detail-add-group ew-detail-add\" title=\"" . HtmlTitle($caption) . "\" data-caption=\"" . HtmlTitle($caption) . "\" href=\"" . HtmlEncode($url) . "\">" . $caption . "</a>";
+		$item->Visible = ($GLOBALS["t101_jo_detail"]->DetailAdd);
+		if ($item->Visible) {
+			if ($detailTableLink <> "")
+				$detailTableLink .= ",";
+			$detailTableLink .= "t101_jo_detail";
+		}
+
+		// Add multiple details
+		if ($this->ShowMultipleDetails) {
+			$item = &$option->add("detailsadd");
+			$url = $this->getAddUrl(TABLE_SHOW_DETAIL . "=" . $detailTableLink);
+			$caption = $Language->phrase("AddMasterDetailLink");
+			$item->Body = "<a class=\"ew-detail-add-group ew-detail-add\" title=\"" . HtmlTitle($caption) . "\" data-caption=\"" . HtmlTitle($caption) . "\" href=\"" . HtmlEncode($url) . "\">" . $caption . "</a>";
+			$item->Visible = ($detailTableLink <> "");
+
+			// Hide single master/detail items
+			$ar = explode(",", $detailTableLink);
+			$cnt = count($ar);
+			for ($i = 0; $i < $cnt; $i++) {
+				if ($item = &$option->getItem("detailadd_" . $ar[$i]))
+					$item->Visible = FALSE;
+			}
+		}
 		$option = $options["action"];
 
 		// Set up options default
@@ -1749,10 +1560,10 @@ class t103_trucking_list extends t103_trucking
 
 		// Filter button
 		$item = &$this->FilterOptions->add("savecurrentfilter");
-		$item->Body = "<a class=\"ew-save-filter\" data-form=\"ft103_truckinglistsrch\" href=\"#\">" . $Language->phrase("SaveCurrentFilter") . "</a>";
+		$item->Body = "<a class=\"ew-save-filter\" data-form=\"ft101_jo_headlistsrch\" href=\"#\">" . $Language->phrase("SaveCurrentFilter") . "</a>";
 		$item->Visible = TRUE;
 		$item = &$this->FilterOptions->add("deletefilter");
-		$item->Body = "<a class=\"ew-delete-filter\" data-form=\"ft103_truckinglistsrch\" href=\"#\">" . $Language->phrase("DeleteFilter") . "</a>";
+		$item->Body = "<a class=\"ew-delete-filter\" data-form=\"ft101_jo_headlistsrch\" href=\"#\">" . $Language->phrase("DeleteFilter") . "</a>";
 		$item->Visible = TRUE;
 		$this->FilterOptions->UseDropDownButton = TRUE;
 		$this->FilterOptions->UseButtonGroup = !$this->FilterOptions->UseDropDownButton;
@@ -1777,7 +1588,7 @@ class t103_trucking_list extends t103_trucking
 					$item = &$option->add("custom_" . $listaction->Action);
 					$caption = $listaction->Caption;
 					$icon = ($listaction->Icon <> "") ? "<i class=\"" . HtmlEncode($listaction->Icon) . "\" data-caption=\"" . HtmlEncode($caption) . "\"></i> " . $caption : $caption;
-					$item->Body = "<a class=\"ew-action ew-list-action\" title=\"" . HtmlEncode($caption) . "\" data-caption=\"" . HtmlEncode($caption) . "\" href=\"\" onclick=\"ew.submitAction(event,jQuery.extend({f:document.ft103_truckinglist}," . $listaction->toJson(TRUE) . "));return false;\">" . $icon . "</a>";
+					$item->Body = "<a class=\"ew-action ew-list-action\" title=\"" . HtmlEncode($caption) . "\" data-caption=\"" . HtmlEncode($caption) . "\" href=\"\" onclick=\"ew.submitAction(event,jQuery.extend({f:document.ft101_jo_headlist}," . $listaction->toJson(TRUE) . "));return false;\">" . $icon . "</a>";
 					$item->Visible = $listaction->Allow;
 				}
 			}
@@ -1884,7 +1695,7 @@ class t103_trucking_list extends t103_trucking
 		// Search button
 		$item = &$this->SearchOptions->add("searchtoggle");
 		$searchToggleClass = ($this->SearchWhere <> "") ? " active" : " active";
-		$item->Body = "<button type=\"button\" class=\"btn btn-default ew-search-toggle" . $searchToggleClass . "\" title=\"" . $Language->phrase("SearchPanel") . "\" data-caption=\"" . $Language->phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"ft103_truckinglistsrch\">" . $Language->phrase("SearchLink") . "</button>";
+		$item->Body = "<button type=\"button\" class=\"btn btn-default ew-search-toggle" . $searchToggleClass . "\" title=\"" . $Language->phrase("SearchPanel") . "\" data-caption=\"" . $Language->phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"ft101_jo_headlistsrch\">" . $Language->phrase("SearchLink") . "</button>";
 		$item->Visible = TRUE;
 
 		// Show all button
@@ -1961,140 +1772,6 @@ class t103_trucking_list extends t103_trucking
 		$this->BasicSearch->setType(Get(TABLE_BASIC_SEARCH_TYPE, ""), FALSE);
 	}
 
-	// Load search values for validation
-	protected function loadSearchValues()
-	{
-		global $CurrentForm;
-
-		// Load search values
-		// id
-
-		if (!$this->isAddOrEdit())
-			$this->id->AdvancedSearch->setSearchValue(Get("x_id", Get("id", "")));
-		if ($this->id->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->id->AdvancedSearch->setSearchOperator(Get("z_id", ""));
-
-		// EI
-		if (!$this->isAddOrEdit())
-			$this->EI->AdvancedSearch->setSearchValue(Get("x_EI", Get("EI", "")));
-		if ($this->EI->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->EI->AdvancedSearch->setSearchOperator(Get("z_EI", ""));
-
-		// Shipper_id
-		if (!$this->isAddOrEdit())
-			$this->Shipper_id->AdvancedSearch->setSearchValue(Get("x_Shipper_id", Get("Shipper_id", "")));
-		if ($this->Shipper_id->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->Shipper_id->AdvancedSearch->setSearchOperator(Get("z_Shipper_id", ""));
-
-		// Party
-		if (!$this->isAddOrEdit())
-			$this->Party->AdvancedSearch->setSearchValue(Get("x_Party", Get("Party", "")));
-		if ($this->Party->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->Party->AdvancedSearch->setSearchOperator(Get("z_Party", ""));
-
-		// Jenis_Container
-		if (!$this->isAddOrEdit())
-			$this->Jenis_Container->AdvancedSearch->setSearchValue(Get("x_Jenis_Container", Get("Jenis_Container", "")));
-		if ($this->Jenis_Container->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->Jenis_Container->AdvancedSearch->setSearchOperator(Get("z_Jenis_Container", ""));
-
-		// Tgl_Stuffing
-		if (!$this->isAddOrEdit())
-			$this->Tgl_Stuffing->AdvancedSearch->setSearchValue(Get("x_Tgl_Stuffing", Get("Tgl_Stuffing", "")));
-		if ($this->Tgl_Stuffing->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->Tgl_Stuffing->AdvancedSearch->setSearchOperator(Get("z_Tgl_Stuffing", ""));
-
-		// Destination_id
-		if (!$this->isAddOrEdit())
-			$this->Destination_id->AdvancedSearch->setSearchValue(Get("x_Destination_id", Get("Destination_id", "")));
-		if ($this->Destination_id->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->Destination_id->AdvancedSearch->setSearchOperator(Get("z_Destination_id", ""));
-
-		// Feeder_id
-		if (!$this->isAddOrEdit())
-			$this->Feeder_id->AdvancedSearch->setSearchValue(Get("x_Feeder_id", Get("Feeder_id", "")));
-		if ($this->Feeder_id->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->Feeder_id->AdvancedSearch->setSearchOperator(Get("z_Feeder_id", ""));
-
-		// ETA_ETD
-		if (!$this->isAddOrEdit())
-			$this->ETA_ETD->AdvancedSearch->setSearchValue(Get("x_ETA_ETD", Get("ETA_ETD", "")));
-		if ($this->ETA_ETD->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->ETA_ETD->AdvancedSearch->setSearchOperator(Get("z_ETA_ETD", ""));
-
-		// Liner_id
-		if (!$this->isAddOrEdit())
-			$this->Liner_id->AdvancedSearch->setSearchValue(Get("x_Liner_id", Get("Liner_id", "")));
-		if ($this->Liner_id->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->Liner_id->AdvancedSearch->setSearchOperator(Get("z_Liner_id", ""));
-
-		// Remark
-		if (!$this->isAddOrEdit())
-			$this->Remark->AdvancedSearch->setSearchValue(Get("x_Remark", Get("Remark", "")));
-		if ($this->Remark->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->Remark->AdvancedSearch->setSearchOperator(Get("z_Remark", ""));
-
-		// TruckingVendor_id
-		if (!$this->isAddOrEdit())
-			$this->TruckingVendor_id->AdvancedSearch->setSearchValue(Get("x_TruckingVendor_id", Get("TruckingVendor_id", "")));
-		if ($this->TruckingVendor_id->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->TruckingVendor_id->AdvancedSearch->setSearchOperator(Get("z_TruckingVendor_id", ""));
-
-		// Driver_id
-		if (!$this->isAddOrEdit())
-			$this->Driver_id->AdvancedSearch->setSearchValue(Get("x_Driver_id", Get("Driver_id", "")));
-		if ($this->Driver_id->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->Driver_id->AdvancedSearch->setSearchOperator(Get("z_Driver_id", ""));
-
-		// No_Pol_1
-		if (!$this->isAddOrEdit())
-			$this->No_Pol_1->AdvancedSearch->setSearchValue(Get("x_No_Pol_1", Get("No_Pol_1", "")));
-		if ($this->No_Pol_1->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->No_Pol_1->AdvancedSearch->setSearchOperator(Get("z_No_Pol_1", ""));
-
-		// No_Pol_2
-		if (!$this->isAddOrEdit())
-			$this->No_Pol_2->AdvancedSearch->setSearchValue(Get("x_No_Pol_2", Get("No_Pol_2", "")));
-		if ($this->No_Pol_2->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->No_Pol_2->AdvancedSearch->setSearchOperator(Get("z_No_Pol_2", ""));
-
-		// No_Pol_3
-		if (!$this->isAddOrEdit())
-			$this->No_Pol_3->AdvancedSearch->setSearchValue(Get("x_No_Pol_3", Get("No_Pol_3", "")));
-		if ($this->No_Pol_3->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->No_Pol_3->AdvancedSearch->setSearchOperator(Get("z_No_Pol_3", ""));
-
-		// Nomor_Container_1
-		if (!$this->isAddOrEdit())
-			$this->Nomor_Container_1->AdvancedSearch->setSearchValue(Get("x_Nomor_Container_1", Get("Nomor_Container_1", "")));
-		if ($this->Nomor_Container_1->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->Nomor_Container_1->AdvancedSearch->setSearchOperator(Get("z_Nomor_Container_1", ""));
-
-		// Nomor_Container_2
-		if (!$this->isAddOrEdit())
-			$this->Nomor_Container_2->AdvancedSearch->setSearchValue(Get("x_Nomor_Container_2", Get("Nomor_Container_2", "")));
-		if ($this->Nomor_Container_2->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->Nomor_Container_2->AdvancedSearch->setSearchOperator(Get("z_Nomor_Container_2", ""));
-	}
-
 	// Load recordset
 	public function loadRecordset($offset = -1, $rowcnt = -1)
 	{
@@ -2158,23 +1835,13 @@ class t103_trucking_list extends t103_trucking
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
-		$this->EI->setDbValue($row['EI']);
+		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
 		$this->Shipper_id->setDbValue($row['Shipper_id']);
 		$this->Party->setDbValue($row['Party']);
-		$this->Jenis_Container->setDbValue($row['Jenis_Container']);
-		$this->Tgl_Stuffing->setDbValue($row['Tgl_Stuffing']);
+		$this->Container->setDbValue($row['Container']);
+		$this->Tanggal_Stuffing->setDbValue($row['Tanggal_Stuffing']);
 		$this->Destination_id->setDbValue($row['Destination_id']);
 		$this->Feeder_id->setDbValue($row['Feeder_id']);
-		$this->ETA_ETD->setDbValue($row['ETA_ETD']);
-		$this->Liner_id->setDbValue($row['Liner_id']);
-		$this->Remark->setDbValue($row['Remark']);
-		$this->TruckingVendor_id->setDbValue($row['TruckingVendor_id']);
-		$this->Driver_id->setDbValue($row['Driver_id']);
-		$this->No_Pol_1->setDbValue($row['No_Pol_1']);
-		$this->No_Pol_2->setDbValue($row['No_Pol_2']);
-		$this->No_Pol_3->setDbValue($row['No_Pol_3']);
-		$this->Nomor_Container_1->setDbValue($row['Nomor_Container_1']);
-		$this->Nomor_Container_2->setDbValue($row['Nomor_Container_2']);
 	}
 
 	// Return a row with default values
@@ -2182,23 +1849,13 @@ class t103_trucking_list extends t103_trucking
 	{
 		$row = [];
 		$row['id'] = NULL;
-		$row['EI'] = NULL;
+		$row['Nomor_JO'] = NULL;
 		$row['Shipper_id'] = NULL;
 		$row['Party'] = NULL;
-		$row['Jenis_Container'] = NULL;
-		$row['Tgl_Stuffing'] = NULL;
+		$row['Container'] = NULL;
+		$row['Tanggal_Stuffing'] = NULL;
 		$row['Destination_id'] = NULL;
 		$row['Feeder_id'] = NULL;
-		$row['ETA_ETD'] = NULL;
-		$row['Liner_id'] = NULL;
-		$row['Remark'] = NULL;
-		$row['TruckingVendor_id'] = NULL;
-		$row['Driver_id'] = NULL;
-		$row['No_Pol_1'] = NULL;
-		$row['No_Pol_2'] = NULL;
-		$row['No_Pol_3'] = NULL;
-		$row['Nomor_Container_1'] = NULL;
-		$row['Nomor_Container_2'] = NULL;
 		return $row;
 	}
 
@@ -2243,23 +1900,13 @@ class t103_trucking_list extends t103_trucking
 
 		// Common render codes for all row types
 		// id
-		// EI
+		// Nomor_JO
 		// Shipper_id
 		// Party
-		// Jenis_Container
-		// Tgl_Stuffing
+		// Container
+		// Tanggal_Stuffing
 		// Destination_id
 		// Feeder_id
-		// ETA_ETD
-		// Liner_id
-		// Remark
-		// TruckingVendor_id
-		// Driver_id
-		// No_Pol_1
-		// No_Pol_2
-		// No_Pol_3
-		// Nomor_Container_1
-		// Nomor_Container_2
 
 		if ($this->RowType == ROWTYPE_VIEW) { // View row
 
@@ -2267,17 +1914,30 @@ class t103_trucking_list extends t103_trucking
 			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
 
-			// EI
-			if (strval($this->EI->CurrentValue) <> "") {
-				$this->EI->ViewValue = $this->EI->optionCaption($this->EI->CurrentValue);
-			} else {
-				$this->EI->ViewValue = NULL;
-			}
-			$this->EI->ViewCustomAttributes = "";
+			// Nomor_JO
+			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
+			$this->Nomor_JO->ViewCustomAttributes = "";
 
 			// Shipper_id
-			$this->Shipper_id->ViewValue = $this->Shipper_id->CurrentValue;
-			$this->Shipper_id->ViewValue = FormatNumber($this->Shipper_id->ViewValue, 0, -2, -2, -2);
+			$curVal = strval($this->Shipper_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->Shipper_id->ViewValue = $this->Shipper_id->lookupCacheOption($curVal);
+				if ($this->Shipper_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->Shipper_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->Shipper_id->ViewValue = $this->Shipper_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->Shipper_id->ViewValue = $this->Shipper_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->Shipper_id->ViewValue = NULL;
+			}
 			$this->Shipper_id->ViewCustomAttributes = "";
 
 			// Party
@@ -2285,78 +1945,72 @@ class t103_trucking_list extends t103_trucking
 			$this->Party->ViewValue = FormatNumber($this->Party->ViewValue, 0, -2, -2, -2);
 			$this->Party->ViewCustomAttributes = "";
 
-			// Jenis_Container
-			if (strval($this->Jenis_Container->CurrentValue) <> "") {
-				$this->Jenis_Container->ViewValue = $this->Jenis_Container->optionCaption($this->Jenis_Container->CurrentValue);
+			// Container
+			if (strval($this->Container->CurrentValue) <> "") {
+				$this->Container->ViewValue = $this->Container->optionCaption($this->Container->CurrentValue);
 			} else {
-				$this->Jenis_Container->ViewValue = NULL;
+				$this->Container->ViewValue = NULL;
 			}
-			$this->Jenis_Container->ViewCustomAttributes = "";
+			$this->Container->ViewCustomAttributes = "";
 
-			// Tgl_Stuffing
-			$this->Tgl_Stuffing->ViewValue = $this->Tgl_Stuffing->CurrentValue;
-			$this->Tgl_Stuffing->ViewValue = FormatDateTime($this->Tgl_Stuffing->ViewValue, 0);
-			$this->Tgl_Stuffing->ViewCustomAttributes = "";
+			// Tanggal_Stuffing
+			$this->Tanggal_Stuffing->ViewValue = $this->Tanggal_Stuffing->CurrentValue;
+			$this->Tanggal_Stuffing->ViewValue = FormatDateTime($this->Tanggal_Stuffing->ViewValue, 11);
+			$this->Tanggal_Stuffing->ViewCustomAttributes = "";
 
 			// Destination_id
-			$this->Destination_id->ViewValue = $this->Destination_id->CurrentValue;
-			$this->Destination_id->ViewValue = FormatNumber($this->Destination_id->ViewValue, 0, -2, -2, -2);
+			$curVal = strval($this->Destination_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->Destination_id->ViewValue = $this->Destination_id->lookupCacheOption($curVal);
+				if ($this->Destination_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->Destination_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->Destination_id->ViewValue = $this->Destination_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->Destination_id->ViewValue = $this->Destination_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->Destination_id->ViewValue = NULL;
+			}
 			$this->Destination_id->ViewCustomAttributes = "";
 
 			// Feeder_id
-			$this->Feeder_id->ViewValue = $this->Feeder_id->CurrentValue;
-			$this->Feeder_id->ViewValue = FormatNumber($this->Feeder_id->ViewValue, 0, -2, -2, -2);
+			$curVal = strval($this->Feeder_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->Feeder_id->ViewValue = $this->Feeder_id->lookupCacheOption($curVal);
+				if ($this->Feeder_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->Feeder_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->Feeder_id->ViewValue = $this->Feeder_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->Feeder_id->ViewValue = $this->Feeder_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->Feeder_id->ViewValue = NULL;
+			}
 			$this->Feeder_id->ViewCustomAttributes = "";
-
-			// ETA_ETD
-			$this->ETA_ETD->ViewValue = $this->ETA_ETD->CurrentValue;
-			$this->ETA_ETD->ViewValue = FormatDateTime($this->ETA_ETD->ViewValue, 0);
-			$this->ETA_ETD->ViewCustomAttributes = "";
-
-			// Liner_id
-			$this->Liner_id->ViewValue = $this->Liner_id->CurrentValue;
-			$this->Liner_id->ViewValue = FormatNumber($this->Liner_id->ViewValue, 0, -2, -2, -2);
-			$this->Liner_id->ViewCustomAttributes = "";
-
-			// TruckingVendor_id
-			$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
-			$this->TruckingVendor_id->ViewValue = FormatNumber($this->TruckingVendor_id->ViewValue, 0, -2, -2, -2);
-			$this->TruckingVendor_id->ViewCustomAttributes = "";
-
-			// Driver_id
-			$this->Driver_id->ViewValue = $this->Driver_id->CurrentValue;
-			$this->Driver_id->ViewValue = FormatNumber($this->Driver_id->ViewValue, 0, -2, -2, -2);
-			$this->Driver_id->ViewCustomAttributes = "";
-
-			// No_Pol_1
-			$this->No_Pol_1->ViewValue = $this->No_Pol_1->CurrentValue;
-			$this->No_Pol_1->ViewCustomAttributes = "";
-
-			// No_Pol_2
-			$this->No_Pol_2->ViewValue = $this->No_Pol_2->CurrentValue;
-			$this->No_Pol_2->ViewCustomAttributes = "";
-
-			// No_Pol_3
-			$this->No_Pol_3->ViewValue = $this->No_Pol_3->CurrentValue;
-			$this->No_Pol_3->ViewCustomAttributes = "";
-
-			// Nomor_Container_1
-			$this->Nomor_Container_1->ViewValue = $this->Nomor_Container_1->CurrentValue;
-			$this->Nomor_Container_1->ViewCustomAttributes = "";
-
-			// Nomor_Container_2
-			$this->Nomor_Container_2->ViewValue = $this->Nomor_Container_2->CurrentValue;
-			$this->Nomor_Container_2->ViewCustomAttributes = "";
 
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
 			$this->id->TooltipValue = "";
 
-			// EI
-			$this->EI->LinkCustomAttributes = "";
-			$this->EI->HrefValue = "";
-			$this->EI->TooltipValue = "";
+			// Nomor_JO
+			$this->Nomor_JO->LinkCustomAttributes = "";
+			$this->Nomor_JO->HrefValue = "";
+			$this->Nomor_JO->TooltipValue = "";
 
 			// Shipper_id
 			$this->Shipper_id->LinkCustomAttributes = "";
@@ -2368,15 +2022,15 @@ class t103_trucking_list extends t103_trucking
 			$this->Party->HrefValue = "";
 			$this->Party->TooltipValue = "";
 
-			// Jenis_Container
-			$this->Jenis_Container->LinkCustomAttributes = "";
-			$this->Jenis_Container->HrefValue = "";
-			$this->Jenis_Container->TooltipValue = "";
+			// Container
+			$this->Container->LinkCustomAttributes = "";
+			$this->Container->HrefValue = "";
+			$this->Container->TooltipValue = "";
 
-			// Tgl_Stuffing
-			$this->Tgl_Stuffing->LinkCustomAttributes = "";
-			$this->Tgl_Stuffing->HrefValue = "";
-			$this->Tgl_Stuffing->TooltipValue = "";
+			// Tanggal_Stuffing
+			$this->Tanggal_Stuffing->LinkCustomAttributes = "";
+			$this->Tanggal_Stuffing->HrefValue = "";
+			$this->Tanggal_Stuffing->TooltipValue = "";
 
 			// Destination_id
 			$this->Destination_id->LinkCustomAttributes = "";
@@ -2387,214 +2041,11 @@ class t103_trucking_list extends t103_trucking
 			$this->Feeder_id->LinkCustomAttributes = "";
 			$this->Feeder_id->HrefValue = "";
 			$this->Feeder_id->TooltipValue = "";
-
-			// ETA_ETD
-			$this->ETA_ETD->LinkCustomAttributes = "";
-			$this->ETA_ETD->HrefValue = "";
-			$this->ETA_ETD->TooltipValue = "";
-
-			// Liner_id
-			$this->Liner_id->LinkCustomAttributes = "";
-			$this->Liner_id->HrefValue = "";
-			$this->Liner_id->TooltipValue = "";
-
-			// TruckingVendor_id
-			$this->TruckingVendor_id->LinkCustomAttributes = "";
-			$this->TruckingVendor_id->HrefValue = "";
-			$this->TruckingVendor_id->TooltipValue = "";
-
-			// Driver_id
-			$this->Driver_id->LinkCustomAttributes = "";
-			$this->Driver_id->HrefValue = "";
-			$this->Driver_id->TooltipValue = "";
-
-			// No_Pol_1
-			$this->No_Pol_1->LinkCustomAttributes = "";
-			$this->No_Pol_1->HrefValue = "";
-			$this->No_Pol_1->TooltipValue = "";
-
-			// No_Pol_2
-			$this->No_Pol_2->LinkCustomAttributes = "";
-			$this->No_Pol_2->HrefValue = "";
-			$this->No_Pol_2->TooltipValue = "";
-
-			// No_Pol_3
-			$this->No_Pol_3->LinkCustomAttributes = "";
-			$this->No_Pol_3->HrefValue = "";
-			$this->No_Pol_3->TooltipValue = "";
-
-			// Nomor_Container_1
-			$this->Nomor_Container_1->LinkCustomAttributes = "";
-			$this->Nomor_Container_1->HrefValue = "";
-			$this->Nomor_Container_1->TooltipValue = "";
-
-			// Nomor_Container_2
-			$this->Nomor_Container_2->LinkCustomAttributes = "";
-			$this->Nomor_Container_2->HrefValue = "";
-			$this->Nomor_Container_2->TooltipValue = "";
-		} elseif ($this->RowType == ROWTYPE_SEARCH) { // Search row
-
-			// id
-			$this->id->EditAttrs["class"] = "form-control";
-			$this->id->EditCustomAttributes = "";
-			$this->id->EditValue = HtmlEncode($this->id->AdvancedSearch->SearchValue);
-			$this->id->PlaceHolder = RemoveHtml($this->id->caption());
-
-			// EI
-			$this->EI->EditCustomAttributes = "";
-			$this->EI->EditValue = $this->EI->options(FALSE);
-
-			// Shipper_id
-			$this->Shipper_id->EditAttrs["class"] = "form-control";
-			$this->Shipper_id->EditCustomAttributes = "";
-			$this->Shipper_id->EditValue = HtmlEncode($this->Shipper_id->AdvancedSearch->SearchValue);
-			$this->Shipper_id->PlaceHolder = RemoveHtml($this->Shipper_id->caption());
-
-			// Party
-			$this->Party->EditAttrs["class"] = "form-control";
-			$this->Party->EditCustomAttributes = "";
-			$this->Party->EditValue = HtmlEncode($this->Party->AdvancedSearch->SearchValue);
-			$this->Party->PlaceHolder = RemoveHtml($this->Party->caption());
-
-			// Jenis_Container
-			$this->Jenis_Container->EditCustomAttributes = "";
-			$this->Jenis_Container->EditValue = $this->Jenis_Container->options(FALSE);
-
-			// Tgl_Stuffing
-			$this->Tgl_Stuffing->EditAttrs["class"] = "form-control";
-			$this->Tgl_Stuffing->EditCustomAttributes = "";
-			$this->Tgl_Stuffing->EditValue = HtmlEncode(FormatDateTime(UnFormatDateTime($this->Tgl_Stuffing->AdvancedSearch->SearchValue, 0), 8));
-			$this->Tgl_Stuffing->PlaceHolder = RemoveHtml($this->Tgl_Stuffing->caption());
-
-			// Destination_id
-			$this->Destination_id->EditAttrs["class"] = "form-control";
-			$this->Destination_id->EditCustomAttributes = "";
-			$this->Destination_id->EditValue = HtmlEncode($this->Destination_id->AdvancedSearch->SearchValue);
-			$this->Destination_id->PlaceHolder = RemoveHtml($this->Destination_id->caption());
-
-			// Feeder_id
-			$this->Feeder_id->EditAttrs["class"] = "form-control";
-			$this->Feeder_id->EditCustomAttributes = "";
-			$this->Feeder_id->EditValue = HtmlEncode($this->Feeder_id->AdvancedSearch->SearchValue);
-			$this->Feeder_id->PlaceHolder = RemoveHtml($this->Feeder_id->caption());
-
-			// ETA_ETD
-			$this->ETA_ETD->EditAttrs["class"] = "form-control";
-			$this->ETA_ETD->EditCustomAttributes = "";
-			$this->ETA_ETD->EditValue = HtmlEncode(FormatDateTime(UnFormatDateTime($this->ETA_ETD->AdvancedSearch->SearchValue, 0), 8));
-			$this->ETA_ETD->PlaceHolder = RemoveHtml($this->ETA_ETD->caption());
-
-			// Liner_id
-			$this->Liner_id->EditAttrs["class"] = "form-control";
-			$this->Liner_id->EditCustomAttributes = "";
-			$this->Liner_id->EditValue = HtmlEncode($this->Liner_id->AdvancedSearch->SearchValue);
-			$this->Liner_id->PlaceHolder = RemoveHtml($this->Liner_id->caption());
-
-			// TruckingVendor_id
-			$this->TruckingVendor_id->EditAttrs["class"] = "form-control";
-			$this->TruckingVendor_id->EditCustomAttributes = "";
-			$this->TruckingVendor_id->EditValue = HtmlEncode($this->TruckingVendor_id->AdvancedSearch->SearchValue);
-			$this->TruckingVendor_id->PlaceHolder = RemoveHtml($this->TruckingVendor_id->caption());
-
-			// Driver_id
-			$this->Driver_id->EditAttrs["class"] = "form-control";
-			$this->Driver_id->EditCustomAttributes = "";
-			$this->Driver_id->EditValue = HtmlEncode($this->Driver_id->AdvancedSearch->SearchValue);
-			$this->Driver_id->PlaceHolder = RemoveHtml($this->Driver_id->caption());
-
-			// No_Pol_1
-			$this->No_Pol_1->EditAttrs["class"] = "form-control";
-			$this->No_Pol_1->EditCustomAttributes = "";
-			if (REMOVE_XSS)
-				$this->No_Pol_1->AdvancedSearch->SearchValue = HtmlDecode($this->No_Pol_1->AdvancedSearch->SearchValue);
-			$this->No_Pol_1->EditValue = HtmlEncode($this->No_Pol_1->AdvancedSearch->SearchValue);
-			$this->No_Pol_1->PlaceHolder = RemoveHtml($this->No_Pol_1->caption());
-
-			// No_Pol_2
-			$this->No_Pol_2->EditAttrs["class"] = "form-control";
-			$this->No_Pol_2->EditCustomAttributes = "";
-			if (REMOVE_XSS)
-				$this->No_Pol_2->AdvancedSearch->SearchValue = HtmlDecode($this->No_Pol_2->AdvancedSearch->SearchValue);
-			$this->No_Pol_2->EditValue = HtmlEncode($this->No_Pol_2->AdvancedSearch->SearchValue);
-			$this->No_Pol_2->PlaceHolder = RemoveHtml($this->No_Pol_2->caption());
-
-			// No_Pol_3
-			$this->No_Pol_3->EditAttrs["class"] = "form-control";
-			$this->No_Pol_3->EditCustomAttributes = "";
-			if (REMOVE_XSS)
-				$this->No_Pol_3->AdvancedSearch->SearchValue = HtmlDecode($this->No_Pol_3->AdvancedSearch->SearchValue);
-			$this->No_Pol_3->EditValue = HtmlEncode($this->No_Pol_3->AdvancedSearch->SearchValue);
-			$this->No_Pol_3->PlaceHolder = RemoveHtml($this->No_Pol_3->caption());
-
-			// Nomor_Container_1
-			$this->Nomor_Container_1->EditAttrs["class"] = "form-control";
-			$this->Nomor_Container_1->EditCustomAttributes = "";
-			if (REMOVE_XSS)
-				$this->Nomor_Container_1->AdvancedSearch->SearchValue = HtmlDecode($this->Nomor_Container_1->AdvancedSearch->SearchValue);
-			$this->Nomor_Container_1->EditValue = HtmlEncode($this->Nomor_Container_1->AdvancedSearch->SearchValue);
-			$this->Nomor_Container_1->PlaceHolder = RemoveHtml($this->Nomor_Container_1->caption());
-
-			// Nomor_Container_2
-			$this->Nomor_Container_2->EditAttrs["class"] = "form-control";
-			$this->Nomor_Container_2->EditCustomAttributes = "";
-			if (REMOVE_XSS)
-				$this->Nomor_Container_2->AdvancedSearch->SearchValue = HtmlDecode($this->Nomor_Container_2->AdvancedSearch->SearchValue);
-			$this->Nomor_Container_2->EditValue = HtmlEncode($this->Nomor_Container_2->AdvancedSearch->SearchValue);
-			$this->Nomor_Container_2->PlaceHolder = RemoveHtml($this->Nomor_Container_2->caption());
 		}
-		if ($this->RowType == ROWTYPE_ADD || $this->RowType == ROWTYPE_EDIT || $this->RowType == ROWTYPE_SEARCH) // Add/Edit/Search row
-			$this->setupFieldTitles();
 
 		// Call Row Rendered event
 		if ($this->RowType <> ROWTYPE_AGGREGATEINIT)
 			$this->Row_Rendered();
-	}
-
-	// Validate search
-	protected function validateSearch()
-	{
-		global $SearchError;
-
-		// Initialize
-		$SearchError = "";
-
-		// Check if validation required
-		if (!SERVER_VALIDATE)
-			return TRUE;
-
-		// Return validate result
-		$validateSearch = ($SearchError == "");
-
-		// Call Form_CustomValidate event
-		$formCustomError = "";
-		$validateSearch = $validateSearch && $this->Form_CustomValidate($formCustomError);
-		if ($formCustomError <> "") {
-			AddMessage($SearchError, $formCustomError);
-		}
-		return $validateSearch;
-	}
-
-	// Load advanced search
-	public function loadAdvancedSearch()
-	{
-		$this->id->AdvancedSearch->load();
-		$this->EI->AdvancedSearch->load();
-		$this->Shipper_id->AdvancedSearch->load();
-		$this->Party->AdvancedSearch->load();
-		$this->Jenis_Container->AdvancedSearch->load();
-		$this->Tgl_Stuffing->AdvancedSearch->load();
-		$this->Destination_id->AdvancedSearch->load();
-		$this->Feeder_id->AdvancedSearch->load();
-		$this->ETA_ETD->AdvancedSearch->load();
-		$this->Liner_id->AdvancedSearch->load();
-		$this->Remark->AdvancedSearch->load();
-		$this->TruckingVendor_id->AdvancedSearch->load();
-		$this->Driver_id->AdvancedSearch->load();
-		$this->No_Pol_1->AdvancedSearch->load();
-		$this->No_Pol_2->AdvancedSearch->load();
-		$this->No_Pol_3->AdvancedSearch->load();
-		$this->Nomor_Container_1->AdvancedSearch->load();
-		$this->Nomor_Container_2->AdvancedSearch->load();
 	}
 
 	// Set up Breadcrumb
@@ -2638,6 +2089,12 @@ class t103_trucking_list extends t103_trucking
 
 					// Format the field values
 					switch ($fld->FieldVar) {
+						case "x_Shipper_id":
+							break;
+						case "x_Destination_id":
+							break;
+						case "x_Feeder_id":
+							break;
 					}
 					$ar[strval($row[0])] = $row;
 					$rs->moveNext();

@@ -58,6 +58,7 @@ var ft005_driverlistsrch = currentSearchForm = new ew.Form("ft005_driverlistsrch
 // Filters
 ft005_driverlistsrch.filterList = <?php echo $t005_driver_list->getFilterList() ?>;
 </script>
+<script src="phpjs/ewscrolltable.js"></script>
 <script>
 
 // Write your client script here, no need to add script tags.
@@ -79,6 +80,15 @@ ft005_driverlistsrch.filterList = <?php echo $t005_driver_list->getFilterList() 
 <?php } ?>
 <div class="clearfix"></div>
 </div>
+<?php } ?>
+<?php if (!$t005_driver->isExport() || EXPORT_MASTER_RECORD && $t005_driver->isExport("print")) { ?>
+<?php
+if ($t005_driver_list->DbMasterFilter <> "" && $t005_driver->getCurrentMasterTable() == "t006_trucking_vendor") {
+	if ($t005_driver_list->MasterRecordExists) {
+		include_once "t006_trucking_vendormaster.php";
+	}
+}
+?>
 <?php } ?>
 <?php
 $t005_driver_list->renderOtherOptions();
@@ -121,6 +131,10 @@ $t005_driver_list->showMessage();
 <input type="hidden" name="<?php echo TOKEN_NAME ?>" value="<?php echo $t005_driver_list->Token ?>">
 <?php } ?>
 <input type="hidden" name="t" value="t005_driver">
+<?php if ($t005_driver->getCurrentMasterTable() == "t006_trucking_vendor" && $t005_driver->CurrentAction) { ?>
+<input type="hidden" name="<?php echo TABLE_SHOW_MASTER ?>" value="t006_trucking_vendor">
+<input type="hidden" name="fk_id" value="<?php echo $t005_driver->TruckingVendor_id->getSessionValue() ?>">
+<?php } ?>
 <div id="gmp_t005_driver" class="<?php if (IsResponsiveLayout()) { ?>table-responsive <?php } ?>card-body ew-grid-middle-panel">
 <?php if ($t005_driver_list->TotalRecs > 0 || $t005_driver->isGridEdit()) { ?>
 <table id="tbl_t005_driverlist" class="table ew-table"><!-- .ew-table ##-->
@@ -141,7 +155,7 @@ $t005_driver_list->ListOptions->render("header", "left");
 	<?php if ($t005_driver->sortUrl($t005_driver->id) == "") { ?>
 		<th data-name="id" class="<?php echo $t005_driver->id->headerCellClass() ?>"><div id="elh_t005_driver_id" class="t005_driver_id"><div class="ew-table-header-caption"><?php echo $t005_driver->id->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="id" class="<?php echo $t005_driver->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t005_driver->SortUrl($t005_driver->id) ?>',1);"><div id="elh_t005_driver_id" class="t005_driver_id">
+		<th data-name="id" class="<?php echo $t005_driver->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t005_driver->SortUrl($t005_driver->id) ?>',2);"><div id="elh_t005_driver_id" class="t005_driver_id">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t005_driver->id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t005_driver->id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t005_driver->id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -150,7 +164,7 @@ $t005_driver_list->ListOptions->render("header", "left");
 	<?php if ($t005_driver->sortUrl($t005_driver->TruckingVendor_id) == "") { ?>
 		<th data-name="TruckingVendor_id" class="<?php echo $t005_driver->TruckingVendor_id->headerCellClass() ?>"><div id="elh_t005_driver_TruckingVendor_id" class="t005_driver_TruckingVendor_id"><div class="ew-table-header-caption"><?php echo $t005_driver->TruckingVendor_id->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="TruckingVendor_id" class="<?php echo $t005_driver->TruckingVendor_id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t005_driver->SortUrl($t005_driver->TruckingVendor_id) ?>',1);"><div id="elh_t005_driver_TruckingVendor_id" class="t005_driver_TruckingVendor_id">
+		<th data-name="TruckingVendor_id" class="<?php echo $t005_driver->TruckingVendor_id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t005_driver->SortUrl($t005_driver->TruckingVendor_id) ?>',2);"><div id="elh_t005_driver_TruckingVendor_id" class="t005_driver_TruckingVendor_id">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t005_driver->TruckingVendor_id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t005_driver->TruckingVendor_id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t005_driver->TruckingVendor_id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -159,7 +173,7 @@ $t005_driver_list->ListOptions->render("header", "left");
 	<?php if ($t005_driver->sortUrl($t005_driver->Nama) == "") { ?>
 		<th data-name="Nama" class="<?php echo $t005_driver->Nama->headerCellClass() ?>"><div id="elh_t005_driver_Nama" class="t005_driver_Nama"><div class="ew-table-header-caption"><?php echo $t005_driver->Nama->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Nama" class="<?php echo $t005_driver->Nama->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t005_driver->SortUrl($t005_driver->Nama) ?>',1);"><div id="elh_t005_driver_Nama" class="t005_driver_Nama">
+		<th data-name="Nama" class="<?php echo $t005_driver->Nama->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t005_driver->SortUrl($t005_driver->Nama) ?>',2);"><div id="elh_t005_driver_Nama" class="t005_driver_Nama">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t005_driver->Nama->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t005_driver->Nama->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t005_driver->Nama->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -168,7 +182,7 @@ $t005_driver_list->ListOptions->render("header", "left");
 	<?php if ($t005_driver->sortUrl($t005_driver->No_HP_1) == "") { ?>
 		<th data-name="No_HP_1" class="<?php echo $t005_driver->No_HP_1->headerCellClass() ?>"><div id="elh_t005_driver_No_HP_1" class="t005_driver_No_HP_1"><div class="ew-table-header-caption"><?php echo $t005_driver->No_HP_1->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="No_HP_1" class="<?php echo $t005_driver->No_HP_1->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t005_driver->SortUrl($t005_driver->No_HP_1) ?>',1);"><div id="elh_t005_driver_No_HP_1" class="t005_driver_No_HP_1">
+		<th data-name="No_HP_1" class="<?php echo $t005_driver->No_HP_1->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t005_driver->SortUrl($t005_driver->No_HP_1) ?>',2);"><div id="elh_t005_driver_No_HP_1" class="t005_driver_No_HP_1">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t005_driver->No_HP_1->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t005_driver->No_HP_1->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t005_driver->No_HP_1->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -177,7 +191,7 @@ $t005_driver_list->ListOptions->render("header", "left");
 	<?php if ($t005_driver->sortUrl($t005_driver->No_HP_2) == "") { ?>
 		<th data-name="No_HP_2" class="<?php echo $t005_driver->No_HP_2->headerCellClass() ?>"><div id="elh_t005_driver_No_HP_2" class="t005_driver_No_HP_2"><div class="ew-table-header-caption"><?php echo $t005_driver->No_HP_2->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="No_HP_2" class="<?php echo $t005_driver->No_HP_2->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t005_driver->SortUrl($t005_driver->No_HP_2) ?>',1);"><div id="elh_t005_driver_No_HP_2" class="t005_driver_No_HP_2">
+		<th data-name="No_HP_2" class="<?php echo $t005_driver->No_HP_2->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t005_driver->SortUrl($t005_driver->No_HP_2) ?>',2);"><div id="elh_t005_driver_No_HP_2" class="t005_driver_No_HP_2">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t005_driver->No_HP_2->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t005_driver->No_HP_2->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t005_driver->No_HP_2->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -391,6 +405,11 @@ if (DEBUG_ENABLED)
 // document.write("page loaded");
 
 </script>
+<?php if (!$t005_driver->isExport()) { ?>
+<script>
+ew.scrollableTable("gmp_t005_driver", "100%", "");
+</script>
+<?php } ?>
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php

@@ -58,6 +58,7 @@ var ft003_feederlistsrch = currentSearchForm = new ew.Form("ft003_feederlistsrch
 // Filters
 ft003_feederlistsrch.filterList = <?php echo $t003_feeder_list->getFilterList() ?>;
 </script>
+<script src="phpjs/ewscrolltable.js"></script>
 <script>
 
 // Write your client script here, no need to add script tags.
@@ -141,7 +142,7 @@ $t003_feeder_list->ListOptions->render("header", "left");
 	<?php if ($t003_feeder->sortUrl($t003_feeder->id) == "") { ?>
 		<th data-name="id" class="<?php echo $t003_feeder->id->headerCellClass() ?>"><div id="elh_t003_feeder_id" class="t003_feeder_id"><div class="ew-table-header-caption"><?php echo $t003_feeder->id->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="id" class="<?php echo $t003_feeder->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t003_feeder->SortUrl($t003_feeder->id) ?>',1);"><div id="elh_t003_feeder_id" class="t003_feeder_id">
+		<th data-name="id" class="<?php echo $t003_feeder->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t003_feeder->SortUrl($t003_feeder->id) ?>',2);"><div id="elh_t003_feeder_id" class="t003_feeder_id">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t003_feeder->id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t003_feeder->id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t003_feeder->id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -150,7 +151,7 @@ $t003_feeder_list->ListOptions->render("header", "left");
 	<?php if ($t003_feeder->sortUrl($t003_feeder->Nama) == "") { ?>
 		<th data-name="Nama" class="<?php echo $t003_feeder->Nama->headerCellClass() ?>"><div id="elh_t003_feeder_Nama" class="t003_feeder_Nama"><div class="ew-table-header-caption"><?php echo $t003_feeder->Nama->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Nama" class="<?php echo $t003_feeder->Nama->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t003_feeder->SortUrl($t003_feeder->Nama) ?>',1);"><div id="elh_t003_feeder_Nama" class="t003_feeder_Nama">
+		<th data-name="Nama" class="<?php echo $t003_feeder->Nama->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t003_feeder->SortUrl($t003_feeder->Nama) ?>',2);"><div id="elh_t003_feeder_Nama" class="t003_feeder_Nama">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t003_feeder->Nama->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t003_feeder->Nama->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t003_feeder->Nama->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -340,6 +341,11 @@ if (DEBUG_ENABLED)
 // document.write("page loaded");
 
 </script>
+<?php if (!$t003_feeder->isExport()) { ?>
+<script>
+ew.scrollableTable("gmp_t003_feeder", "100%", "");
+</script>
+<?php } ?>
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php

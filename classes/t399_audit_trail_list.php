@@ -1211,17 +1211,20 @@ class t399_audit_trail_list extends t399_audit_trail
 	protected function setupSortOrder()
 	{
 
+		// Check for Ctrl pressed
+		$ctrl = Get("ctrl") !== NULL;
+
 		// Check for "order" parameter
 		if (Get("order") !== NULL) {
 			$this->CurrentOrder = Get("order");
 			$this->CurrentOrderType = Get("ordertype", "");
-			$this->updateSort($this->id); // id
-			$this->updateSort($this->datetime); // datetime
-			$this->updateSort($this->script); // script
-			$this->updateSort($this->user); // user
-			$this->updateSort($this->_action); // action
-			$this->updateSort($this->_table); // table
-			$this->updateSort($this->field); // field
+			$this->updateSort($this->id, $ctrl); // id
+			$this->updateSort($this->datetime, $ctrl); // datetime
+			$this->updateSort($this->script, $ctrl); // script
+			$this->updateSort($this->user, $ctrl); // user
+			$this->updateSort($this->_action, $ctrl); // action
+			$this->updateSort($this->_table, $ctrl); // table
+			$this->updateSort($this->field, $ctrl); // field
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1280,37 +1283,37 @@ class t399_audit_trail_list extends t399_audit_trail
 		// Add group option item
 		$item = &$this->ListOptions->add($this->ListOptions->GroupOptionName);
 		$item->Body = "";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 
 		// "view"
 		$item = &$this->ListOptions->add("view");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "edit"
 		$item = &$this->ListOptions->add("edit");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "copy"
 		$item = &$this->ListOptions->add("copy");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "delete"
 		$item = &$this->ListOptions->add("delete");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// List actions
 		$item = &$this->ListOptions->add("listactions");
 		$item->CssClass = "text-nowrap";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 		$item->ShowInDropDown = FALSE;
@@ -1318,9 +1321,16 @@ class t399_audit_trail_list extends t399_audit_trail
 		// "checkbox"
 		$item = &$this->ListOptions->add("checkbox");
 		$item->Visible = FALSE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Header = "<input type=\"checkbox\" name=\"key\" id=\"key\" onclick=\"ew.selectAllKey(this);\">";
-		$item->moveTo(0);
+		$item->ShowInDropDown = FALSE;
+		$item->ShowInButtonGroup = FALSE;
+
+		// "sequence"
+		$item = &$this->ListOptions->add("sequence");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = TRUE;
+		$item->OnLeft = TRUE; // Always on left
 		$item->ShowInDropDown = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 
@@ -1348,6 +1358,10 @@ class t399_audit_trail_list extends t399_audit_trail
 
 		// Call ListOptions_Rendering event
 		$this->ListOptions_Rendering();
+
+		// "sequence"
+		$opt = &$this->ListOptions->Items["sequence"];
+		$opt->Body = FormatSequenceNumber($this->RecCnt);
 
 		// "view"
 		$opt = &$this->ListOptions->Items["view"];

@@ -99,6 +99,14 @@ $t006_trucking_vendor_view->showMessage();
 	</tr>
 <?php } ?>
 </table>
+<?php
+	if (in_array("t005_driver", explode(",", $t006_trucking_vendor->getCurrentDetailTable())) && $t005_driver->DetailView) {
+?>
+<?php if ($t006_trucking_vendor->getCurrentDetailTable() <> "") { ?>
+<h4 class="ew-detail-caption"><?php echo $Language->TablePhrase("t005_driver", "TblCaption") ?></h4>
+<?php } ?>
+<?php include_once "t005_drivergrid.php" ?>
+<?php } ?>
 </form>
 <?php
 $t006_trucking_vendor_view->showPageFooter();

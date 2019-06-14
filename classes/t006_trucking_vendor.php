@@ -64,6 +64,7 @@ class t006_trucking_vendor extends DbTable
 		$this->id = new DbField('t006_trucking_vendor', 't006_trucking_vendor', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
 		$this->id->IsAutoIncrement = TRUE; // Autoincrement field
 		$this->id->IsPrimaryKey = TRUE; // Primary key field
+		$this->id->IsForeignKey = TRUE; // Foreign key field
 		$this->id->Sortable = TRUE; // Allow sort
 		$this->id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
 		$this->fields['id'] = &$this->id;
@@ -94,8 +95,8 @@ class t006_trucking_vendor extends DbTable
 		}
 	}
 
-	// Single column sort
-	public function updateSort(&$fld)
+	// Multiple column sort
+	public function updateSort(&$fld, $ctrl)
 	{
 		if ($this->CurrentOrder == $fld->Name) {
 			$sortField = $fld->Expression;
@@ -106,10 +107,48 @@ class t006_trucking_vendor extends DbTable
 				$thisSort = ($lastSort == "ASC") ? "DESC" : "ASC";
 			}
 			$fld->setSort($thisSort);
-			$this->setSessionOrderBy($sortField . " " . $thisSort); // Save to Session
+			if ($ctrl) {
+				$orderBy = $this->getSessionOrderBy();
+				if (ContainsString($orderBy, $sortField . " " . $lastSort)) {
+					$orderBy = str_replace($sortField . " " . $lastSort, $sortField . " " . $thisSort, $orderBy);
+				} else {
+					if ($orderBy <> "")
+						$orderBy .= ", ";
+					$orderBy .= $sortField . " " . $thisSort;
+				}
+				$this->setSessionOrderBy($orderBy); // Save to Session
+			} else {
+				$this->setSessionOrderBy($sortField . " " . $thisSort); // Save to Session
+			}
 		} else {
-			$fld->setSort("");
+			if (!$ctrl)
+				$fld->setSort("");
 		}
+	}
+
+	// Current detail table name
+	public function getCurrentDetailTable()
+	{
+		return @$_SESSION[PROJECT_NAME . "_" . $this->TableVar . "_" . TABLE_DETAIL_TABLE];
+	}
+	public function setCurrentDetailTable($v)
+	{
+		$_SESSION[PROJECT_NAME . "_" . $this->TableVar . "_" . TABLE_DETAIL_TABLE] = $v;
+	}
+
+	// Get detail url
+	public function getDetailUrl()
+	{
+
+		// Detail url
+		$detailUrl = "";
+		if ($this->getCurrentDetailTable() == "t005_driver") {
+			$detailUrl = $GLOBALS["t005_driver"]->getListUrl() . "?" . TABLE_SHOW_MASTER . "=" . $this->TableVar;
+			$detailUrl .= "&fk_id=" . urlencode($this->id->CurrentValue);
+		}
+		if ($detailUrl == "")
+			$detailUrl = "t006_trucking_vendorlist.php";
+		return $detailUrl;
 	}
 
 	// Table level SQL
@@ -508,7 +547,10 @@ class t006_trucking_vendor extends DbTable
 	// Edit URL
 	public function getEditUrl($parm = "")
 	{
-		$url = $this->keyUrl("t006_trucking_vendoredit.php", $this->getUrlParm($parm));
+		if ($parm <> "")
+			$url = $this->keyUrl("t006_trucking_vendoredit.php", $this->getUrlParm($parm));
+		else
+			$url = $this->keyUrl("t006_trucking_vendoredit.php", $this->getUrlParm(TABLE_SHOW_DETAIL . "="));
 		return $this->addMasterUrl($url);
 	}
 
@@ -522,7 +564,10 @@ class t006_trucking_vendor extends DbTable
 	// Copy URL
 	public function getCopyUrl($parm = "")
 	{
-		$url = $this->keyUrl("t006_trucking_vendoradd.php", $this->getUrlParm($parm));
+		if ($parm <> "")
+			$url = $this->keyUrl("t006_trucking_vendoradd.php", $this->getUrlParm($parm));
+		else
+			$url = $this->keyUrl("t006_trucking_vendoradd.php", $this->getUrlParm(TABLE_SHOW_DETAIL . "="));
 		return $this->addMasterUrl($url);
 	}
 

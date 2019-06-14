@@ -50,8 +50,6 @@ ft101_tagihan_truckingview.Form_CustomValidate = function(fobj) { // DO NOT CHAN
 ft101_tagihan_truckingview.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-ft101_tagihan_truckingview.lists["x_JO_id"] = <?php echo $t101_tagihan_trucking_view->JO_id->Lookup->toClientList() ?>;
-ft101_tagihan_truckingview.lists["x_JO_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_view->JO_id->lookupOptions()) ?>;
 ft101_tagihan_truckingview.lists["x_Shipper_id"] = <?php echo $t101_tagihan_trucking_view->Shipper_id->Lookup->toClientList() ?>;
 ft101_tagihan_truckingview.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_tagihan_trucking_view->Shipper_id->lookupOptions()) ?>;
 ft101_tagihan_truckingview.lists["x_Jenis_Container"] = <?php echo $t101_tagihan_trucking_view->Jenis_Container->Lookup->toClientList() ?>;

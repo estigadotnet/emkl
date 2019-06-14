@@ -397,7 +397,7 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 		$this->ExportXmlUrl = $this->pageUrl() . "export=xml";
 		$this->ExportCsvUrl = $this->pageUrl() . "export=csv";
 		$this->ExportPdfUrl = $this->pageUrl() . "export=pdf";
-		$this->AddUrl = "t006_trucking_vendoradd.php";
+		$this->AddUrl = "t006_trucking_vendoradd.php?" . TABLE_SHOW_DETAIL . "=";
 		$this->InlineAddUrl = $this->pageUrl() . "action=add";
 		$this->GridAddUrl = $this->pageUrl() . "action=gridadd";
 		$this->GridEditUrl = $this->pageUrl() . "action=gridedit";
@@ -1124,12 +1124,15 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 	protected function setupSortOrder()
 	{
 
+		// Check for Ctrl pressed
+		$ctrl = Get("ctrl") !== NULL;
+
 		// Check for "order" parameter
 		if (Get("order") !== NULL) {
 			$this->CurrentOrder = Get("order");
 			$this->CurrentOrderType = Get("ordertype", "");
-			$this->updateSort($this->id); // id
-			$this->updateSort($this->Nama); // Nama
+			$this->updateSort($this->id, $ctrl); // id
+			$this->updateSort($this->Nama, $ctrl); // Nama
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1183,37 +1186,60 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 		// Add group option item
 		$item = &$this->ListOptions->add($this->ListOptions->GroupOptionName);
 		$item->Body = "";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 
 		// "view"
 		$item = &$this->ListOptions->add("view");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "edit"
 		$item = &$this->ListOptions->add("edit");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "copy"
 		$item = &$this->ListOptions->add("copy");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "delete"
 		$item = &$this->ListOptions->add("delete");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
+
+		// "detail_t005_driver"
+		$item = &$this->ListOptions->add("detail_t005_driver");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = TRUE && !$this->ShowMultipleDetails;
+		$item->OnLeft = FALSE;
+		$item->ShowInButtonGroup = FALSE;
+		if (!isset($GLOBALS["t005_driver_grid"]))
+			$GLOBALS["t005_driver_grid"] = new t005_driver_grid();
+
+		// Multiple details
+		if ($this->ShowMultipleDetails) {
+			$item = &$this->ListOptions->add("details");
+			$item->CssClass = "text-nowrap";
+			$item->Visible = $this->ShowMultipleDetails;
+			$item->OnLeft = FALSE;
+			$item->ShowInButtonGroup = FALSE;
+		}
+
+		// Set up detail pages
+		$pages = new SubPages();
+		$pages->add("t005_driver");
+		$this->DetailPages = $pages;
 
 		// List actions
 		$item = &$this->ListOptions->add("listactions");
 		$item->CssClass = "text-nowrap";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 		$item->ShowInDropDown = FALSE;
@@ -1221,9 +1247,16 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 		// "checkbox"
 		$item = &$this->ListOptions->add("checkbox");
 		$item->Visible = FALSE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Header = "<input type=\"checkbox\" name=\"key\" id=\"key\" onclick=\"ew.selectAllKey(this);\">";
-		$item->moveTo(0);
+		$item->ShowInDropDown = FALSE;
+		$item->ShowInButtonGroup = FALSE;
+
+		// "sequence"
+		$item = &$this->ListOptions->add("sequence");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = TRUE;
+		$item->OnLeft = TRUE; // Always on left
 		$item->ShowInDropDown = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 
@@ -1251,6 +1284,10 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 
 		// Call ListOptions_Rendering event
 		$this->ListOptions_Rendering();
+
+		// "sequence"
+		$opt = &$this->ListOptions->Items["sequence"];
+		$opt->Body = FormatSequenceNumber($this->RecCnt);
 
 		// "view"
 		$opt = &$this->ListOptions->Items["view"];
@@ -1314,6 +1351,71 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 				$opt->Visible = TRUE;
 			}
 		}
+		$detailViewTblVar = "";
+		$detailCopyTblVar = "";
+		$detailEditTblVar = "";
+
+		// "detail_t005_driver"
+		$opt = &$this->ListOptions->Items["detail_t005_driver"];
+		if (TRUE) {
+			$body = $Language->phrase("DetailLink") . $Language->TablePhrase("t005_driver", "TblCaption");
+			$body = "<a class=\"btn btn-default ew-row-link ew-detail\" data-action=\"list\" href=\"" . HtmlEncode("t005_driverlist.php?" . TABLE_SHOW_MASTER . "=t006_trucking_vendor&fk_id=" . urlencode(strval($this->id->CurrentValue)) . "") . "\">" . $body . "</a>";
+			$links = "";
+			if ($GLOBALS["t005_driver_grid"]->DetailView) {
+				$caption = $Language->phrase("MasterDetailViewLink");
+				$url = $this->getViewUrl(TABLE_SHOW_DETAIL . "=t005_driver");
+				$links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-view\" data-action=\"view\" data-caption=\"" . HtmlTitle($caption) . "\" href=\"" . HtmlEncode($url) . "\">" . HtmlImageAndText($caption) . "</a></li>";
+				if ($detailViewTblVar <> "")
+					$detailViewTblVar .= ",";
+				$detailViewTblVar .= "t005_driver";
+			}
+			if ($GLOBALS["t005_driver_grid"]->DetailEdit) {
+				$caption = $Language->phrase("MasterDetailEditLink");
+				$url = $this->getEditUrl(TABLE_SHOW_DETAIL . "=t005_driver");
+				$links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-edit\" data-action=\"edit\" data-caption=\"" . HtmlTitle($caption) . "\" href=\"" . HtmlEncode($url) . "\">" . HtmlImageAndText($caption) . "</a></li>";
+				if ($detailEditTblVar <> "")
+					$detailEditTblVar .= ",";
+				$detailEditTblVar .= "t005_driver";
+			}
+			if ($GLOBALS["t005_driver_grid"]->DetailAdd) {
+				$caption = $Language->phrase("MasterDetailCopyLink");
+				$url = $this->getCopyUrl(TABLE_SHOW_DETAIL . "=t005_driver");
+				$links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-copy\" data-action=\"add\" data-caption=\"" . HtmlTitle($caption) . "\" href=\"" . HtmlEncode($url) . "\">" . HtmlImageAndText($caption) . "</a></li>";
+				if ($detailCopyTblVar <> "")
+					$detailCopyTblVar .= ",";
+				$detailCopyTblVar .= "t005_driver";
+			}
+			if ($links <> "") {
+				$body .= "<button class=\"dropdown-toggle btn btn-default ew-detail\" data-toggle=\"dropdown\"></button>";
+				$body .= "<ul class=\"dropdown-menu\">". $links . "</ul>";
+			}
+			$body = "<div class=\"btn-group btn-group-sm ew-btn-group\">" . $body . "</div>";
+			$opt->Body = $body;
+			if ($this->ShowMultipleDetails)
+				$opt->Visible = FALSE;
+		}
+		if ($this->ShowMultipleDetails) {
+			$body = "<div class=\"btn-group btn-group-sm ew-btn-group\">";
+			$links = "";
+			if ($detailViewTblVar <> "") {
+				$links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-view\" data-action=\"view\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailViewLink")) . "\" href=\"" . HtmlEncode($this->getViewUrl(TABLE_SHOW_DETAIL . "=" . $detailViewTblVar)) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailViewLink")) . "</a></li>";
+			}
+			if ($detailEditTblVar <> "") {
+				$links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-edit\" data-action=\"edit\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailEditLink")) . "\" href=\"" . HtmlEncode($this->getEditUrl(TABLE_SHOW_DETAIL . "=" . $detailEditTblVar)) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailEditLink")) . "</a></li>";
+			}
+			if ($detailCopyTblVar <> "") {
+				$links .= "<li><a class=\"dropdown-item ew-row-link ew-detail-copy\" data-action=\"add\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailCopyLink")) . "\" href=\"" . HtmlEncode($this->GetCopyUrl(TABLE_SHOW_DETAIL . "=" . $detailCopyTblVar)) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailCopyLink")) . "</a></li>";
+			}
+			if ($links <> "") {
+				$body .= "<button class=\"dropdown-toggle btn btn-default ew-master-detail\" title=\"" . HtmlTitle($Language->phrase("MultipleMasterDetails")) . "\" data-toggle=\"dropdown\">" . $Language->phrase("MultipleMasterDetails") . "</button>";
+				$body .= "<ul class=\"dropdown-menu ew-menu\">". $links . "</ul>";
+			}
+			$body .= "</div>";
+
+			// Multiple details
+			$opt = &$this->ListOptions->Items["details"];
+			$opt->Body = $body;
+		}
 
 		// "checkbox"
 		$opt = &$this->ListOptions->Items["checkbox"];
@@ -1336,6 +1438,35 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 		$addcaption = HtmlTitle($Language->phrase("AddLink"));
 		$item->Body = "<a class=\"ew-add-edit ew-add\" title=\"" . $addcaption . "\" data-caption=\"" . $addcaption . "\" href=\"" . HtmlEncode($this->AddUrl) . "\">" . $Language->phrase("AddLink") . "</a>";
 		$item->Visible = ($this->AddUrl <> "");
+		$option = $options["detail"];
+		$detailTableLink = "";
+		$item = &$option->add("detailadd_t005_driver");
+		$url = $this->getAddUrl(TABLE_SHOW_DETAIL . "=t005_driver");
+		$caption = $Language->phrase("Add") . "&nbsp;" . $this->tableCaption() . "/" . $GLOBALS["t005_driver"]->tableCaption();
+		$item->Body = "<a class=\"ew-detail-add-group ew-detail-add\" title=\"" . HtmlTitle($caption) . "\" data-caption=\"" . HtmlTitle($caption) . "\" href=\"" . HtmlEncode($url) . "\">" . $caption . "</a>";
+		$item->Visible = ($GLOBALS["t005_driver"]->DetailAdd);
+		if ($item->Visible) {
+			if ($detailTableLink <> "")
+				$detailTableLink .= ",";
+			$detailTableLink .= "t005_driver";
+		}
+
+		// Add multiple details
+		if ($this->ShowMultipleDetails) {
+			$item = &$option->add("detailsadd");
+			$url = $this->getAddUrl(TABLE_SHOW_DETAIL . "=" . $detailTableLink);
+			$caption = $Language->phrase("AddMasterDetailLink");
+			$item->Body = "<a class=\"ew-detail-add-group ew-detail-add\" title=\"" . HtmlTitle($caption) . "\" data-caption=\"" . HtmlTitle($caption) . "\" href=\"" . HtmlEncode($url) . "\">" . $caption . "</a>";
+			$item->Visible = ($detailTableLink <> "");
+
+			// Hide single master/detail items
+			$ar = explode(",", $detailTableLink);
+			$cnt = count($ar);
+			for ($i = 0; $i < $cnt; $i++) {
+				if ($item = &$option->getItem("detailadd_" . $ar[$i]))
+					$item->Visible = FALSE;
+			}
+		}
 		$option = $options["action"];
 
 		// Set up options default

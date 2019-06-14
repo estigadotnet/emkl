@@ -54,9 +54,9 @@ class t005_driver extends DbTable
 		$this->ExportExcelPageSize = ""; // Page size (PhpSpreadsheet only)
 		$this->ExportWordPageOrientation = "portrait"; // Page orientation (PHPWord only)
 		$this->ExportWordColumnWidth = NULL; // Cell width (PHPWord only)
-		$this->DetailAdd = FALSE; // Allow detail add
-		$this->DetailEdit = FALSE; // Allow detail edit
-		$this->DetailView = FALSE; // Allow detail view
+		$this->DetailAdd = TRUE; // Allow detail add
+		$this->DetailEdit = TRUE; // Allow detail edit
+		$this->DetailView = TRUE; // Allow detail view
 		$this->ShowMultipleDetails = FALSE; // Show multiple details
 		$this->GridAddRowCount = 5;
 		$this->AllowAddDeleteRow = TRUE; // Allow add/delete row
@@ -73,6 +73,7 @@ class t005_driver extends DbTable
 
 		// TruckingVendor_id
 		$this->TruckingVendor_id = new DbField('t005_driver', 't005_driver', 'x_TruckingVendor_id', 'TruckingVendor_id', '`TruckingVendor_id`', '`TruckingVendor_id`', 3, -1, FALSE, '`TruckingVendor_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->TruckingVendor_id->IsForeignKey = TRUE; // Foreign key field
 		$this->TruckingVendor_id->Nullable = FALSE; // NOT NULL field
 		$this->TruckingVendor_id->Required = TRUE; // Required field
 		$this->TruckingVendor_id->Sortable = TRUE; // Allow sort
@@ -117,8 +118,8 @@ class t005_driver extends DbTable
 		}
 	}
 
-	// Single column sort
-	public function updateSort(&$fld)
+	// Multiple column sort
+	public function updateSort(&$fld, $ctrl)
 	{
 		if ($this->CurrentOrder == $fld->Name) {
 			$sortField = $fld->Expression;
@@ -129,10 +130,75 @@ class t005_driver extends DbTable
 				$thisSort = ($lastSort == "ASC") ? "DESC" : "ASC";
 			}
 			$fld->setSort($thisSort);
-			$this->setSessionOrderBy($sortField . " " . $thisSort); // Save to Session
+			if ($ctrl) {
+				$orderBy = $this->getSessionOrderBy();
+				if (ContainsString($orderBy, $sortField . " " . $lastSort)) {
+					$orderBy = str_replace($sortField . " " . $lastSort, $sortField . " " . $thisSort, $orderBy);
+				} else {
+					if ($orderBy <> "")
+						$orderBy .= ", ";
+					$orderBy .= $sortField . " " . $thisSort;
+				}
+				$this->setSessionOrderBy($orderBy); // Save to Session
+			} else {
+				$this->setSessionOrderBy($sortField . " " . $thisSort); // Save to Session
+			}
 		} else {
-			$fld->setSort("");
+			if (!$ctrl)
+				$fld->setSort("");
 		}
+	}
+
+	// Current master table name
+	public function getCurrentMasterTable()
+	{
+		return @$_SESSION[PROJECT_NAME . "_" . $this->TableVar . "_" . TABLE_MASTER_TABLE];
+	}
+	public function setCurrentMasterTable($v)
+	{
+		$_SESSION[PROJECT_NAME . "_" . $this->TableVar . "_" . TABLE_MASTER_TABLE] = $v;
+	}
+
+	// Session master WHERE clause
+	public function getMasterFilter()
+	{
+
+		// Master filter
+		$masterFilter = "";
+		if ($this->getCurrentMasterTable() == "t006_trucking_vendor") {
+			if ($this->TruckingVendor_id->getSessionValue() <> "")
+				$masterFilter .= "`id`=" . QuotedValue($this->TruckingVendor_id->getSessionValue(), DATATYPE_NUMBER, "DB");
+			else
+				return "";
+		}
+		return $masterFilter;
+	}
+
+	// Session detail WHERE clause
+	public function getDetailFilter()
+	{
+
+		// Detail filter
+		$detailFilter = "";
+		if ($this->getCurrentMasterTable() == "t006_trucking_vendor") {
+			if ($this->TruckingVendor_id->getSessionValue() <> "")
+				$detailFilter .= "`TruckingVendor_id`=" . QuotedValue($this->TruckingVendor_id->getSessionValue(), DATATYPE_NUMBER, "DB");
+			else
+				return "";
+		}
+		return $detailFilter;
+	}
+
+	// Master filter
+	public function sqlMasterFilter_t006_trucking_vendor()
+	{
+		return "`id`=@id@";
+	}
+
+	// Detail filter
+	public function sqlDetailFilter_t006_trucking_vendor()
+	{
+		return "`TruckingVendor_id`=@TruckingVendor_id@";
 	}
 
 	// Table level SQL
@@ -568,6 +634,10 @@ class t005_driver extends DbTable
 	// Add master url
 	public function addMasterUrl($url)
 	{
+		if ($this->getCurrentMasterTable() == "t006_trucking_vendor" && !ContainsString($url, TABLE_SHOW_MASTER . "=")) {
+			$url .= (ContainsString($url, "?") ? "&" : "?") . TABLE_SHOW_MASTER . "=" . $this->getCurrentMasterTable();
+			$url .= "&fk_id=" . urlencode($this->TruckingVendor_id->CurrentValue);
+		}
 		return $url;
 	}
 	public function keyToJson($htmlEncode = FALSE)
@@ -761,8 +831,15 @@ class t005_driver extends DbTable
 		// TruckingVendor_id
 		$this->TruckingVendor_id->EditAttrs["class"] = "form-control";
 		$this->TruckingVendor_id->EditCustomAttributes = "";
+		if ($this->TruckingVendor_id->getSessionValue() <> "") {
+			$this->TruckingVendor_id->CurrentValue = $this->TruckingVendor_id->getSessionValue();
+		$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
+		$this->TruckingVendor_id->ViewValue = FormatNumber($this->TruckingVendor_id->ViewValue, 0, -2, -2, -2);
+		$this->TruckingVendor_id->ViewCustomAttributes = "";
+		} else {
 		$this->TruckingVendor_id->EditValue = $this->TruckingVendor_id->CurrentValue;
 		$this->TruckingVendor_id->PlaceHolder = RemoveHtml($this->TruckingVendor_id->caption());
+		}
 
 		// Nama
 		$this->Nama->EditAttrs["class"] = "form-control";

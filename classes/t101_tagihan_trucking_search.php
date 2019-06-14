@@ -584,7 +584,6 @@ class t101_tagihan_trucking_search extends t101_tagihan_trucking
 		$this->createToken();
 
 		// Set up lookup cache
-		$this->setupLookupOptions($this->JO_id);
 		$this->setupLookupOptions($this->Shipper_id);
 
 		// Set up Breadcrumb
@@ -825,25 +824,8 @@ class t101_tagihan_trucking_search extends t101_tagihan_trucking
 			$this->id->ViewCustomAttributes = "";
 
 			// JO_id
-			$curVal = strval($this->JO_id->CurrentValue);
-			if ($curVal <> "") {
-				$this->JO_id->ViewValue = $this->JO_id->lookupCacheOption($curVal);
-				if ($this->JO_id->ViewValue === NULL) { // Lookup from database
-					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
-					$sqlWrk = $this->JO_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
-					$rswrk = Conn()->execute($sqlWrk);
-					if ($rswrk && !$rswrk->EOF) { // Lookup values found
-						$arwrk = array();
-						$arwrk[1] = $rswrk->fields('df');
-						$this->JO_id->ViewValue = $this->JO_id->displayValue($arwrk);
-						$rswrk->Close();
-					} else {
-						$this->JO_id->ViewValue = $this->JO_id->CurrentValue;
-					}
-				}
-			} else {
-				$this->JO_id->ViewValue = NULL;
-			}
+			$this->JO_id->ViewValue = $this->JO_id->CurrentValue;
+			$this->JO_id->ViewValue = FormatNumber($this->JO_id->ViewValue, 0, -2, -2, -2);
 			$this->JO_id->ViewCustomAttributes = "";
 
 			// Nomor_Polisi_1
@@ -999,25 +981,8 @@ class t101_tagihan_trucking_search extends t101_tagihan_trucking
 			// JO_id
 			$this->JO_id->EditAttrs["class"] = "form-control";
 			$this->JO_id->EditCustomAttributes = "";
-			$curVal = trim(strval($this->JO_id->AdvancedSearch->SearchValue));
-			if ($curVal <> "")
-				$this->JO_id->AdvancedSearch->ViewValue = $this->JO_id->lookupCacheOption($curVal);
-			else
-				$this->JO_id->AdvancedSearch->ViewValue = $this->JO_id->Lookup !== NULL && is_array($this->JO_id->Lookup->Options) ? $curVal : NULL;
-			if ($this->JO_id->AdvancedSearch->ViewValue !== NULL) { // Load from cache
-				$this->JO_id->EditValue = array_values($this->JO_id->Lookup->Options);
-			} else { // Lookup from database
-				if ($curVal == "") {
-					$filterWrk = "0=1";
-				} else {
-					$filterWrk = "`id`" . SearchString("=", $this->JO_id->AdvancedSearch->SearchValue, DATATYPE_NUMBER, "");
-				}
-				$sqlWrk = $this->JO_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
-				$rswrk = Conn()->execute($sqlWrk);
-				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
-				if ($rswrk) $rswrk->Close();
-				$this->JO_id->EditValue = $arwrk;
-			}
+			$this->JO_id->EditValue = HtmlEncode($this->JO_id->AdvancedSearch->SearchValue);
+			$this->JO_id->PlaceHolder = RemoveHtml($this->JO_id->caption());
 
 			// Nomor_Polisi_1
 			$this->Nomor_Polisi_1->EditAttrs["class"] = "form-control";
@@ -1142,6 +1107,9 @@ class t101_tagihan_trucking_search extends t101_tagihan_trucking
 		if (!CheckInteger($this->id->AdvancedSearch->SearchValue)) {
 			AddMessage($SearchError, $this->id->errorMessage());
 		}
+		if (!CheckInteger($this->JO_id->AdvancedSearch->SearchValue)) {
+			AddMessage($SearchError, $this->JO_id->errorMessage());
+		}
 		if (!CheckEuroDate($this->Tanggal->AdvancedSearch->SearchValue)) {
 			AddMessage($SearchError, $this->Tanggal->errorMessage());
 		}
@@ -1222,8 +1190,6 @@ class t101_tagihan_trucking_search extends t101_tagihan_trucking
 
 					// Format the field values
 					switch ($fld->FieldVar) {
-						case "x_JO_id":
-							break;
 						case "x_Shipper_id":
 							break;
 					}

@@ -133,6 +133,14 @@ $t006_trucking_vendor_edit->showMessage();
 	</div>
 <?php } ?>
 </div><!-- /page* -->
+<?php
+	if (in_array("t005_driver", explode(",", $t006_trucking_vendor->getCurrentDetailTable())) && $t005_driver->DetailEdit) {
+?>
+<?php if ($t006_trucking_vendor->getCurrentDetailTable() <> "") { ?>
+<h4 class="ew-detail-caption"><?php echo $Language->TablePhrase("t005_driver", "TblCaption") ?></h4>
+<?php } ?>
+<?php include_once "t005_drivergrid.php" ?>
+<?php } ?>
 <?php if (!$t006_trucking_vendor_edit->IsModal) { ?>
 <div class="form-group row"><!-- buttons .form-group -->
 	<div class="<?php echo $t006_trucking_vendor_edit->OffsetColumnClass ?>"><!-- buttons offset -->

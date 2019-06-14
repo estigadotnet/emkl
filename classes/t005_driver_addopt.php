@@ -4,20 +4,20 @@ namespace PHPMaker2019\emkl_prj;
 /**
  * Page class
  */
-class t103_trucking_delete extends t103_trucking
+class t005_driver_addopt extends t005_driver
 {
 
 	// Page ID
-	public $PageID = "delete";
+	public $PageID = "addopt";
 
 	// Project ID
 	public $ProjectID = "{D4B21A3D-A1C8-4ED3-BA65-212E10E691E7}";
 
 	// Table name
-	public $TableName = 't103_trucking';
+	public $TableName = 't005_driver';
 
 	// Page object name
-	public $PageObjName = "t103_trucking_delete";
+	public $PageObjName = "t005_driver_addopt";
 
 	// Page headings
 	public $Heading = "";
@@ -342,20 +342,24 @@ class t103_trucking_delete extends t103_trucking
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (t103_trucking)
-		if (!isset($GLOBALS["t103_trucking"]) || get_class($GLOBALS["t103_trucking"]) == PROJECT_NAMESPACE . "t103_trucking") {
-			$GLOBALS["t103_trucking"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["t103_trucking"];
+		// Table object (t005_driver)
+		if (!isset($GLOBALS["t005_driver"]) || get_class($GLOBALS["t005_driver"]) == PROJECT_NAMESPACE . "t005_driver") {
+			$GLOBALS["t005_driver"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["t005_driver"];
 		}
 		$this->CancelUrl = $this->pageUrl() . "action=cancel";
 
+		// Table object (t006_trucking_vendor)
+		if (!isset($GLOBALS['t006_trucking_vendor']))
+			$GLOBALS['t006_trucking_vendor'] = new t006_trucking_vendor();
+
 		// Page ID
 		if (!defined(PROJECT_NAMESPACE . "PAGE_ID"))
-			define(PROJECT_NAMESPACE . "PAGE_ID", 'delete');
+			define(PROJECT_NAMESPACE . "PAGE_ID", 'addopt');
 
 		// Table name (for backward compatibility)
 		if (!defined(PROJECT_NAMESPACE . "TABLE_NAME"))
-			define(PROJECT_NAMESPACE . "TABLE_NAME", 't103_trucking');
+			define(PROJECT_NAMESPACE . "TABLE_NAME", 't005_driver');
 
 		// Start timer
 		if (!isset($GLOBALS["DebugTimer"]))
@@ -381,14 +385,14 @@ class t103_trucking_delete extends t103_trucking
 		Page_Unloaded();
 
 		// Export
-		global $EXPORT, $t103_trucking;
+		global $EXPORT, $t005_driver;
 		if ($this->CustomExport && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EXPORT)) {
 				$content = ob_get_contents();
 			if ($ExportFileName == "")
 				$ExportFileName = $this->TableVar;
 			$class = PROJECT_NAMESPACE . $EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($t103_trucking);
+				$doc = new $class($t005_driver);
 				$doc->Text = @$content;
 				if ($this->isExport("email"))
 					echo $this->exportEmail($doc->Text);
@@ -507,14 +511,6 @@ class t103_trucking_delete extends t103_trucking
 		if ($this->isAdd() || $this->isCopy() || $this->isGridAdd())
 			$this->id->Visible = FALSE;
 	}
-	public $DbMasterFilter = "";
-	public $DbDetailFilter = "";
-	public $StartRec;
-	public $TotalRecs = 0;
-	public $RecCnt;
-	public $RecKeys = array();
-	public $StartRowCnt = 1;
-	public $RowCnt = 0;
 
 	//
 	// Page run
@@ -522,7 +518,8 @@ class t103_trucking_delete extends t103_trucking
 
 	public function run()
 	{
-		global $ExportType, $CustomExportType, $ExportFileName, $UserProfile, $Language, $Security, $RequestSecurity, $CurrentForm;
+		global $ExportType, $CustomExportType, $ExportFileName, $UserProfile, $Language, $Security, $RequestSecurity, $CurrentForm,
+			$FormError;
 
 		// Init Session data for API request if token found
 		if (IsApi() && session_status() !== PHP_SESSION_ACTIVE) {
@@ -530,25 +527,15 @@ class t103_trucking_delete extends t103_trucking
 			if (is_callable($func) && Param(TOKEN_NAME) !== NULL && $func(Param(TOKEN_NAME), SessionTimeoutTime()))
 				session_start();
 		}
+
+		// Create form object
+		$CurrentForm = new HttpForm();
 		$this->CurrentAction = Param("action"); // Set up current action
-		$this->id->setVisibility();
-		$this->EI->setVisibility();
-		$this->Shipper_id->setVisibility();
-		$this->Party->setVisibility();
-		$this->Jenis_Container->setVisibility();
-		$this->Tgl_Stuffing->setVisibility();
-		$this->Destination_id->setVisibility();
-		$this->Feeder_id->setVisibility();
-		$this->ETA_ETD->setVisibility();
-		$this->Liner_id->setVisibility();
-		$this->Remark->Visible = FALSE;
+		$this->id->Visible = FALSE;
 		$this->TruckingVendor_id->setVisibility();
-		$this->Driver_id->setVisibility();
-		$this->No_Pol_1->setVisibility();
-		$this->No_Pol_2->setVisibility();
-		$this->No_Pol_3->setVisibility();
-		$this->Nomor_Container_1->setVisibility();
-		$this->Nomor_Container_2->setVisibility();
+		$this->Nama->setVisibility();
+		$this->No_HP_1->setVisibility();
+		$this->No_HP_2->setVisibility();
 		$this->hideFieldsForAddEdit();
 
 		// Do not use lookup cache
@@ -570,86 +557,81 @@ class t103_trucking_delete extends t103_trucking
 		$this->createToken();
 
 		// Set up lookup cache
+		set_error_handler(PROJECT_NAMESPACE . "ErrorHandler");
+
 		// Set up Breadcrumb
+		//$this->setupBreadcrumb(); // Not used
 
-		$this->setupBreadcrumb();
+		$this->loadRowValues(); // Load default values
 
-		// Load key parameters
-		$this->RecKeys = $this->getRecordKeys(); // Load record keys
-		$filter = $this->getFilterFromRecordKeys();
-		if ($filter == "") {
-			$this->terminate("t103_truckinglist.php"); // Prevent SQL injection, return to list
-			return;
-		}
-
-		// Set up filter (WHERE Clause)
-		$this->CurrentFilter = $filter;
-
-		// Get action
-		if (IsApi()) {
-			$this->CurrentAction = "delete"; // Delete record directly
-		} elseif (Post("action") !== NULL) {
-			$this->CurrentAction = Post("action");
-		} elseif (Get("action") == "1") {
-			$this->CurrentAction = "delete"; // Delete record directly
-		} else {
-			$this->CurrentAction = "show"; // Display record
-		}
-		if ($this->isDelete()) {
-			$this->SendEmail = TRUE; // Send email on delete success
-			if ($this->deleteRows()) { // Delete rows
-				if ($this->getSuccessMessage() == "")
-					$this->setSuccessMessage($Language->phrase("DeleteSuccess")); // Set up success message
-				if (IsApi()) {
-					$this->terminate(TRUE);
-					return;
-				} else {
-					$this->terminate($this->getReturnUrl()); // Return to caller
-				}
-			} else { // Delete failed
-				if (IsApi()) {
-					$this->terminate();
-					return;
-				}
-				$this->CurrentAction = "show"; // Display record
-			}
-		}
-		if ($this->isShow()) { // Load records for display
-			if ($this->Recordset = $this->loadRecordset())
-				$this->TotalRecs = $this->Recordset->RecordCount(); // Get record count
-			if ($this->TotalRecs <= 0) { // No record found, exit
-				if ($this->Recordset)
-					$this->Recordset->close();
-				$this->terminate("t103_truckinglist.php"); // Return to list
-			}
-		}
+		// Render row
+		$this->RowType = ROWTYPE_ADD; // Render add type
+		$this->resetAttributes();
+		$this->renderRow();
 	}
 
-	// Load recordset
-	public function loadRecordset($offset = -1, $rowcnt = -1)
+	// Get upload files
+	protected function getUploadFiles()
+	{
+		global $CurrentForm, $Language;
+	}
+
+	// Load default values
+	protected function loadDefaultValues()
+	{
+		$this->id->CurrentValue = NULL;
+		$this->id->OldValue = $this->id->CurrentValue;
+		$this->TruckingVendor_id->CurrentValue = NULL;
+		$this->TruckingVendor_id->OldValue = $this->TruckingVendor_id->CurrentValue;
+		$this->Nama->CurrentValue = NULL;
+		$this->Nama->OldValue = $this->Nama->CurrentValue;
+		$this->No_HP_1->CurrentValue = "-";
+		$this->No_HP_2->CurrentValue = "-";
+	}
+
+	// Load form values
+	protected function loadFormValues()
 	{
 
-		// Load List page SQL
-		$sql = $this->getListSql();
-		$conn = &$this->getConnection();
+		// Load from form
+		global $CurrentForm;
 
-		// Load recordset
-		$dbtype = GetConnectionType($this->Dbid);
-		if ($this->UseSelectLimit) {
-			$conn->raiseErrorFn = $GLOBALS["ERROR_FUNC"];
-			if ($dbtype == "MSSQL") {
-				$rs = $conn->selectLimit($sql, $rowcnt, $offset, ["_hasOrderBy" => trim($this->getOrderBy()) || trim($this->getSessionOrderBy())]);
-			} else {
-				$rs = $conn->selectLimit($sql, $rowcnt, $offset);
-			}
-			$conn->raiseErrorFn = '';
-		} else {
-			$rs = LoadRecordset($sql, $conn);
+		// Check field name 'TruckingVendor_id' first before field var 'x_TruckingVendor_id'
+		$val = $CurrentForm->hasValue("TruckingVendor_id") ? $CurrentForm->getValue("TruckingVendor_id") : $CurrentForm->getValue("x_TruckingVendor_id");
+		if (!$this->TruckingVendor_id->IsDetailKey) {
+			$this->TruckingVendor_id->setFormValue(ConvertFromUtf8($val));
 		}
 
-		// Call Recordset Selected event
-		$this->Recordset_Selected($rs);
-		return $rs;
+		// Check field name 'Nama' first before field var 'x_Nama'
+		$val = $CurrentForm->hasValue("Nama") ? $CurrentForm->getValue("Nama") : $CurrentForm->getValue("x_Nama");
+		if (!$this->Nama->IsDetailKey) {
+			$this->Nama->setFormValue(ConvertFromUtf8($val));
+		}
+
+		// Check field name 'No_HP_1' first before field var 'x_No_HP_1'
+		$val = $CurrentForm->hasValue("No_HP_1") ? $CurrentForm->getValue("No_HP_1") : $CurrentForm->getValue("x_No_HP_1");
+		if (!$this->No_HP_1->IsDetailKey) {
+			$this->No_HP_1->setFormValue(ConvertFromUtf8($val));
+		}
+
+		// Check field name 'No_HP_2' first before field var 'x_No_HP_2'
+		$val = $CurrentForm->hasValue("No_HP_2") ? $CurrentForm->getValue("No_HP_2") : $CurrentForm->getValue("x_No_HP_2");
+		if (!$this->No_HP_2->IsDetailKey) {
+			$this->No_HP_2->setFormValue(ConvertFromUtf8($val));
+		}
+
+		// Check field name 'id' first before field var 'x_id'
+		$val = $CurrentForm->hasValue("id") ? $CurrentForm->getValue("id") : $CurrentForm->getValue("x_id");
+	}
+
+	// Restore form values
+	public function restoreFormValues()
+	{
+		global $CurrentForm;
+		$this->TruckingVendor_id->CurrentValue = ConvertToUtf8($this->TruckingVendor_id->FormValue);
+		$this->Nama->CurrentValue = ConvertToUtf8($this->Nama->FormValue);
+		$this->No_HP_1->CurrentValue = ConvertToUtf8($this->No_HP_1->FormValue);
+		$this->No_HP_2->CurrentValue = ConvertToUtf8($this->No_HP_2->FormValue);
 	}
 
 	// Load row based on key values
@@ -688,47 +670,22 @@ class t103_trucking_delete extends t103_trucking
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
-		$this->EI->setDbValue($row['EI']);
-		$this->Shipper_id->setDbValue($row['Shipper_id']);
-		$this->Party->setDbValue($row['Party']);
-		$this->Jenis_Container->setDbValue($row['Jenis_Container']);
-		$this->Tgl_Stuffing->setDbValue($row['Tgl_Stuffing']);
-		$this->Destination_id->setDbValue($row['Destination_id']);
-		$this->Feeder_id->setDbValue($row['Feeder_id']);
-		$this->ETA_ETD->setDbValue($row['ETA_ETD']);
-		$this->Liner_id->setDbValue($row['Liner_id']);
-		$this->Remark->setDbValue($row['Remark']);
 		$this->TruckingVendor_id->setDbValue($row['TruckingVendor_id']);
-		$this->Driver_id->setDbValue($row['Driver_id']);
-		$this->No_Pol_1->setDbValue($row['No_Pol_1']);
-		$this->No_Pol_2->setDbValue($row['No_Pol_2']);
-		$this->No_Pol_3->setDbValue($row['No_Pol_3']);
-		$this->Nomor_Container_1->setDbValue($row['Nomor_Container_1']);
-		$this->Nomor_Container_2->setDbValue($row['Nomor_Container_2']);
+		$this->Nama->setDbValue($row['Nama']);
+		$this->No_HP_1->setDbValue($row['No_HP_1']);
+		$this->No_HP_2->setDbValue($row['No_HP_2']);
 	}
 
 	// Return a row with default values
 	protected function newRow()
 	{
+		$this->loadDefaultValues();
 		$row = [];
-		$row['id'] = NULL;
-		$row['EI'] = NULL;
-		$row['Shipper_id'] = NULL;
-		$row['Party'] = NULL;
-		$row['Jenis_Container'] = NULL;
-		$row['Tgl_Stuffing'] = NULL;
-		$row['Destination_id'] = NULL;
-		$row['Feeder_id'] = NULL;
-		$row['ETA_ETD'] = NULL;
-		$row['Liner_id'] = NULL;
-		$row['Remark'] = NULL;
-		$row['TruckingVendor_id'] = NULL;
-		$row['Driver_id'] = NULL;
-		$row['No_Pol_1'] = NULL;
-		$row['No_Pol_2'] = NULL;
-		$row['No_Pol_3'] = NULL;
-		$row['Nomor_Container_1'] = NULL;
-		$row['Nomor_Container_2'] = NULL;
+		$row['id'] = $this->id->CurrentValue;
+		$row['TruckingVendor_id'] = $this->TruckingVendor_id->CurrentValue;
+		$row['Nama'] = $this->Nama->CurrentValue;
+		$row['No_HP_1'] = $this->No_HP_1->CurrentValue;
+		$row['No_HP_2'] = $this->No_HP_2->CurrentValue;
 		return $row;
 	}
 
@@ -744,23 +701,10 @@ class t103_trucking_delete extends t103_trucking
 
 		// Common render codes for all row types
 		// id
-		// EI
-		// Shipper_id
-		// Party
-		// Jenis_Container
-		// Tgl_Stuffing
-		// Destination_id
-		// Feeder_id
-		// ETA_ETD
-		// Liner_id
-		// Remark
 		// TruckingVendor_id
-		// Driver_id
-		// No_Pol_1
-		// No_Pol_2
-		// No_Pol_3
-		// Nomor_Container_1
-		// Nomor_Container_2
+		// Nama
+		// No_HP_1
+		// No_HP_2
 
 		if ($this->RowType == ROWTYPE_VIEW) { // View row
 
@@ -768,233 +712,186 @@ class t103_trucking_delete extends t103_trucking
 			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
 
-			// EI
-			if (strval($this->EI->CurrentValue) <> "") {
-				$this->EI->ViewValue = $this->EI->optionCaption($this->EI->CurrentValue);
-			} else {
-				$this->EI->ViewValue = NULL;
-			}
-			$this->EI->ViewCustomAttributes = "";
-
-			// Shipper_id
-			$this->Shipper_id->ViewValue = $this->Shipper_id->CurrentValue;
-			$this->Shipper_id->ViewValue = FormatNumber($this->Shipper_id->ViewValue, 0, -2, -2, -2);
-			$this->Shipper_id->ViewCustomAttributes = "";
-
-			// Party
-			$this->Party->ViewValue = $this->Party->CurrentValue;
-			$this->Party->ViewValue = FormatNumber($this->Party->ViewValue, 0, -2, -2, -2);
-			$this->Party->ViewCustomAttributes = "";
-
-			// Jenis_Container
-			if (strval($this->Jenis_Container->CurrentValue) <> "") {
-				$this->Jenis_Container->ViewValue = $this->Jenis_Container->optionCaption($this->Jenis_Container->CurrentValue);
-			} else {
-				$this->Jenis_Container->ViewValue = NULL;
-			}
-			$this->Jenis_Container->ViewCustomAttributes = "";
-
-			// Tgl_Stuffing
-			$this->Tgl_Stuffing->ViewValue = $this->Tgl_Stuffing->CurrentValue;
-			$this->Tgl_Stuffing->ViewValue = FormatDateTime($this->Tgl_Stuffing->ViewValue, 0);
-			$this->Tgl_Stuffing->ViewCustomAttributes = "";
-
-			// Destination_id
-			$this->Destination_id->ViewValue = $this->Destination_id->CurrentValue;
-			$this->Destination_id->ViewValue = FormatNumber($this->Destination_id->ViewValue, 0, -2, -2, -2);
-			$this->Destination_id->ViewCustomAttributes = "";
-
-			// Feeder_id
-			$this->Feeder_id->ViewValue = $this->Feeder_id->CurrentValue;
-			$this->Feeder_id->ViewValue = FormatNumber($this->Feeder_id->ViewValue, 0, -2, -2, -2);
-			$this->Feeder_id->ViewCustomAttributes = "";
-
-			// ETA_ETD
-			$this->ETA_ETD->ViewValue = $this->ETA_ETD->CurrentValue;
-			$this->ETA_ETD->ViewValue = FormatDateTime($this->ETA_ETD->ViewValue, 0);
-			$this->ETA_ETD->ViewCustomAttributes = "";
-
-			// Liner_id
-			$this->Liner_id->ViewValue = $this->Liner_id->CurrentValue;
-			$this->Liner_id->ViewValue = FormatNumber($this->Liner_id->ViewValue, 0, -2, -2, -2);
-			$this->Liner_id->ViewCustomAttributes = "";
-
 			// TruckingVendor_id
 			$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
 			$this->TruckingVendor_id->ViewValue = FormatNumber($this->TruckingVendor_id->ViewValue, 0, -2, -2, -2);
 			$this->TruckingVendor_id->ViewCustomAttributes = "";
 
-			// Driver_id
-			$this->Driver_id->ViewValue = $this->Driver_id->CurrentValue;
-			$this->Driver_id->ViewValue = FormatNumber($this->Driver_id->ViewValue, 0, -2, -2, -2);
-			$this->Driver_id->ViewCustomAttributes = "";
+			// Nama
+			$this->Nama->ViewValue = $this->Nama->CurrentValue;
+			$this->Nama->ViewCustomAttributes = "";
 
-			// No_Pol_1
-			$this->No_Pol_1->ViewValue = $this->No_Pol_1->CurrentValue;
-			$this->No_Pol_1->ViewCustomAttributes = "";
+			// No_HP_1
+			$this->No_HP_1->ViewValue = $this->No_HP_1->CurrentValue;
+			$this->No_HP_1->ViewCustomAttributes = "";
 
-			// No_Pol_2
-			$this->No_Pol_2->ViewValue = $this->No_Pol_2->CurrentValue;
-			$this->No_Pol_2->ViewCustomAttributes = "";
-
-			// No_Pol_3
-			$this->No_Pol_3->ViewValue = $this->No_Pol_3->CurrentValue;
-			$this->No_Pol_3->ViewCustomAttributes = "";
-
-			// Nomor_Container_1
-			$this->Nomor_Container_1->ViewValue = $this->Nomor_Container_1->CurrentValue;
-			$this->Nomor_Container_1->ViewCustomAttributes = "";
-
-			// Nomor_Container_2
-			$this->Nomor_Container_2->ViewValue = $this->Nomor_Container_2->CurrentValue;
-			$this->Nomor_Container_2->ViewCustomAttributes = "";
-
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
-
-			// EI
-			$this->EI->LinkCustomAttributes = "";
-			$this->EI->HrefValue = "";
-			$this->EI->TooltipValue = "";
-
-			// Shipper_id
-			$this->Shipper_id->LinkCustomAttributes = "";
-			$this->Shipper_id->HrefValue = "";
-			$this->Shipper_id->TooltipValue = "";
-
-			// Party
-			$this->Party->LinkCustomAttributes = "";
-			$this->Party->HrefValue = "";
-			$this->Party->TooltipValue = "";
-
-			// Jenis_Container
-			$this->Jenis_Container->LinkCustomAttributes = "";
-			$this->Jenis_Container->HrefValue = "";
-			$this->Jenis_Container->TooltipValue = "";
-
-			// Tgl_Stuffing
-			$this->Tgl_Stuffing->LinkCustomAttributes = "";
-			$this->Tgl_Stuffing->HrefValue = "";
-			$this->Tgl_Stuffing->TooltipValue = "";
-
-			// Destination_id
-			$this->Destination_id->LinkCustomAttributes = "";
-			$this->Destination_id->HrefValue = "";
-			$this->Destination_id->TooltipValue = "";
-
-			// Feeder_id
-			$this->Feeder_id->LinkCustomAttributes = "";
-			$this->Feeder_id->HrefValue = "";
-			$this->Feeder_id->TooltipValue = "";
-
-			// ETA_ETD
-			$this->ETA_ETD->LinkCustomAttributes = "";
-			$this->ETA_ETD->HrefValue = "";
-			$this->ETA_ETD->TooltipValue = "";
-
-			// Liner_id
-			$this->Liner_id->LinkCustomAttributes = "";
-			$this->Liner_id->HrefValue = "";
-			$this->Liner_id->TooltipValue = "";
+			// No_HP_2
+			$this->No_HP_2->ViewValue = $this->No_HP_2->CurrentValue;
+			$this->No_HP_2->ViewCustomAttributes = "";
 
 			// TruckingVendor_id
 			$this->TruckingVendor_id->LinkCustomAttributes = "";
 			$this->TruckingVendor_id->HrefValue = "";
 			$this->TruckingVendor_id->TooltipValue = "";
 
-			// Driver_id
-			$this->Driver_id->LinkCustomAttributes = "";
-			$this->Driver_id->HrefValue = "";
-			$this->Driver_id->TooltipValue = "";
+			// Nama
+			$this->Nama->LinkCustomAttributes = "";
+			$this->Nama->HrefValue = "";
+			$this->Nama->TooltipValue = "";
 
-			// No_Pol_1
-			$this->No_Pol_1->LinkCustomAttributes = "";
-			$this->No_Pol_1->HrefValue = "";
-			$this->No_Pol_1->TooltipValue = "";
+			// No_HP_1
+			$this->No_HP_1->LinkCustomAttributes = "";
+			$this->No_HP_1->HrefValue = "";
+			$this->No_HP_1->TooltipValue = "";
 
-			// No_Pol_2
-			$this->No_Pol_2->LinkCustomAttributes = "";
-			$this->No_Pol_2->HrefValue = "";
-			$this->No_Pol_2->TooltipValue = "";
+			// No_HP_2
+			$this->No_HP_2->LinkCustomAttributes = "";
+			$this->No_HP_2->HrefValue = "";
+			$this->No_HP_2->TooltipValue = "";
+		} elseif ($this->RowType == ROWTYPE_ADD) { // Add row
 
-			// No_Pol_3
-			$this->No_Pol_3->LinkCustomAttributes = "";
-			$this->No_Pol_3->HrefValue = "";
-			$this->No_Pol_3->TooltipValue = "";
+			// TruckingVendor_id
+			$this->TruckingVendor_id->EditAttrs["class"] = "form-control";
+			$this->TruckingVendor_id->EditCustomAttributes = "";
+			$this->TruckingVendor_id->EditValue = HtmlEncode($this->TruckingVendor_id->CurrentValue);
+			$this->TruckingVendor_id->PlaceHolder = RemoveHtml($this->TruckingVendor_id->caption());
 
-			// Nomor_Container_1
-			$this->Nomor_Container_1->LinkCustomAttributes = "";
-			$this->Nomor_Container_1->HrefValue = "";
-			$this->Nomor_Container_1->TooltipValue = "";
+			// Nama
+			$this->Nama->EditAttrs["class"] = "form-control";
+			$this->Nama->EditCustomAttributes = "";
+			if (REMOVE_XSS)
+				$this->Nama->CurrentValue = HtmlDecode($this->Nama->CurrentValue);
+			$this->Nama->EditValue = HtmlEncode($this->Nama->CurrentValue);
+			$this->Nama->PlaceHolder = RemoveHtml($this->Nama->caption());
 
-			// Nomor_Container_2
-			$this->Nomor_Container_2->LinkCustomAttributes = "";
-			$this->Nomor_Container_2->HrefValue = "";
-			$this->Nomor_Container_2->TooltipValue = "";
+			// No_HP_1
+			$this->No_HP_1->EditAttrs["class"] = "form-control";
+			$this->No_HP_1->EditCustomAttributes = "";
+			if (REMOVE_XSS)
+				$this->No_HP_1->CurrentValue = HtmlDecode($this->No_HP_1->CurrentValue);
+			$this->No_HP_1->EditValue = HtmlEncode($this->No_HP_1->CurrentValue);
+			$this->No_HP_1->PlaceHolder = RemoveHtml($this->No_HP_1->caption());
+
+			// No_HP_2
+			$this->No_HP_2->EditAttrs["class"] = "form-control";
+			$this->No_HP_2->EditCustomAttributes = "";
+			if (REMOVE_XSS)
+				$this->No_HP_2->CurrentValue = HtmlDecode($this->No_HP_2->CurrentValue);
+			$this->No_HP_2->EditValue = HtmlEncode($this->No_HP_2->CurrentValue);
+			$this->No_HP_2->PlaceHolder = RemoveHtml($this->No_HP_2->caption());
+
+			// Add refer script
+			// TruckingVendor_id
+
+			$this->TruckingVendor_id->LinkCustomAttributes = "";
+			$this->TruckingVendor_id->HrefValue = "";
+
+			// Nama
+			$this->Nama->LinkCustomAttributes = "";
+			$this->Nama->HrefValue = "";
+
+			// No_HP_1
+			$this->No_HP_1->LinkCustomAttributes = "";
+			$this->No_HP_1->HrefValue = "";
+
+			// No_HP_2
+			$this->No_HP_2->LinkCustomAttributes = "";
+			$this->No_HP_2->HrefValue = "";
 		}
+		if ($this->RowType == ROWTYPE_ADD || $this->RowType == ROWTYPE_EDIT || $this->RowType == ROWTYPE_SEARCH) // Add/Edit/Search row
+			$this->setupFieldTitles();
 
 		// Call Row Rendered event
 		if ($this->RowType <> ROWTYPE_AGGREGATEINIT)
 			$this->Row_Rendered();
 	}
 
-	// Delete records based on current filter
-	protected function deleteRows()
+	// Validate form
+	protected function validateForm()
+	{
+		global $Language, $FormError;
+
+		// Initialize form error message
+		$FormError = "";
+
+		// Check if validation required
+		if (!SERVER_VALIDATE)
+			return ($FormError == "");
+		if ($this->id->Required) {
+			if (!$this->id->IsDetailKey && $this->id->FormValue != NULL && $this->id->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->id->caption(), $this->id->RequiredErrorMessage));
+			}
+		}
+		if ($this->TruckingVendor_id->Required) {
+			if (!$this->TruckingVendor_id->IsDetailKey && $this->TruckingVendor_id->FormValue != NULL && $this->TruckingVendor_id->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->TruckingVendor_id->caption(), $this->TruckingVendor_id->RequiredErrorMessage));
+			}
+		}
+		if (!CheckInteger($this->TruckingVendor_id->FormValue)) {
+			AddMessage($FormError, $this->TruckingVendor_id->errorMessage());
+		}
+		if ($this->Nama->Required) {
+			if (!$this->Nama->IsDetailKey && $this->Nama->FormValue != NULL && $this->Nama->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->Nama->caption(), $this->Nama->RequiredErrorMessage));
+			}
+		}
+		if ($this->No_HP_1->Required) {
+			if (!$this->No_HP_1->IsDetailKey && $this->No_HP_1->FormValue != NULL && $this->No_HP_1->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->No_HP_1->caption(), $this->No_HP_1->RequiredErrorMessage));
+			}
+		}
+		if ($this->No_HP_2->Required) {
+			if (!$this->No_HP_2->IsDetailKey && $this->No_HP_2->FormValue != NULL && $this->No_HP_2->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->No_HP_2->caption(), $this->No_HP_2->RequiredErrorMessage));
+			}
+		}
+
+		// Return validate result
+		$validateForm = ($FormError == "");
+
+		// Call Form_CustomValidate event
+		$formCustomError = "";
+		$validateForm = $validateForm && $this->Form_CustomValidate($formCustomError);
+		if ($formCustomError <> "") {
+			AddMessage($FormError, $formCustomError);
+		}
+		return $validateForm;
+	}
+
+	// Add record
+	protected function addRow($rsold = NULL)
 	{
 		global $Language, $Security;
-		$deleteRows = TRUE;
-		$sql = $this->getCurrentSql();
 		$conn = &$this->getConnection();
-		$conn->raiseErrorFn = $GLOBALS["ERROR_FUNC"];
-		$rs = $conn->execute($sql);
-		$conn->raiseErrorFn = '';
-		if ($rs === FALSE) {
-			return FALSE;
-		} elseif ($rs->EOF) {
-			$this->setFailureMessage($Language->phrase("NoRecord")); // No record found
-			$rs->close();
-			return FALSE;
+
+		// Load db values from rsold
+		$this->loadDbValues($rsold);
+		if ($rsold) {
 		}
-		$rows = ($rs) ? $rs->getRows() : [];
-		$conn->beginTrans();
+		$rsnew = [];
 
-		// Clone old rows
-		$rsold = $rows;
-		if ($rs)
-			$rs->close();
+		// TruckingVendor_id
+		$this->TruckingVendor_id->setDbValueDef($rsnew, $this->TruckingVendor_id->CurrentValue, 0, FALSE);
 
-		// Call row deleting event
-		if ($deleteRows) {
-			foreach ($rsold as $row) {
-				$deleteRows = $this->Row_Deleting($row);
-				if (!$deleteRows)
-					break;
+		// Nama
+		$this->Nama->setDbValueDef($rsnew, $this->Nama->CurrentValue, "", FALSE);
+
+		// No_HP_1
+		$this->No_HP_1->setDbValueDef($rsnew, $this->No_HP_1->CurrentValue, "", strval($this->No_HP_1->CurrentValue) == "");
+
+		// No_HP_2
+		$this->No_HP_2->setDbValueDef($rsnew, $this->No_HP_2->CurrentValue, "", strval($this->No_HP_2->CurrentValue) == "");
+
+		// Call Row Inserting event
+		$rs = ($rsold) ? $rsold->fields : NULL;
+		$insertRow = $this->Row_Inserting($rs, $rsnew);
+		if ($insertRow) {
+			$conn->raiseErrorFn = $GLOBALS["ERROR_FUNC"];
+			$addRow = $this->insert($rsnew);
+			$conn->raiseErrorFn = '';
+			if ($addRow) {
 			}
-		}
-		if ($deleteRows) {
-			$key = "";
-			foreach ($rsold as $row) {
-				$thisKey = "";
-				if ($thisKey <> "")
-					$thisKey .= $GLOBALS["COMPOSITE_KEY_SEPARATOR"];
-				$thisKey .= $row['id'];
-				if (DELETE_UPLOADED_FILES) // Delete old files
-					$this->deleteUploadedFiles($row);
-				$conn->raiseErrorFn = $GLOBALS["ERROR_FUNC"];
-				$deleteRows = $this->delete($row); // Delete
-				$conn->raiseErrorFn = '';
-				if ($deleteRows === FALSE)
-					break;
-				if ($key <> "")
-					$key .= ", ";
-				$key .= $thisKey;
-			}
-		}
-		if (!$deleteRows) {
-
-			// Set up error message
+		} else {
 			if ($this->getSuccessMessage() <> "" || $this->getFailureMessage() <> "") {
 
 				// Use the message, do nothing
@@ -1002,28 +899,23 @@ class t103_trucking_delete extends t103_trucking
 				$this->setFailureMessage($this->CancelMessage);
 				$this->CancelMessage = "";
 			} else {
-				$this->setFailureMessage($Language->phrase("DeleteCancelled"));
+				$this->setFailureMessage($Language->phrase("InsertCancelled"));
 			}
+			$addRow = FALSE;
 		}
-		if ($deleteRows) {
-			$conn->commitTrans(); // Commit the changes
-		} else {
-			$conn->rollbackTrans(); // Rollback changes
+		if ($addRow) {
+
+			// Call Row Inserted event
+			$rs = ($rsold) ? $rsold->fields : NULL;
+			$this->Row_Inserted($rs, $rsnew);
 		}
 
-		// Call Row Deleted event
-		if ($deleteRows) {
-			foreach ($rsold as $row) {
-				$this->Row_Deleted($row);
-			}
-		}
-
-		// Write JSON for API request (Support single row only)
-		if (IsApi() && $deleteRows) {
-			$row = $this->getRecordsFromRecordset($rsold, TRUE);
+		// Write JSON for API request
+		if (IsApi() && $addRow) {
+			$row = $this->getRecordsFromRecordset([$rsnew], TRUE);
 			WriteJson(["success" => TRUE, $this->TableVar => $row]);
 		}
-		return $deleteRows;
+		return $addRow;
 	}
 
 	// Set up Breadcrumb
@@ -1032,9 +924,9 @@ class t103_trucking_delete extends t103_trucking
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new Breadcrumb();
 		$url = substr(CurrentUrl(), strrpos(CurrentUrl(), "/")+1);
-		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t103_truckinglist.php"), "", $this->TableVar, TRUE);
-		$pageId = "delete";
-		$Breadcrumb->add("delete", $pageId, $url);
+		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t005_driverlist.php"), "", $this->TableVar, TRUE);
+		$pageId = "addopt";
+		$Breadcrumb->add("addopt", $pageId, $url);
 	}
 
 	// Setup lookup options

@@ -122,14 +122,26 @@ $t005_driver_add->showMessage();
 <input type="hidden" name="t" value="t005_driver">
 <input type="hidden" name="action" id="action" value="insert">
 <input type="hidden" name="modal" value="<?php echo (int)$t005_driver_add->IsModal ?>">
+<?php if ($t005_driver->getCurrentMasterTable() == "t006_trucking_vendor") { ?>
+<input type="hidden" name="<?php echo TABLE_SHOW_MASTER ?>" value="t006_trucking_vendor">
+<input type="hidden" name="fk_id" value="<?php echo $t005_driver->TruckingVendor_id->getSessionValue() ?>">
+<?php } ?>
 <div class="ew-add-div"><!-- page* -->
 <?php if ($t005_driver->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 	<div id="r_TruckingVendor_id" class="form-group row">
 		<label id="elh_t005_driver_TruckingVendor_id" for="x_TruckingVendor_id" class="<?php echo $t005_driver_add->LeftColumnClass ?>"><?php echo $t005_driver->TruckingVendor_id->caption() ?><?php echo ($t005_driver->TruckingVendor_id->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
 		<div class="<?php echo $t005_driver_add->RightColumnClass ?>"><div<?php echo $t005_driver->TruckingVendor_id->cellAttributes() ?>>
+<?php if ($t005_driver->TruckingVendor_id->getSessionValue() <> "") { ?>
+<span id="el_t005_driver_TruckingVendor_id">
+<span<?php echo $t005_driver->TruckingVendor_id->viewAttributes() ?>>
+<input type="text" readonly class="form-control-plaintext" value="<?php echo RemoveHtml($t005_driver->TruckingVendor_id->ViewValue) ?>"></span>
+</span>
+<input type="hidden" id="x_TruckingVendor_id" name="x_TruckingVendor_id" value="<?php echo HtmlEncode($t005_driver->TruckingVendor_id->CurrentValue) ?>">
+<?php } else { ?>
 <span id="el_t005_driver_TruckingVendor_id">
 <input type="text" data-table="t005_driver" data-field="x_TruckingVendor_id" name="x_TruckingVendor_id" id="x_TruckingVendor_id" size="30" placeholder="<?php echo HtmlEncode($t005_driver->TruckingVendor_id->getPlaceHolder()) ?>" value="<?php echo $t005_driver->TruckingVendor_id->EditValue ?>"<?php echo $t005_driver->TruckingVendor_id->editAttributes() ?>>
 </span>
+<?php } ?>
 <?php echo $t005_driver->TruckingVendor_id->CustomMsg ?></div></div>
 	</div>
 <?php } ?>

@@ -713,7 +713,6 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		}
 
 		// Set up lookup cache
-		$this->setupLookupOptions($this->JO_id);
 		$this->setupLookupOptions($this->Shipper_id);
 
 		// Search filters
@@ -1950,23 +1949,26 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 	protected function setupSortOrder()
 	{
 
+		// Check for Ctrl pressed
+		$ctrl = Get("ctrl") !== NULL;
+
 		// Check for "order" parameter
 		if (Get("order") !== NULL) {
 			$this->CurrentOrder = Get("order");
 			$this->CurrentOrderType = Get("ordertype", "");
-			$this->updateSort($this->JO_id); // JO_id
-			$this->updateSort($this->Nomor_Polisi_1); // Nomor_Polisi_1
-			$this->updateSort($this->Nomor_Polisi_2); // Nomor_Polisi_2
-			$this->updateSort($this->Nomor_Polisi_3); // Nomor_Polisi_3
-			$this->updateSort($this->Tanggal); // Tanggal
-			$this->updateSort($this->Shipper_id); // Shipper_id
-			$this->updateSort($this->Dari_Lokasi); // Dari_Lokasi
-			$this->updateSort($this->Ke_Lokasi); // Ke_Lokasi
-			$this->updateSort($this->Jenis_Container); // Jenis_Container
-			$this->updateSort($this->Nomor_Container_1); // Nomor_Container_1
-			$this->updateSort($this->Nomor_Container_2); // Nomor_Container_2
-			$this->updateSort($this->Keterangan); // Keterangan
-			$this->updateSort($this->Tagihan); // Tagihan
+			$this->updateSort($this->JO_id, $ctrl); // JO_id
+			$this->updateSort($this->Nomor_Polisi_1, $ctrl); // Nomor_Polisi_1
+			$this->updateSort($this->Nomor_Polisi_2, $ctrl); // Nomor_Polisi_2
+			$this->updateSort($this->Nomor_Polisi_3, $ctrl); // Nomor_Polisi_3
+			$this->updateSort($this->Tanggal, $ctrl); // Tanggal
+			$this->updateSort($this->Shipper_id, $ctrl); // Shipper_id
+			$this->updateSort($this->Dari_Lokasi, $ctrl); // Dari_Lokasi
+			$this->updateSort($this->Ke_Lokasi, $ctrl); // Ke_Lokasi
+			$this->updateSort($this->Jenis_Container, $ctrl); // Jenis_Container
+			$this->updateSort($this->Nomor_Container_1, $ctrl); // Nomor_Container_1
+			$this->updateSort($this->Nomor_Container_2, $ctrl); // Nomor_Container_2
+			$this->updateSort($this->Keterangan, $ctrl); // Keterangan
+			$this->updateSort($this->Tagihan, $ctrl); // Tagihan
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -2032,44 +2034,44 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		if ($this->AllowAddDeleteRow) {
 			$item = &$this->ListOptions->add("griddelete");
 			$item->CssClass = "text-nowrap";
-			$item->OnLeft = TRUE;
+			$item->OnLeft = FALSE;
 			$item->Visible = FALSE; // Default hidden
 		}
 
 		// Add group option item
 		$item = &$this->ListOptions->add($this->ListOptions->GroupOptionName);
 		$item->Body = "";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 
 		// "view"
 		$item = &$this->ListOptions->add("view");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "edit"
 		$item = &$this->ListOptions->add("edit");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "copy"
 		$item = &$this->ListOptions->add("copy");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "delete"
 		$item = &$this->ListOptions->add("delete");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// List actions
 		$item = &$this->ListOptions->add("listactions");
 		$item->CssClass = "text-nowrap";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 		$item->ShowInDropDown = FALSE;
@@ -2077,9 +2079,8 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		// "checkbox"
 		$item = &$this->ListOptions->add("checkbox");
 		$item->Visible = FALSE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Header = "<input type=\"checkbox\" name=\"key\" id=\"key\" onclick=\"ew.selectAllKey(this);\">";
-		$item->moveTo(0);
 		$item->ShowInDropDown = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 
@@ -3034,25 +3035,8 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			$this->id->ViewCustomAttributes = "";
 
 			// JO_id
-			$curVal = strval($this->JO_id->CurrentValue);
-			if ($curVal <> "") {
-				$this->JO_id->ViewValue = $this->JO_id->lookupCacheOption($curVal);
-				if ($this->JO_id->ViewValue === NULL) { // Lookup from database
-					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
-					$sqlWrk = $this->JO_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
-					$rswrk = Conn()->execute($sqlWrk);
-					if ($rswrk && !$rswrk->EOF) { // Lookup values found
-						$arwrk = array();
-						$arwrk[1] = $rswrk->fields('df');
-						$this->JO_id->ViewValue = $this->JO_id->displayValue($arwrk);
-						$rswrk->Close();
-					} else {
-						$this->JO_id->ViewValue = $this->JO_id->CurrentValue;
-					}
-				}
-			} else {
-				$this->JO_id->ViewValue = NULL;
-			}
+			$this->JO_id->ViewValue = $this->JO_id->CurrentValue;
+			$this->JO_id->ViewValue = FormatNumber($this->JO_id->ViewValue, 0, -2, -2, -2);
 			$this->JO_id->ViewCustomAttributes = "";
 
 			// Nomor_Polisi_1
@@ -3213,25 +3197,8 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			// JO_id
 			$this->JO_id->EditAttrs["class"] = "form-control";
 			$this->JO_id->EditCustomAttributes = "";
-			$curVal = trim(strval($this->JO_id->CurrentValue));
-			if ($curVal <> "")
-				$this->JO_id->ViewValue = $this->JO_id->lookupCacheOption($curVal);
-			else
-				$this->JO_id->ViewValue = $this->JO_id->Lookup !== NULL && is_array($this->JO_id->Lookup->Options) ? $curVal : NULL;
-			if ($this->JO_id->ViewValue !== NULL) { // Load from cache
-				$this->JO_id->EditValue = array_values($this->JO_id->Lookup->Options);
-			} else { // Lookup from database
-				if ($curVal == "") {
-					$filterWrk = "0=1";
-				} else {
-					$filterWrk = "`id`" . SearchString("=", $this->JO_id->CurrentValue, DATATYPE_NUMBER, "");
-				}
-				$sqlWrk = $this->JO_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
-				$rswrk = Conn()->execute($sqlWrk);
-				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
-				if ($rswrk) $rswrk->Close();
-				$this->JO_id->EditValue = $arwrk;
-			}
+			$this->JO_id->EditValue = HtmlEncode($this->JO_id->CurrentValue);
+			$this->JO_id->PlaceHolder = RemoveHtml($this->JO_id->caption());
 
 			// Nomor_Polisi_1
 			$this->Nomor_Polisi_1->EditAttrs["class"] = "form-control";
@@ -3396,25 +3363,8 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			// JO_id
 			$this->JO_id->EditAttrs["class"] = "form-control";
 			$this->JO_id->EditCustomAttributes = "";
-			$curVal = trim(strval($this->JO_id->CurrentValue));
-			if ($curVal <> "")
-				$this->JO_id->ViewValue = $this->JO_id->lookupCacheOption($curVal);
-			else
-				$this->JO_id->ViewValue = $this->JO_id->Lookup !== NULL && is_array($this->JO_id->Lookup->Options) ? $curVal : NULL;
-			if ($this->JO_id->ViewValue !== NULL) { // Load from cache
-				$this->JO_id->EditValue = array_values($this->JO_id->Lookup->Options);
-			} else { // Lookup from database
-				if ($curVal == "") {
-					$filterWrk = "0=1";
-				} else {
-					$filterWrk = "`id`" . SearchString("=", $this->JO_id->CurrentValue, DATATYPE_NUMBER, "");
-				}
-				$sqlWrk = $this->JO_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
-				$rswrk = Conn()->execute($sqlWrk);
-				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
-				if ($rswrk) $rswrk->Close();
-				$this->JO_id->EditValue = $arwrk;
-			}
+			$this->JO_id->EditValue = HtmlEncode($this->JO_id->CurrentValue);
+			$this->JO_id->PlaceHolder = RemoveHtml($this->JO_id->caption());
 
 			// Nomor_Polisi_1
 			$this->Nomor_Polisi_1->EditAttrs["class"] = "form-control";
@@ -3579,25 +3529,8 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			// JO_id
 			$this->JO_id->EditAttrs["class"] = "form-control";
 			$this->JO_id->EditCustomAttributes = "";
-			$curVal = trim(strval($this->JO_id->AdvancedSearch->SearchValue));
-			if ($curVal <> "")
-				$this->JO_id->AdvancedSearch->ViewValue = $this->JO_id->lookupCacheOption($curVal);
-			else
-				$this->JO_id->AdvancedSearch->ViewValue = $this->JO_id->Lookup !== NULL && is_array($this->JO_id->Lookup->Options) ? $curVal : NULL;
-			if ($this->JO_id->AdvancedSearch->ViewValue !== NULL) { // Load from cache
-				$this->JO_id->EditValue = array_values($this->JO_id->Lookup->Options);
-			} else { // Lookup from database
-				if ($curVal == "") {
-					$filterWrk = "0=1";
-				} else {
-					$filterWrk = "`id`" . SearchString("=", $this->JO_id->AdvancedSearch->SearchValue, DATATYPE_NUMBER, "");
-				}
-				$sqlWrk = $this->JO_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
-				$rswrk = Conn()->execute($sqlWrk);
-				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
-				if ($rswrk) $rswrk->Close();
-				$this->JO_id->EditValue = $arwrk;
-			}
+			$this->JO_id->EditValue = HtmlEncode($this->JO_id->AdvancedSearch->SearchValue);
+			$this->JO_id->PlaceHolder = RemoveHtml($this->JO_id->caption());
 
 			// Nomor_Polisi_1
 			$this->Nomor_Polisi_1->EditAttrs["class"] = "form-control";
@@ -3719,6 +3652,9 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		// Check if validation required
 		if (!SERVER_VALIDATE)
 			return TRUE;
+		if (!CheckInteger($this->JO_id->AdvancedSearch->SearchValue)) {
+			AddMessage($SearchError, $this->JO_id->errorMessage());
+		}
 
 		// Return validate result
 		$validateSearch = ($SearchError == "");
@@ -3752,6 +3688,9 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			if (!$this->JO_id->IsDetailKey && $this->JO_id->FormValue != NULL && $this->JO_id->FormValue == "") {
 				AddMessage($FormError, str_replace("%s", $this->JO_id->caption(), $this->JO_id->RequiredErrorMessage));
 			}
+		}
+		if (!CheckInteger($this->JO_id->FormValue)) {
+			AddMessage($FormError, $this->JO_id->errorMessage());
 		}
 		if ($this->Nomor_Polisi_1->Required) {
 			if (!$this->Nomor_Polisi_1->IsDetailKey && $this->Nomor_Polisi_1->FormValue != NULL && $this->Nomor_Polisi_1->FormValue == "") {
@@ -4196,8 +4135,6 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 
 					// Format the field values
 					switch ($fld->FieldVar) {
-						case "x_JO_id":
-							break;
 						case "x_Shipper_id":
 							break;
 					}

@@ -1580,31 +1580,34 @@ class t096_employees_list extends t096_employees
 	protected function setupSortOrder()
 	{
 
+		// Check for Ctrl pressed
+		$ctrl = Get("ctrl") !== NULL;
+
 		// Check for "order" parameter
 		if (Get("order") !== NULL) {
 			$this->CurrentOrder = Get("order");
 			$this->CurrentOrderType = Get("ordertype", "");
-			$this->updateSort($this->EmployeeID); // EmployeeID
-			$this->updateSort($this->LastName); // LastName
-			$this->updateSort($this->FirstName); // FirstName
-			$this->updateSort($this->Title); // Title
-			$this->updateSort($this->TitleOfCourtesy); // TitleOfCourtesy
-			$this->updateSort($this->BirthDate); // BirthDate
-			$this->updateSort($this->HireDate); // HireDate
-			$this->updateSort($this->Address); // Address
-			$this->updateSort($this->City); // City
-			$this->updateSort($this->Region); // Region
-			$this->updateSort($this->PostalCode); // PostalCode
-			$this->updateSort($this->Country); // Country
-			$this->updateSort($this->HomePhone); // HomePhone
-			$this->updateSort($this->Extension); // Extension
-			$this->updateSort($this->_Email); // Email
-			$this->updateSort($this->Photo); // Photo
-			$this->updateSort($this->ReportsTo); // ReportsTo
-			$this->updateSort($this->Password); // Password
-			$this->updateSort($this->UserLevel); // UserLevel
-			$this->updateSort($this->Username); // Username
-			$this->updateSort($this->Activated); // Activated
+			$this->updateSort($this->EmployeeID, $ctrl); // EmployeeID
+			$this->updateSort($this->LastName, $ctrl); // LastName
+			$this->updateSort($this->FirstName, $ctrl); // FirstName
+			$this->updateSort($this->Title, $ctrl); // Title
+			$this->updateSort($this->TitleOfCourtesy, $ctrl); // TitleOfCourtesy
+			$this->updateSort($this->BirthDate, $ctrl); // BirthDate
+			$this->updateSort($this->HireDate, $ctrl); // HireDate
+			$this->updateSort($this->Address, $ctrl); // Address
+			$this->updateSort($this->City, $ctrl); // City
+			$this->updateSort($this->Region, $ctrl); // Region
+			$this->updateSort($this->PostalCode, $ctrl); // PostalCode
+			$this->updateSort($this->Country, $ctrl); // Country
+			$this->updateSort($this->HomePhone, $ctrl); // HomePhone
+			$this->updateSort($this->Extension, $ctrl); // Extension
+			$this->updateSort($this->_Email, $ctrl); // Email
+			$this->updateSort($this->Photo, $ctrl); // Photo
+			$this->updateSort($this->ReportsTo, $ctrl); // ReportsTo
+			$this->updateSort($this->Password, $ctrl); // Password
+			$this->updateSort($this->UserLevel, $ctrl); // UserLevel
+			$this->updateSort($this->Username, $ctrl); // Username
+			$this->updateSort($this->Activated, $ctrl); // Activated
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1677,37 +1680,37 @@ class t096_employees_list extends t096_employees
 		// Add group option item
 		$item = &$this->ListOptions->add($this->ListOptions->GroupOptionName);
 		$item->Body = "";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 
 		// "view"
 		$item = &$this->ListOptions->add("view");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "edit"
 		$item = &$this->ListOptions->add("edit");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "copy"
 		$item = &$this->ListOptions->add("copy");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "delete"
 		$item = &$this->ListOptions->add("delete");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// List actions
 		$item = &$this->ListOptions->add("listactions");
 		$item->CssClass = "text-nowrap";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 		$item->ShowInDropDown = FALSE;
@@ -1715,9 +1718,16 @@ class t096_employees_list extends t096_employees
 		// "checkbox"
 		$item = &$this->ListOptions->add("checkbox");
 		$item->Visible = FALSE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Header = "<input type=\"checkbox\" name=\"key\" id=\"key\" onclick=\"ew.selectAllKey(this);\">";
-		$item->moveTo(0);
+		$item->ShowInDropDown = FALSE;
+		$item->ShowInButtonGroup = FALSE;
+
+		// "sequence"
+		$item = &$this->ListOptions->add("sequence");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = TRUE;
+		$item->OnLeft = TRUE; // Always on left
 		$item->ShowInDropDown = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 
@@ -1745,6 +1755,10 @@ class t096_employees_list extends t096_employees
 
 		// Call ListOptions_Rendering event
 		$this->ListOptions_Rendering();
+
+		// "sequence"
+		$opt = &$this->ListOptions->Items["sequence"];
+		$opt->Body = FormatSequenceNumber($this->RecCnt);
 
 		// "view"
 		$opt = &$this->ListOptions->Items["view"];

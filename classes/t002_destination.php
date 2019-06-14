@@ -94,8 +94,8 @@ class t002_destination extends DbTable
 		}
 	}
 
-	// Single column sort
-	public function updateSort(&$fld)
+	// Multiple column sort
+	public function updateSort(&$fld, $ctrl)
 	{
 		if ($this->CurrentOrder == $fld->Name) {
 			$sortField = $fld->Expression;
@@ -106,9 +106,22 @@ class t002_destination extends DbTable
 				$thisSort = ($lastSort == "ASC") ? "DESC" : "ASC";
 			}
 			$fld->setSort($thisSort);
-			$this->setSessionOrderBy($sortField . " " . $thisSort); // Save to Session
+			if ($ctrl) {
+				$orderBy = $this->getSessionOrderBy();
+				if (ContainsString($orderBy, $sortField . " " . $lastSort)) {
+					$orderBy = str_replace($sortField . " " . $lastSort, $sortField . " " . $thisSort, $orderBy);
+				} else {
+					if ($orderBy <> "")
+						$orderBy .= ", ";
+					$orderBy .= $sortField . " " . $thisSort;
+				}
+				$this->setSessionOrderBy($orderBy); // Save to Session
+			} else {
+				$this->setSessionOrderBy($sortField . " " . $thisSort); // Save to Session
+			}
 		} else {
-			$fld->setSort("");
+			if (!$ctrl)
+				$fld->setSort("");
 		}
 	}
 

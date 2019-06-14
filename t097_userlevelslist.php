@@ -142,7 +142,7 @@ $t097_userlevels_list->ListOptions->render("header", "left");
 	<?php if ($t097_userlevels->sortUrl($t097_userlevels->userlevelid) == "") { ?>
 		<th data-name="userlevelid" class="<?php echo $t097_userlevels->userlevelid->headerCellClass() ?>"><div id="elh_t097_userlevels_userlevelid" class="t097_userlevels_userlevelid"><div class="ew-table-header-caption"><?php echo $t097_userlevels->userlevelid->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="userlevelid" class="<?php echo $t097_userlevels->userlevelid->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t097_userlevels->SortUrl($t097_userlevels->userlevelid) ?>',1);"><div id="elh_t097_userlevels_userlevelid" class="t097_userlevels_userlevelid">
+		<th data-name="userlevelid" class="<?php echo $t097_userlevels->userlevelid->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t097_userlevels->SortUrl($t097_userlevels->userlevelid) ?>',2);"><div id="elh_t097_userlevels_userlevelid" class="t097_userlevels_userlevelid">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t097_userlevels->userlevelid->caption() ?></span><span class="ew-table-header-sort"><?php if ($t097_userlevels->userlevelid->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t097_userlevels->userlevelid->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -151,7 +151,7 @@ $t097_userlevels_list->ListOptions->render("header", "left");
 	<?php if ($t097_userlevels->sortUrl($t097_userlevels->userlevelname) == "") { ?>
 		<th data-name="userlevelname" class="<?php echo $t097_userlevels->userlevelname->headerCellClass() ?>"><div id="elh_t097_userlevels_userlevelname" class="t097_userlevels_userlevelname"><div class="ew-table-header-caption"><?php echo $t097_userlevels->userlevelname->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="userlevelname" class="<?php echo $t097_userlevels->userlevelname->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t097_userlevels->SortUrl($t097_userlevels->userlevelname) ?>',1);"><div id="elh_t097_userlevels_userlevelname" class="t097_userlevels_userlevelname">
+		<th data-name="userlevelname" class="<?php echo $t097_userlevels->userlevelname->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t097_userlevels->SortUrl($t097_userlevels->userlevelname) ?>',2);"><div id="elh_t097_userlevels_userlevelname" class="t097_userlevels_userlevelname">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t097_userlevels->userlevelname->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t097_userlevels->userlevelname->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t097_userlevels->userlevelname->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>

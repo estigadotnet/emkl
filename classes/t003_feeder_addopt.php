@@ -4,7 +4,7 @@ namespace PHPMaker2019\emkl_prj;
 /**
  * Page class
  */
-class t102_jo_addopt extends t102_jo
+class t003_feeder_addopt extends t003_feeder
 {
 
 	// Page ID
@@ -14,10 +14,10 @@ class t102_jo_addopt extends t102_jo
 	public $ProjectID = "{D4B21A3D-A1C8-4ED3-BA65-212E10E691E7}";
 
 	// Table name
-	public $TableName = 't102_jo';
+	public $TableName = 't003_feeder';
 
 	// Page object name
-	public $PageObjName = "t102_jo_addopt";
+	public $PageObjName = "t003_feeder_addopt";
 
 	// Page headings
 	public $Heading = "";
@@ -342,10 +342,10 @@ class t102_jo_addopt extends t102_jo
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (t102_jo)
-		if (!isset($GLOBALS["t102_jo"]) || get_class($GLOBALS["t102_jo"]) == PROJECT_NAMESPACE . "t102_jo") {
-			$GLOBALS["t102_jo"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["t102_jo"];
+		// Table object (t003_feeder)
+		if (!isset($GLOBALS["t003_feeder"]) || get_class($GLOBALS["t003_feeder"]) == PROJECT_NAMESPACE . "t003_feeder") {
+			$GLOBALS["t003_feeder"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["t003_feeder"];
 		}
 		$this->CancelUrl = $this->pageUrl() . "action=cancel";
 
@@ -355,7 +355,7 @@ class t102_jo_addopt extends t102_jo
 
 		// Table name (for backward compatibility)
 		if (!defined(PROJECT_NAMESPACE . "TABLE_NAME"))
-			define(PROJECT_NAMESPACE . "TABLE_NAME", 't102_jo');
+			define(PROJECT_NAMESPACE . "TABLE_NAME", 't003_feeder');
 
 		// Start timer
 		if (!isset($GLOBALS["DebugTimer"]))
@@ -381,14 +381,14 @@ class t102_jo_addopt extends t102_jo
 		Page_Unloaded();
 
 		// Export
-		global $EXPORT, $t102_jo;
+		global $EXPORT, $t003_feeder;
 		if ($this->CustomExport && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EXPORT)) {
 				$content = ob_get_contents();
 			if ($ExportFileName == "")
 				$ExportFileName = $this->TableVar;
 			$class = PROJECT_NAMESPACE . $EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($t102_jo);
+				$doc = new $class($t003_feeder);
 				$doc->Text = @$content;
 				if ($this->isExport("email"))
 					echo $this->exportEmail($doc->Text);
@@ -528,7 +528,7 @@ class t102_jo_addopt extends t102_jo
 		$CurrentForm = new HttpForm();
 		$this->CurrentAction = Param("action"); // Set up current action
 		$this->id->Visible = FALSE;
-		$this->Nomor_JO->setVisibility();
+		$this->Nama->setVisibility();
 		$this->hideFieldsForAddEdit();
 
 		// Do not use lookup cache
@@ -574,8 +574,8 @@ class t102_jo_addopt extends t102_jo
 	{
 		$this->id->CurrentValue = NULL;
 		$this->id->OldValue = $this->id->CurrentValue;
-		$this->Nomor_JO->CurrentValue = NULL;
-		$this->Nomor_JO->OldValue = $this->Nomor_JO->CurrentValue;
+		$this->Nama->CurrentValue = NULL;
+		$this->Nama->OldValue = $this->Nama->CurrentValue;
 	}
 
 	// Load form values
@@ -585,10 +585,10 @@ class t102_jo_addopt extends t102_jo
 		// Load from form
 		global $CurrentForm;
 
-		// Check field name 'Nomor_JO' first before field var 'x_Nomor_JO'
-		$val = $CurrentForm->hasValue("Nomor_JO") ? $CurrentForm->getValue("Nomor_JO") : $CurrentForm->getValue("x_Nomor_JO");
-		if (!$this->Nomor_JO->IsDetailKey) {
-			$this->Nomor_JO->setFormValue(ConvertFromUtf8($val));
+		// Check field name 'Nama' first before field var 'x_Nama'
+		$val = $CurrentForm->hasValue("Nama") ? $CurrentForm->getValue("Nama") : $CurrentForm->getValue("x_Nama");
+		if (!$this->Nama->IsDetailKey) {
+			$this->Nama->setFormValue(ConvertFromUtf8($val));
 		}
 
 		// Check field name 'id' first before field var 'x_id'
@@ -599,7 +599,7 @@ class t102_jo_addopt extends t102_jo
 	public function restoreFormValues()
 	{
 		global $CurrentForm;
-		$this->Nomor_JO->CurrentValue = ConvertToUtf8($this->Nomor_JO->FormValue);
+		$this->Nama->CurrentValue = ConvertToUtf8($this->Nama->FormValue);
 	}
 
 	// Load row based on key values
@@ -638,7 +638,7 @@ class t102_jo_addopt extends t102_jo
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
-		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
+		$this->Nama->setDbValue($row['Nama']);
 	}
 
 	// Return a row with default values
@@ -647,7 +647,7 @@ class t102_jo_addopt extends t102_jo
 		$this->loadDefaultValues();
 		$row = [];
 		$row['id'] = $this->id->CurrentValue;
-		$row['Nomor_JO'] = $this->Nomor_JO->CurrentValue;
+		$row['Nama'] = $this->Nama->CurrentValue;
 		return $row;
 	}
 
@@ -663,7 +663,7 @@ class t102_jo_addopt extends t102_jo
 
 		// Common render codes for all row types
 		// id
-		// Nomor_JO
+		// Nama
 
 		if ($this->RowType == ROWTYPE_VIEW) { // View row
 
@@ -671,29 +671,29 @@ class t102_jo_addopt extends t102_jo
 			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
 
-			// Nomor_JO
-			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
-			$this->Nomor_JO->ViewCustomAttributes = "";
+			// Nama
+			$this->Nama->ViewValue = $this->Nama->CurrentValue;
+			$this->Nama->ViewCustomAttributes = "";
 
-			// Nomor_JO
-			$this->Nomor_JO->LinkCustomAttributes = "";
-			$this->Nomor_JO->HrefValue = "";
-			$this->Nomor_JO->TooltipValue = "";
+			// Nama
+			$this->Nama->LinkCustomAttributes = "";
+			$this->Nama->HrefValue = "";
+			$this->Nama->TooltipValue = "";
 		} elseif ($this->RowType == ROWTYPE_ADD) { // Add row
 
-			// Nomor_JO
-			$this->Nomor_JO->EditAttrs["class"] = "form-control";
-			$this->Nomor_JO->EditCustomAttributes = "";
+			// Nama
+			$this->Nama->EditAttrs["class"] = "form-control";
+			$this->Nama->EditCustomAttributes = "";
 			if (REMOVE_XSS)
-				$this->Nomor_JO->CurrentValue = HtmlDecode($this->Nomor_JO->CurrentValue);
-			$this->Nomor_JO->EditValue = HtmlEncode($this->Nomor_JO->CurrentValue);
-			$this->Nomor_JO->PlaceHolder = RemoveHtml($this->Nomor_JO->caption());
+				$this->Nama->CurrentValue = HtmlDecode($this->Nama->CurrentValue);
+			$this->Nama->EditValue = HtmlEncode($this->Nama->CurrentValue);
+			$this->Nama->PlaceHolder = RemoveHtml($this->Nama->caption());
 
 			// Add refer script
-			// Nomor_JO
+			// Nama
 
-			$this->Nomor_JO->LinkCustomAttributes = "";
-			$this->Nomor_JO->HrefValue = "";
+			$this->Nama->LinkCustomAttributes = "";
+			$this->Nama->HrefValue = "";
 		}
 		if ($this->RowType == ROWTYPE_ADD || $this->RowType == ROWTYPE_EDIT || $this->RowType == ROWTYPE_SEARCH) // Add/Edit/Search row
 			$this->setupFieldTitles();
@@ -719,9 +719,9 @@ class t102_jo_addopt extends t102_jo
 				AddMessage($FormError, str_replace("%s", $this->id->caption(), $this->id->RequiredErrorMessage));
 			}
 		}
-		if ($this->Nomor_JO->Required) {
-			if (!$this->Nomor_JO->IsDetailKey && $this->Nomor_JO->FormValue != NULL && $this->Nomor_JO->FormValue == "") {
-				AddMessage($FormError, str_replace("%s", $this->Nomor_JO->caption(), $this->Nomor_JO->RequiredErrorMessage));
+		if ($this->Nama->Required) {
+			if (!$this->Nama->IsDetailKey && $this->Nama->FormValue != NULL && $this->Nama->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->Nama->caption(), $this->Nama->RequiredErrorMessage));
 			}
 		}
 
@@ -749,8 +749,8 @@ class t102_jo_addopt extends t102_jo
 		}
 		$rsnew = [];
 
-		// Nomor_JO
-		$this->Nomor_JO->setDbValueDef($rsnew, $this->Nomor_JO->CurrentValue, "", FALSE);
+		// Nama
+		$this->Nama->setDbValueDef($rsnew, $this->Nama->CurrentValue, "", FALSE);
 
 		// Call Row Inserting event
 		$rs = ($rsold) ? $rsold->fields : NULL;
@@ -794,7 +794,7 @@ class t102_jo_addopt extends t102_jo
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new Breadcrumb();
 		$url = substr(CurrentUrl(), strrpos(CurrentUrl(), "/")+1);
-		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t102_jolist.php"), "", $this->TableVar, TRUE);
+		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t003_feederlist.php"), "", $this->TableVar, TRUE);
 		$pageId = "addopt";
 		$Breadcrumb->add("addopt", $pageId, $url);
 	}

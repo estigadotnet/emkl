@@ -700,6 +700,9 @@ class t006_trucking_vendor_view extends t006_trucking_vendor
 		$this->resetAttributes();
 		$this->renderRow();
 
+		// Set up detail parameters
+		$this->setupDetailParms();
+
 		// Normal return
 		if (IsApi()) {
 			$rows = $this->getRecordsFromRecordset($this->Recordset, TRUE); // Get current record only
@@ -750,6 +753,86 @@ class t006_trucking_vendor_view extends t006_trucking_vendor
 		else
 			$item->Body = "<a class=\"ew-action ew-delete\" title=\"" . HtmlTitle($Language->phrase("ViewPageDeleteLink")) . "\" data-caption=\"" . HtmlTitle($Language->phrase("ViewPageDeleteLink")) . "\" href=\"" . HtmlEncode($this->DeleteUrl) . "\">" . $Language->phrase("ViewPageDeleteLink") . "</a>";
 		$item->Visible = ($this->DeleteUrl <> "");
+		$option = &$options["detail"];
+		$detailTableLink = "";
+		$detailViewTblVar = "";
+		$detailCopyTblVar = "";
+		$detailEditTblVar = "";
+
+		// "detail_t005_driver"
+		$item = &$option->add("detail_t005_driver");
+		$body = $Language->phrase("ViewPageDetailLink") . $Language->TablePhrase("t005_driver", "TblCaption");
+		$body = "<a class=\"btn btn-default ew-row-link ew-detail\" data-action=\"list\" href=\"" . HtmlEncode("t005_driverlist.php?" . TABLE_SHOW_MASTER . "=t006_trucking_vendor&fk_id=" . urlencode(strval($this->id->CurrentValue)) . "") . "\">" . $body . "</a>";
+		$links = "";
+		if (!isset($GLOBALS["t005_driver_grid"]))
+			$GLOBALS["t005_driver_grid"] = new t005_driver_grid();
+		if ($GLOBALS["t005_driver_grid"]->DetailView) {
+			$links .= "<li><a class=\"ew-row-link ew-detail-view\" data-action=\"view\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailViewLink")) . "\" href=\"" . HtmlEncode($this->getViewUrl(TABLE_SHOW_DETAIL . "=t005_driver")) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailViewLink")) . "</a></li>";
+			if ($detailViewTblVar <> "")
+				$detailViewTblVar .= ",";
+			$detailViewTblVar .= "t005_driver";
+		}
+		if ($GLOBALS["t005_driver_grid"]->DetailEdit) {
+			$links .= "<li><a class=\"ew-row-link ew-detail-edit\" data-action=\"edit\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailEditLink")) . "\" href=\"" . HtmlEncode($this->getEditUrl(TABLE_SHOW_DETAIL . "=t005_driver")) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailEditLink")) . "</a></li>";
+			if ($detailEditTblVar <> "")
+				$detailEditTblVar .= ",";
+			$detailEditTblVar .= "t005_driver";
+		}
+		if ($GLOBALS["t005_driver_grid"]->DetailAdd) {
+			$links .= "<li><a class=\"ew-row-link ew-detail-copy\" data-action=\"add\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailCopyLink")) . "\" href=\"" . HtmlEncode($this->getCopyUrl(TABLE_SHOW_DETAIL . "=t005_driver")) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailCopyLink")) . "</a></li>";
+			if ($detailCopyTblVar <> "")
+				$detailCopyTblVar .= ",";
+			$detailCopyTblVar .= "t005_driver";
+		}
+		if ($links <> "") {
+			$body .= "<button class=\"dropdown-toggle btn btn-default ew-detail\" data-toggle=\"dropdown\"></button>";
+			$body .= "<ul class=\"dropdown-menu\">". $links . "</ul>";
+		}
+		$body = "<div class=\"btn-group btn-group-sm ew-btn-group\">" . $body . "</div>";
+		$item->Body = $body;
+		$item->Visible = TRUE;
+		if ($item->Visible) {
+			if ($detailTableLink <> "")
+				$detailTableLink .= ",";
+			$detailTableLink .= "t005_driver";
+		}
+		if ($this->ShowMultipleDetails)
+			$item->Visible = FALSE;
+
+		// Multiple details
+		if ($this->ShowMultipleDetails) {
+			$body = "<div class=\"btn-group btn-group-sm ew-btn-group\">";
+			$links = "";
+			if ($detailViewTblVar <> "") {
+				$links .= "<li><a class=\"ew-row-link ew-detail-view\" data-action=\"view\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailViewLink")) . "\" href=\"" . HtmlEncode($this->getViewUrl(TABLE_SHOW_DETAIL . "=" . $detailViewTblVar)) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailViewLink")) . "</a></li>";
+			}
+			if ($detailEditTblVar <> "") {
+				$links .= "<li><a class=\"ew-row-link ew-detail-edit\" data-action=\"edit\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailEditLink")) . "\" href=\"" . HtmlEncode($this->getEditUrl(TABLE_SHOW_DETAIL . "=" . $detailEditTblVar)) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailEditLink")) . "</a></li>";
+			}
+			if ($detailCopyTblVar <> "") {
+				$links .= "<li><a class=\"ew-row-link ew-detail-copy\" data-action=\"add\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailCopyLink")) . "\" href=\"" . HtmlEncode($this->getCopyUrl(TABLE_SHOW_DETAIL . "=" . $detailCopyTblVar)) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailCopyLink")) . "</a></li>";
+			}
+			if ($links <> "") {
+				$body .= "<button class=\"dropdown-toggle btn btn-default ew-master-detail\" title=\"" . HtmlTitle($Language->phrase("MultipleMasterDetails")) . "\" data-toggle=\"dropdown\">" . $Language->phrase("MultipleMasterDetails") . "</button>";
+				$body .= "<ul class=\"dropdown-menu ew-menu\">". $links . "</ul>";
+			}
+			$body .= "</div>";
+
+			// Multiple details
+			$opt = &$option->add("details");
+			$opt->Body = $body;
+		}
+
+		// Set up detail default
+		$option = &$options["detail"];
+		$options["detail"]->DropDownButtonPhrase = $Language->phrase("ButtonDetails");
+		$ar = explode(",", $detailTableLink);
+		$cnt = count($ar);
+		$option->UseDropDownButton = ($cnt > 1);
+		$option->UseButtonGroup = TRUE;
+		$item = &$option->add($option->GroupOptionName);
+		$item->Body = "";
+		$item->Visible = FALSE;
 
 		// Set up action default
 		$option = &$options["action"];
@@ -890,6 +973,36 @@ class t006_trucking_vendor_view extends t006_trucking_vendor
 		// Call Row Rendered event
 		if ($this->RowType <> ROWTYPE_AGGREGATEINIT)
 			$this->Row_Rendered();
+	}
+
+	// Set up detail parms based on QueryString
+	protected function setupDetailParms()
+	{
+
+		// Get the keys for master table
+		if (Get(TABLE_SHOW_DETAIL) !== NULL) {
+			$detailTblVar = Get(TABLE_SHOW_DETAIL);
+			$this->setCurrentDetailTable($detailTblVar);
+		} else {
+			$detailTblVar = $this->getCurrentDetailTable();
+		}
+		if ($detailTblVar <> "") {
+			$detailTblVar = explode(",", $detailTblVar);
+			if (in_array("t005_driver", $detailTblVar)) {
+				if (!isset($GLOBALS["t005_driver_grid"]))
+					$GLOBALS["t005_driver_grid"] = new t005_driver_grid();
+				if ($GLOBALS["t005_driver_grid"]->DetailView) {
+					$GLOBALS["t005_driver_grid"]->CurrentMode = "view";
+
+					// Save current master table to detail table
+					$GLOBALS["t005_driver_grid"]->setCurrentMasterTable($this->TableVar);
+					$GLOBALS["t005_driver_grid"]->setStartRecordNumber(1);
+					$GLOBALS["t005_driver_grid"]->TruckingVendor_id->IsDetailKey = TRUE;
+					$GLOBALS["t005_driver_grid"]->TruckingVendor_id->CurrentValue = $this->id->CurrentValue;
+					$GLOBALS["t005_driver_grid"]->TruckingVendor_id->setSessionValue($GLOBALS["t005_driver_grid"]->TruckingVendor_id->CurrentValue);
+				}
+			}
+		}
 	}
 
 	// Set up Breadcrumb

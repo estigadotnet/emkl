@@ -196,7 +196,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->EmployeeID) == "") { ?>
 		<th data-name="EmployeeID" class="<?php echo $t096_employees->EmployeeID->headerCellClass() ?>"><div id="elh_t096_employees_EmployeeID" class="t096_employees_EmployeeID"><div class="ew-table-header-caption"><?php echo $t096_employees->EmployeeID->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="EmployeeID" class="<?php echo $t096_employees->EmployeeID->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->EmployeeID) ?>',1);"><div id="elh_t096_employees_EmployeeID" class="t096_employees_EmployeeID">
+		<th data-name="EmployeeID" class="<?php echo $t096_employees->EmployeeID->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->EmployeeID) ?>',2);"><div id="elh_t096_employees_EmployeeID" class="t096_employees_EmployeeID">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->EmployeeID->caption() ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->EmployeeID->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->EmployeeID->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -205,7 +205,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->LastName) == "") { ?>
 		<th data-name="LastName" class="<?php echo $t096_employees->LastName->headerCellClass() ?>"><div id="elh_t096_employees_LastName" class="t096_employees_LastName"><div class="ew-table-header-caption"><?php echo $t096_employees->LastName->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="LastName" class="<?php echo $t096_employees->LastName->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->LastName) ?>',1);"><div id="elh_t096_employees_LastName" class="t096_employees_LastName">
+		<th data-name="LastName" class="<?php echo $t096_employees->LastName->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->LastName) ?>',2);"><div id="elh_t096_employees_LastName" class="t096_employees_LastName">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->LastName->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->LastName->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->LastName->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -214,7 +214,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->FirstName) == "") { ?>
 		<th data-name="FirstName" class="<?php echo $t096_employees->FirstName->headerCellClass() ?>"><div id="elh_t096_employees_FirstName" class="t096_employees_FirstName"><div class="ew-table-header-caption"><?php echo $t096_employees->FirstName->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="FirstName" class="<?php echo $t096_employees->FirstName->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->FirstName) ?>',1);"><div id="elh_t096_employees_FirstName" class="t096_employees_FirstName">
+		<th data-name="FirstName" class="<?php echo $t096_employees->FirstName->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->FirstName) ?>',2);"><div id="elh_t096_employees_FirstName" class="t096_employees_FirstName">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->FirstName->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->FirstName->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->FirstName->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -223,7 +223,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->Title) == "") { ?>
 		<th data-name="Title" class="<?php echo $t096_employees->Title->headerCellClass() ?>"><div id="elh_t096_employees_Title" class="t096_employees_Title"><div class="ew-table-header-caption"><?php echo $t096_employees->Title->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Title" class="<?php echo $t096_employees->Title->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Title) ?>',1);"><div id="elh_t096_employees_Title" class="t096_employees_Title">
+		<th data-name="Title" class="<?php echo $t096_employees->Title->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Title) ?>',2);"><div id="elh_t096_employees_Title" class="t096_employees_Title">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->Title->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->Title->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->Title->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -232,7 +232,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->TitleOfCourtesy) == "") { ?>
 		<th data-name="TitleOfCourtesy" class="<?php echo $t096_employees->TitleOfCourtesy->headerCellClass() ?>"><div id="elh_t096_employees_TitleOfCourtesy" class="t096_employees_TitleOfCourtesy"><div class="ew-table-header-caption"><?php echo $t096_employees->TitleOfCourtesy->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="TitleOfCourtesy" class="<?php echo $t096_employees->TitleOfCourtesy->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->TitleOfCourtesy) ?>',1);"><div id="elh_t096_employees_TitleOfCourtesy" class="t096_employees_TitleOfCourtesy">
+		<th data-name="TitleOfCourtesy" class="<?php echo $t096_employees->TitleOfCourtesy->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->TitleOfCourtesy) ?>',2);"><div id="elh_t096_employees_TitleOfCourtesy" class="t096_employees_TitleOfCourtesy">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->TitleOfCourtesy->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->TitleOfCourtesy->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->TitleOfCourtesy->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -241,7 +241,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->BirthDate) == "") { ?>
 		<th data-name="BirthDate" class="<?php echo $t096_employees->BirthDate->headerCellClass() ?>"><div id="elh_t096_employees_BirthDate" class="t096_employees_BirthDate"><div class="ew-table-header-caption"><?php echo $t096_employees->BirthDate->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="BirthDate" class="<?php echo $t096_employees->BirthDate->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->BirthDate) ?>',1);"><div id="elh_t096_employees_BirthDate" class="t096_employees_BirthDate">
+		<th data-name="BirthDate" class="<?php echo $t096_employees->BirthDate->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->BirthDate) ?>',2);"><div id="elh_t096_employees_BirthDate" class="t096_employees_BirthDate">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->BirthDate->caption() ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->BirthDate->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->BirthDate->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -250,7 +250,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->HireDate) == "") { ?>
 		<th data-name="HireDate" class="<?php echo $t096_employees->HireDate->headerCellClass() ?>"><div id="elh_t096_employees_HireDate" class="t096_employees_HireDate"><div class="ew-table-header-caption"><?php echo $t096_employees->HireDate->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="HireDate" class="<?php echo $t096_employees->HireDate->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->HireDate) ?>',1);"><div id="elh_t096_employees_HireDate" class="t096_employees_HireDate">
+		<th data-name="HireDate" class="<?php echo $t096_employees->HireDate->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->HireDate) ?>',2);"><div id="elh_t096_employees_HireDate" class="t096_employees_HireDate">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->HireDate->caption() ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->HireDate->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->HireDate->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -259,7 +259,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->Address) == "") { ?>
 		<th data-name="Address" class="<?php echo $t096_employees->Address->headerCellClass() ?>"><div id="elh_t096_employees_Address" class="t096_employees_Address"><div class="ew-table-header-caption"><?php echo $t096_employees->Address->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Address" class="<?php echo $t096_employees->Address->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Address) ?>',1);"><div id="elh_t096_employees_Address" class="t096_employees_Address">
+		<th data-name="Address" class="<?php echo $t096_employees->Address->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Address) ?>',2);"><div id="elh_t096_employees_Address" class="t096_employees_Address">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->Address->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->Address->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->Address->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -268,7 +268,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->City) == "") { ?>
 		<th data-name="City" class="<?php echo $t096_employees->City->headerCellClass() ?>"><div id="elh_t096_employees_City" class="t096_employees_City"><div class="ew-table-header-caption"><?php echo $t096_employees->City->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="City" class="<?php echo $t096_employees->City->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->City) ?>',1);"><div id="elh_t096_employees_City" class="t096_employees_City">
+		<th data-name="City" class="<?php echo $t096_employees->City->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->City) ?>',2);"><div id="elh_t096_employees_City" class="t096_employees_City">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->City->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->City->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->City->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -277,7 +277,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->Region) == "") { ?>
 		<th data-name="Region" class="<?php echo $t096_employees->Region->headerCellClass() ?>"><div id="elh_t096_employees_Region" class="t096_employees_Region"><div class="ew-table-header-caption"><?php echo $t096_employees->Region->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Region" class="<?php echo $t096_employees->Region->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Region) ?>',1);"><div id="elh_t096_employees_Region" class="t096_employees_Region">
+		<th data-name="Region" class="<?php echo $t096_employees->Region->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Region) ?>',2);"><div id="elh_t096_employees_Region" class="t096_employees_Region">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->Region->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->Region->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->Region->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -286,7 +286,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->PostalCode) == "") { ?>
 		<th data-name="PostalCode" class="<?php echo $t096_employees->PostalCode->headerCellClass() ?>"><div id="elh_t096_employees_PostalCode" class="t096_employees_PostalCode"><div class="ew-table-header-caption"><?php echo $t096_employees->PostalCode->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="PostalCode" class="<?php echo $t096_employees->PostalCode->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->PostalCode) ?>',1);"><div id="elh_t096_employees_PostalCode" class="t096_employees_PostalCode">
+		<th data-name="PostalCode" class="<?php echo $t096_employees->PostalCode->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->PostalCode) ?>',2);"><div id="elh_t096_employees_PostalCode" class="t096_employees_PostalCode">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->PostalCode->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->PostalCode->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->PostalCode->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -295,7 +295,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->Country) == "") { ?>
 		<th data-name="Country" class="<?php echo $t096_employees->Country->headerCellClass() ?>"><div id="elh_t096_employees_Country" class="t096_employees_Country"><div class="ew-table-header-caption"><?php echo $t096_employees->Country->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Country" class="<?php echo $t096_employees->Country->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Country) ?>',1);"><div id="elh_t096_employees_Country" class="t096_employees_Country">
+		<th data-name="Country" class="<?php echo $t096_employees->Country->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Country) ?>',2);"><div id="elh_t096_employees_Country" class="t096_employees_Country">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->Country->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->Country->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->Country->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -304,7 +304,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->HomePhone) == "") { ?>
 		<th data-name="HomePhone" class="<?php echo $t096_employees->HomePhone->headerCellClass() ?>"><div id="elh_t096_employees_HomePhone" class="t096_employees_HomePhone"><div class="ew-table-header-caption"><?php echo $t096_employees->HomePhone->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="HomePhone" class="<?php echo $t096_employees->HomePhone->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->HomePhone) ?>',1);"><div id="elh_t096_employees_HomePhone" class="t096_employees_HomePhone">
+		<th data-name="HomePhone" class="<?php echo $t096_employees->HomePhone->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->HomePhone) ?>',2);"><div id="elh_t096_employees_HomePhone" class="t096_employees_HomePhone">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->HomePhone->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->HomePhone->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->HomePhone->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -313,7 +313,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->Extension) == "") { ?>
 		<th data-name="Extension" class="<?php echo $t096_employees->Extension->headerCellClass() ?>"><div id="elh_t096_employees_Extension" class="t096_employees_Extension"><div class="ew-table-header-caption"><?php echo $t096_employees->Extension->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Extension" class="<?php echo $t096_employees->Extension->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Extension) ?>',1);"><div id="elh_t096_employees_Extension" class="t096_employees_Extension">
+		<th data-name="Extension" class="<?php echo $t096_employees->Extension->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Extension) ?>',2);"><div id="elh_t096_employees_Extension" class="t096_employees_Extension">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->Extension->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->Extension->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->Extension->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -322,7 +322,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->_Email) == "") { ?>
 		<th data-name="_Email" class="<?php echo $t096_employees->_Email->headerCellClass() ?>"><div id="elh_t096_employees__Email" class="t096_employees__Email"><div class="ew-table-header-caption"><?php echo $t096_employees->_Email->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="_Email" class="<?php echo $t096_employees->_Email->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->_Email) ?>',1);"><div id="elh_t096_employees__Email" class="t096_employees__Email">
+		<th data-name="_Email" class="<?php echo $t096_employees->_Email->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->_Email) ?>',2);"><div id="elh_t096_employees__Email" class="t096_employees__Email">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->_Email->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->_Email->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->_Email->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -331,7 +331,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->Photo) == "") { ?>
 		<th data-name="Photo" class="<?php echo $t096_employees->Photo->headerCellClass() ?>"><div id="elh_t096_employees_Photo" class="t096_employees_Photo"><div class="ew-table-header-caption"><?php echo $t096_employees->Photo->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Photo" class="<?php echo $t096_employees->Photo->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Photo) ?>',1);"><div id="elh_t096_employees_Photo" class="t096_employees_Photo">
+		<th data-name="Photo" class="<?php echo $t096_employees->Photo->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Photo) ?>',2);"><div id="elh_t096_employees_Photo" class="t096_employees_Photo">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->Photo->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->Photo->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->Photo->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -340,7 +340,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->ReportsTo) == "") { ?>
 		<th data-name="ReportsTo" class="<?php echo $t096_employees->ReportsTo->headerCellClass() ?>"><div id="elh_t096_employees_ReportsTo" class="t096_employees_ReportsTo"><div class="ew-table-header-caption"><?php echo $t096_employees->ReportsTo->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="ReportsTo" class="<?php echo $t096_employees->ReportsTo->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->ReportsTo) ?>',1);"><div id="elh_t096_employees_ReportsTo" class="t096_employees_ReportsTo">
+		<th data-name="ReportsTo" class="<?php echo $t096_employees->ReportsTo->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->ReportsTo) ?>',2);"><div id="elh_t096_employees_ReportsTo" class="t096_employees_ReportsTo">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->ReportsTo->caption() ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->ReportsTo->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->ReportsTo->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -349,7 +349,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->Password) == "") { ?>
 		<th data-name="Password" class="<?php echo $t096_employees->Password->headerCellClass() ?>"><div id="elh_t096_employees_Password" class="t096_employees_Password"><div class="ew-table-header-caption"><?php echo $t096_employees->Password->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Password" class="<?php echo $t096_employees->Password->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Password) ?>',1);"><div id="elh_t096_employees_Password" class="t096_employees_Password">
+		<th data-name="Password" class="<?php echo $t096_employees->Password->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Password) ?>',2);"><div id="elh_t096_employees_Password" class="t096_employees_Password">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->Password->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->Password->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->Password->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -358,7 +358,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->UserLevel) == "") { ?>
 		<th data-name="UserLevel" class="<?php echo $t096_employees->UserLevel->headerCellClass() ?>"><div id="elh_t096_employees_UserLevel" class="t096_employees_UserLevel"><div class="ew-table-header-caption"><?php echo $t096_employees->UserLevel->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="UserLevel" class="<?php echo $t096_employees->UserLevel->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->UserLevel) ?>',1);"><div id="elh_t096_employees_UserLevel" class="t096_employees_UserLevel">
+		<th data-name="UserLevel" class="<?php echo $t096_employees->UserLevel->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->UserLevel) ?>',2);"><div id="elh_t096_employees_UserLevel" class="t096_employees_UserLevel">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->UserLevel->caption() ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->UserLevel->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->UserLevel->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -367,7 +367,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->Username) == "") { ?>
 		<th data-name="Username" class="<?php echo $t096_employees->Username->headerCellClass() ?>"><div id="elh_t096_employees_Username" class="t096_employees_Username"><div class="ew-table-header-caption"><?php echo $t096_employees->Username->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Username" class="<?php echo $t096_employees->Username->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Username) ?>',1);"><div id="elh_t096_employees_Username" class="t096_employees_Username">
+		<th data-name="Username" class="<?php echo $t096_employees->Username->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Username) ?>',2);"><div id="elh_t096_employees_Username" class="t096_employees_Username">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->Username->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->Username->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->Username->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -376,7 +376,7 @@ $t096_employees_list->ListOptions->render("header", "left");
 	<?php if ($t096_employees->sortUrl($t096_employees->Activated) == "") { ?>
 		<th data-name="Activated" class="<?php echo $t096_employees->Activated->headerCellClass() ?>"><div id="elh_t096_employees_Activated" class="t096_employees_Activated"><div class="ew-table-header-caption"><?php echo $t096_employees->Activated->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Activated" class="<?php echo $t096_employees->Activated->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Activated) ?>',1);"><div id="elh_t096_employees_Activated" class="t096_employees_Activated">
+		<th data-name="Activated" class="<?php echo $t096_employees->Activated->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t096_employees->SortUrl($t096_employees->Activated) ?>',2);"><div id="elh_t096_employees_Activated" class="t096_employees_Activated">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t096_employees->Activated->caption() ?></span><span class="ew-table-header-sort"><?php if ($t096_employees->Activated->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t096_employees->Activated->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>

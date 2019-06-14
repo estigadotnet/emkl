@@ -4,7 +4,7 @@ namespace PHPMaker2019\emkl_prj;
 /**
  * Page class
  */
-class t103_trucking_view extends t103_trucking
+class t101_jo_head_view extends t101_jo_head
 {
 
 	// Page ID
@@ -14,10 +14,10 @@ class t103_trucking_view extends t103_trucking
 	public $ProjectID = "{D4B21A3D-A1C8-4ED3-BA65-212E10E691E7}";
 
 	// Table name
-	public $TableName = 't103_trucking';
+	public $TableName = 't101_jo_head';
 
 	// Page object name
-	public $PageObjName = "t103_trucking_view";
+	public $PageObjName = "t101_jo_head_view";
 
 	// Page URLs
 	public $AddUrl;
@@ -375,10 +375,10 @@ class t103_trucking_view extends t103_trucking
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (t103_trucking)
-		if (!isset($GLOBALS["t103_trucking"]) || get_class($GLOBALS["t103_trucking"]) == PROJECT_NAMESPACE . "t103_trucking") {
-			$GLOBALS["t103_trucking"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["t103_trucking"];
+		// Table object (t101_jo_head)
+		if (!isset($GLOBALS["t101_jo_head"]) || get_class($GLOBALS["t101_jo_head"]) == PROJECT_NAMESPACE . "t101_jo_head") {
+			$GLOBALS["t101_jo_head"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["t101_jo_head"];
 		}
 		$keyUrl = "";
 		if (Get("id") !== NULL) {
@@ -400,7 +400,7 @@ class t103_trucking_view extends t103_trucking
 
 		// Table name (for backward compatibility)
 		if (!defined(PROJECT_NAMESPACE . "TABLE_NAME"))
-			define(PROJECT_NAMESPACE . "TABLE_NAME", 't103_trucking');
+			define(PROJECT_NAMESPACE . "TABLE_NAME", 't101_jo_head');
 
 		// Start timer
 		if (!isset($GLOBALS["DebugTimer"]))
@@ -441,14 +441,14 @@ class t103_trucking_view extends t103_trucking
 		Page_Unloaded();
 
 		// Export
-		global $EXPORT, $t103_trucking;
+		global $EXPORT, $t101_jo_head;
 		if ($this->CustomExport && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EXPORT)) {
 				$content = ob_get_contents();
 			if ($ExportFileName == "")
 				$ExportFileName = $this->TableVar;
 			$class = PROJECT_NAMESPACE . $EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($t103_trucking);
+				$doc = new $class($t101_jo_head);
 				$doc->Text = @$content;
 				if ($this->isExport("email"))
 					echo $this->exportEmail($doc->Text);
@@ -483,7 +483,7 @@ class t103_trucking_view extends t103_trucking
 				$pageName = GetPageName($url);
 				if ($pageName != $this->getListUrl()) { // Not List page
 					$row["caption"] = $this->getModalCaption($pageName);
-					if ($pageName == "t103_truckingview.php")
+					if ($pageName == "t101_jo_headview.php")
 						$row["view"] = "1";
 				} else { // List page should not be shown as modal => error
 					$row["error"] = $this->getFailureMessage();
@@ -616,23 +616,13 @@ class t103_trucking_view extends t103_trucking
 		$this->IsModal = (Param("modal") == "1");
 		$this->CurrentAction = Param("action"); // Set up current action
 		$this->id->setVisibility();
-		$this->EI->setVisibility();
+		$this->Nomor_JO->setVisibility();
 		$this->Shipper_id->setVisibility();
 		$this->Party->setVisibility();
-		$this->Jenis_Container->setVisibility();
-		$this->Tgl_Stuffing->setVisibility();
+		$this->Container->setVisibility();
+		$this->Tanggal_Stuffing->setVisibility();
 		$this->Destination_id->setVisibility();
 		$this->Feeder_id->setVisibility();
-		$this->ETA_ETD->setVisibility();
-		$this->Liner_id->setVisibility();
-		$this->Remark->setVisibility();
-		$this->TruckingVendor_id->setVisibility();
-		$this->Driver_id->setVisibility();
-		$this->No_Pol_1->setVisibility();
-		$this->No_Pol_2->setVisibility();
-		$this->No_Pol_3->setVisibility();
-		$this->Nomor_Container_1->setVisibility();
-		$this->Nomor_Container_2->setVisibility();
 		$this->hideFieldsForAddEdit();
 
 		// Do not use lookup cache
@@ -654,8 +644,11 @@ class t103_trucking_view extends t103_trucking
 		$this->createToken();
 
 		// Set up lookup cache
-		// Check modal
+		$this->setupLookupOptions($this->Shipper_id);
+		$this->setupLookupOptions($this->Destination_id);
+		$this->setupLookupOptions($this->Feeder_id);
 
+		// Check modal
 		if ($this->IsModal)
 			$SkipHeaderFooter = TRUE;
 		$returnUrl = "";
@@ -674,7 +667,7 @@ class t103_trucking_view extends t103_trucking
 				$this->id->setFormValue(Route(2));
 				$this->RecKey["id"] = $this->id->FormValue;
 			} else {
-				$returnUrl = "t103_truckinglist.php"; // Return to list
+				$returnUrl = "t101_jo_headlist.php"; // Return to list
 			}
 
 			// Get action
@@ -696,11 +689,11 @@ class t103_trucking_view extends t103_trucking
 					if (!$res) { // Load record based on key
 						if ($this->getSuccessMessage() == "" && $this->getFailureMessage() == "")
 							$this->setFailureMessage($Language->phrase("NoRecord")); // Set no record message
-						$returnUrl = "t103_truckinglist.php"; // No matching record, return to list
+						$returnUrl = "t101_jo_headlist.php"; // No matching record, return to list
 					}
 			}
 		} else {
-			$returnUrl = "t103_truckinglist.php"; // Not page request, return to list
+			$returnUrl = "t101_jo_headlist.php"; // Not page request, return to list
 		}
 		if ($returnUrl <> "") {
 			$this->terminate($returnUrl);
@@ -715,6 +708,9 @@ class t103_trucking_view extends t103_trucking
 		$this->RowType = ROWTYPE_VIEW;
 		$this->resetAttributes();
 		$this->renderRow();
+
+		// Set up detail parameters
+		$this->setupDetailParms();
 
 		// Normal return
 		if (IsApi()) {
@@ -766,6 +762,86 @@ class t103_trucking_view extends t103_trucking
 		else
 			$item->Body = "<a class=\"ew-action ew-delete\" title=\"" . HtmlTitle($Language->phrase("ViewPageDeleteLink")) . "\" data-caption=\"" . HtmlTitle($Language->phrase("ViewPageDeleteLink")) . "\" href=\"" . HtmlEncode($this->DeleteUrl) . "\">" . $Language->phrase("ViewPageDeleteLink") . "</a>";
 		$item->Visible = ($this->DeleteUrl <> "");
+		$option = &$options["detail"];
+		$detailTableLink = "";
+		$detailViewTblVar = "";
+		$detailCopyTblVar = "";
+		$detailEditTblVar = "";
+
+		// "detail_t101_jo_detail"
+		$item = &$option->add("detail_t101_jo_detail");
+		$body = $Language->phrase("ViewPageDetailLink") . $Language->TablePhrase("t101_jo_detail", "TblCaption");
+		$body = "<a class=\"btn btn-default ew-row-link ew-detail\" data-action=\"list\" href=\"" . HtmlEncode("t101_jo_detaillist.php?" . TABLE_SHOW_MASTER . "=t101_jo_head&fk_id=" . urlencode(strval($this->id->CurrentValue)) . "") . "\">" . $body . "</a>";
+		$links = "";
+		if (!isset($GLOBALS["t101_jo_detail_grid"]))
+			$GLOBALS["t101_jo_detail_grid"] = new t101_jo_detail_grid();
+		if ($GLOBALS["t101_jo_detail_grid"]->DetailView) {
+			$links .= "<li><a class=\"ew-row-link ew-detail-view\" data-action=\"view\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailViewLink")) . "\" href=\"" . HtmlEncode($this->getViewUrl(TABLE_SHOW_DETAIL . "=t101_jo_detail")) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailViewLink")) . "</a></li>";
+			if ($detailViewTblVar <> "")
+				$detailViewTblVar .= ",";
+			$detailViewTblVar .= "t101_jo_detail";
+		}
+		if ($GLOBALS["t101_jo_detail_grid"]->DetailEdit) {
+			$links .= "<li><a class=\"ew-row-link ew-detail-edit\" data-action=\"edit\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailEditLink")) . "\" href=\"" . HtmlEncode($this->getEditUrl(TABLE_SHOW_DETAIL . "=t101_jo_detail")) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailEditLink")) . "</a></li>";
+			if ($detailEditTblVar <> "")
+				$detailEditTblVar .= ",";
+			$detailEditTblVar .= "t101_jo_detail";
+		}
+		if ($GLOBALS["t101_jo_detail_grid"]->DetailAdd) {
+			$links .= "<li><a class=\"ew-row-link ew-detail-copy\" data-action=\"add\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailCopyLink")) . "\" href=\"" . HtmlEncode($this->getCopyUrl(TABLE_SHOW_DETAIL . "=t101_jo_detail")) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailCopyLink")) . "</a></li>";
+			if ($detailCopyTblVar <> "")
+				$detailCopyTblVar .= ",";
+			$detailCopyTblVar .= "t101_jo_detail";
+		}
+		if ($links <> "") {
+			$body .= "<button class=\"dropdown-toggle btn btn-default ew-detail\" data-toggle=\"dropdown\"></button>";
+			$body .= "<ul class=\"dropdown-menu\">". $links . "</ul>";
+		}
+		$body = "<div class=\"btn-group btn-group-sm ew-btn-group\">" . $body . "</div>";
+		$item->Body = $body;
+		$item->Visible = TRUE;
+		if ($item->Visible) {
+			if ($detailTableLink <> "")
+				$detailTableLink .= ",";
+			$detailTableLink .= "t101_jo_detail";
+		}
+		if ($this->ShowMultipleDetails)
+			$item->Visible = FALSE;
+
+		// Multiple details
+		if ($this->ShowMultipleDetails) {
+			$body = "<div class=\"btn-group btn-group-sm ew-btn-group\">";
+			$links = "";
+			if ($detailViewTblVar <> "") {
+				$links .= "<li><a class=\"ew-row-link ew-detail-view\" data-action=\"view\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailViewLink")) . "\" href=\"" . HtmlEncode($this->getViewUrl(TABLE_SHOW_DETAIL . "=" . $detailViewTblVar)) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailViewLink")) . "</a></li>";
+			}
+			if ($detailEditTblVar <> "") {
+				$links .= "<li><a class=\"ew-row-link ew-detail-edit\" data-action=\"edit\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailEditLink")) . "\" href=\"" . HtmlEncode($this->getEditUrl(TABLE_SHOW_DETAIL . "=" . $detailEditTblVar)) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailEditLink")) . "</a></li>";
+			}
+			if ($detailCopyTblVar <> "") {
+				$links .= "<li><a class=\"ew-row-link ew-detail-copy\" data-action=\"add\" data-caption=\"" . HtmlTitle($Language->phrase("MasterDetailCopyLink")) . "\" href=\"" . HtmlEncode($this->getCopyUrl(TABLE_SHOW_DETAIL . "=" . $detailCopyTblVar)) . "\">" . HtmlImageAndText($Language->phrase("MasterDetailCopyLink")) . "</a></li>";
+			}
+			if ($links <> "") {
+				$body .= "<button class=\"dropdown-toggle btn btn-default ew-master-detail\" title=\"" . HtmlTitle($Language->phrase("MultipleMasterDetails")) . "\" data-toggle=\"dropdown\">" . $Language->phrase("MultipleMasterDetails") . "</button>";
+				$body .= "<ul class=\"dropdown-menu ew-menu\">". $links . "</ul>";
+			}
+			$body .= "</div>";
+
+			// Multiple details
+			$opt = &$option->add("details");
+			$opt->Body = $body;
+		}
+
+		// Set up detail default
+		$option = &$options["detail"];
+		$options["detail"]->DropDownButtonPhrase = $Language->phrase("ButtonDetails");
+		$ar = explode(",", $detailTableLink);
+		$cnt = count($ar);
+		$option->UseDropDownButton = ($cnt > 1);
+		$option->UseButtonGroup = TRUE;
+		$item = &$option->add($option->GroupOptionName);
+		$item->Body = "";
+		$item->Visible = FALSE;
 
 		// Set up action default
 		$option = &$options["action"];
@@ -850,23 +926,13 @@ class t103_trucking_view extends t103_trucking
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
-		$this->EI->setDbValue($row['EI']);
+		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
 		$this->Shipper_id->setDbValue($row['Shipper_id']);
 		$this->Party->setDbValue($row['Party']);
-		$this->Jenis_Container->setDbValue($row['Jenis_Container']);
-		$this->Tgl_Stuffing->setDbValue($row['Tgl_Stuffing']);
+		$this->Container->setDbValue($row['Container']);
+		$this->Tanggal_Stuffing->setDbValue($row['Tanggal_Stuffing']);
 		$this->Destination_id->setDbValue($row['Destination_id']);
 		$this->Feeder_id->setDbValue($row['Feeder_id']);
-		$this->ETA_ETD->setDbValue($row['ETA_ETD']);
-		$this->Liner_id->setDbValue($row['Liner_id']);
-		$this->Remark->setDbValue($row['Remark']);
-		$this->TruckingVendor_id->setDbValue($row['TruckingVendor_id']);
-		$this->Driver_id->setDbValue($row['Driver_id']);
-		$this->No_Pol_1->setDbValue($row['No_Pol_1']);
-		$this->No_Pol_2->setDbValue($row['No_Pol_2']);
-		$this->No_Pol_3->setDbValue($row['No_Pol_3']);
-		$this->Nomor_Container_1->setDbValue($row['Nomor_Container_1']);
-		$this->Nomor_Container_2->setDbValue($row['Nomor_Container_2']);
 	}
 
 	// Return a row with default values
@@ -874,23 +940,13 @@ class t103_trucking_view extends t103_trucking
 	{
 		$row = [];
 		$row['id'] = NULL;
-		$row['EI'] = NULL;
+		$row['Nomor_JO'] = NULL;
 		$row['Shipper_id'] = NULL;
 		$row['Party'] = NULL;
-		$row['Jenis_Container'] = NULL;
-		$row['Tgl_Stuffing'] = NULL;
+		$row['Container'] = NULL;
+		$row['Tanggal_Stuffing'] = NULL;
 		$row['Destination_id'] = NULL;
 		$row['Feeder_id'] = NULL;
-		$row['ETA_ETD'] = NULL;
-		$row['Liner_id'] = NULL;
-		$row['Remark'] = NULL;
-		$row['TruckingVendor_id'] = NULL;
-		$row['Driver_id'] = NULL;
-		$row['No_Pol_1'] = NULL;
-		$row['No_Pol_2'] = NULL;
-		$row['No_Pol_3'] = NULL;
-		$row['Nomor_Container_1'] = NULL;
-		$row['Nomor_Container_2'] = NULL;
 		return $row;
 	}
 
@@ -912,23 +968,13 @@ class t103_trucking_view extends t103_trucking
 
 		// Common render codes for all row types
 		// id
-		// EI
+		// Nomor_JO
 		// Shipper_id
 		// Party
-		// Jenis_Container
-		// Tgl_Stuffing
+		// Container
+		// Tanggal_Stuffing
 		// Destination_id
 		// Feeder_id
-		// ETA_ETD
-		// Liner_id
-		// Remark
-		// TruckingVendor_id
-		// Driver_id
-		// No_Pol_1
-		// No_Pol_2
-		// No_Pol_3
-		// Nomor_Container_1
-		// Nomor_Container_2
 
 		if ($this->RowType == ROWTYPE_VIEW) { // View row
 
@@ -936,17 +982,30 @@ class t103_trucking_view extends t103_trucking
 			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
 
-			// EI
-			if (strval($this->EI->CurrentValue) <> "") {
-				$this->EI->ViewValue = $this->EI->optionCaption($this->EI->CurrentValue);
-			} else {
-				$this->EI->ViewValue = NULL;
-			}
-			$this->EI->ViewCustomAttributes = "";
+			// Nomor_JO
+			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
+			$this->Nomor_JO->ViewCustomAttributes = "";
 
 			// Shipper_id
-			$this->Shipper_id->ViewValue = $this->Shipper_id->CurrentValue;
-			$this->Shipper_id->ViewValue = FormatNumber($this->Shipper_id->ViewValue, 0, -2, -2, -2);
+			$curVal = strval($this->Shipper_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->Shipper_id->ViewValue = $this->Shipper_id->lookupCacheOption($curVal);
+				if ($this->Shipper_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->Shipper_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->Shipper_id->ViewValue = $this->Shipper_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->Shipper_id->ViewValue = $this->Shipper_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->Shipper_id->ViewValue = NULL;
+			}
 			$this->Shipper_id->ViewCustomAttributes = "";
 
 			// Party
@@ -954,82 +1013,72 @@ class t103_trucking_view extends t103_trucking
 			$this->Party->ViewValue = FormatNumber($this->Party->ViewValue, 0, -2, -2, -2);
 			$this->Party->ViewCustomAttributes = "";
 
-			// Jenis_Container
-			if (strval($this->Jenis_Container->CurrentValue) <> "") {
-				$this->Jenis_Container->ViewValue = $this->Jenis_Container->optionCaption($this->Jenis_Container->CurrentValue);
+			// Container
+			if (strval($this->Container->CurrentValue) <> "") {
+				$this->Container->ViewValue = $this->Container->optionCaption($this->Container->CurrentValue);
 			} else {
-				$this->Jenis_Container->ViewValue = NULL;
+				$this->Container->ViewValue = NULL;
 			}
-			$this->Jenis_Container->ViewCustomAttributes = "";
+			$this->Container->ViewCustomAttributes = "";
 
-			// Tgl_Stuffing
-			$this->Tgl_Stuffing->ViewValue = $this->Tgl_Stuffing->CurrentValue;
-			$this->Tgl_Stuffing->ViewValue = FormatDateTime($this->Tgl_Stuffing->ViewValue, 0);
-			$this->Tgl_Stuffing->ViewCustomAttributes = "";
+			// Tanggal_Stuffing
+			$this->Tanggal_Stuffing->ViewValue = $this->Tanggal_Stuffing->CurrentValue;
+			$this->Tanggal_Stuffing->ViewValue = FormatDateTime($this->Tanggal_Stuffing->ViewValue, 11);
+			$this->Tanggal_Stuffing->ViewCustomAttributes = "";
 
 			// Destination_id
-			$this->Destination_id->ViewValue = $this->Destination_id->CurrentValue;
-			$this->Destination_id->ViewValue = FormatNumber($this->Destination_id->ViewValue, 0, -2, -2, -2);
+			$curVal = strval($this->Destination_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->Destination_id->ViewValue = $this->Destination_id->lookupCacheOption($curVal);
+				if ($this->Destination_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->Destination_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->Destination_id->ViewValue = $this->Destination_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->Destination_id->ViewValue = $this->Destination_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->Destination_id->ViewValue = NULL;
+			}
 			$this->Destination_id->ViewCustomAttributes = "";
 
 			// Feeder_id
-			$this->Feeder_id->ViewValue = $this->Feeder_id->CurrentValue;
-			$this->Feeder_id->ViewValue = FormatNumber($this->Feeder_id->ViewValue, 0, -2, -2, -2);
+			$curVal = strval($this->Feeder_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->Feeder_id->ViewValue = $this->Feeder_id->lookupCacheOption($curVal);
+				if ($this->Feeder_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->Feeder_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->Feeder_id->ViewValue = $this->Feeder_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->Feeder_id->ViewValue = $this->Feeder_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->Feeder_id->ViewValue = NULL;
+			}
 			$this->Feeder_id->ViewCustomAttributes = "";
-
-			// ETA_ETD
-			$this->ETA_ETD->ViewValue = $this->ETA_ETD->CurrentValue;
-			$this->ETA_ETD->ViewValue = FormatDateTime($this->ETA_ETD->ViewValue, 0);
-			$this->ETA_ETD->ViewCustomAttributes = "";
-
-			// Liner_id
-			$this->Liner_id->ViewValue = $this->Liner_id->CurrentValue;
-			$this->Liner_id->ViewValue = FormatNumber($this->Liner_id->ViewValue, 0, -2, -2, -2);
-			$this->Liner_id->ViewCustomAttributes = "";
-
-			// Remark
-			$this->Remark->ViewValue = $this->Remark->CurrentValue;
-			$this->Remark->ViewCustomAttributes = "";
-
-			// TruckingVendor_id
-			$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
-			$this->TruckingVendor_id->ViewValue = FormatNumber($this->TruckingVendor_id->ViewValue, 0, -2, -2, -2);
-			$this->TruckingVendor_id->ViewCustomAttributes = "";
-
-			// Driver_id
-			$this->Driver_id->ViewValue = $this->Driver_id->CurrentValue;
-			$this->Driver_id->ViewValue = FormatNumber($this->Driver_id->ViewValue, 0, -2, -2, -2);
-			$this->Driver_id->ViewCustomAttributes = "";
-
-			// No_Pol_1
-			$this->No_Pol_1->ViewValue = $this->No_Pol_1->CurrentValue;
-			$this->No_Pol_1->ViewCustomAttributes = "";
-
-			// No_Pol_2
-			$this->No_Pol_2->ViewValue = $this->No_Pol_2->CurrentValue;
-			$this->No_Pol_2->ViewCustomAttributes = "";
-
-			// No_Pol_3
-			$this->No_Pol_3->ViewValue = $this->No_Pol_3->CurrentValue;
-			$this->No_Pol_3->ViewCustomAttributes = "";
-
-			// Nomor_Container_1
-			$this->Nomor_Container_1->ViewValue = $this->Nomor_Container_1->CurrentValue;
-			$this->Nomor_Container_1->ViewCustomAttributes = "";
-
-			// Nomor_Container_2
-			$this->Nomor_Container_2->ViewValue = $this->Nomor_Container_2->CurrentValue;
-			$this->Nomor_Container_2->ViewCustomAttributes = "";
 
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
 			$this->id->TooltipValue = "";
 
-			// EI
-			$this->EI->LinkCustomAttributes = "";
-			$this->EI->HrefValue = "";
-			$this->EI->TooltipValue = "";
+			// Nomor_JO
+			$this->Nomor_JO->LinkCustomAttributes = "";
+			$this->Nomor_JO->HrefValue = "";
+			$this->Nomor_JO->TooltipValue = "";
 
 			// Shipper_id
 			$this->Shipper_id->LinkCustomAttributes = "";
@@ -1041,15 +1090,15 @@ class t103_trucking_view extends t103_trucking
 			$this->Party->HrefValue = "";
 			$this->Party->TooltipValue = "";
 
-			// Jenis_Container
-			$this->Jenis_Container->LinkCustomAttributes = "";
-			$this->Jenis_Container->HrefValue = "";
-			$this->Jenis_Container->TooltipValue = "";
+			// Container
+			$this->Container->LinkCustomAttributes = "";
+			$this->Container->HrefValue = "";
+			$this->Container->TooltipValue = "";
 
-			// Tgl_Stuffing
-			$this->Tgl_Stuffing->LinkCustomAttributes = "";
-			$this->Tgl_Stuffing->HrefValue = "";
-			$this->Tgl_Stuffing->TooltipValue = "";
+			// Tanggal_Stuffing
+			$this->Tanggal_Stuffing->LinkCustomAttributes = "";
+			$this->Tanggal_Stuffing->HrefValue = "";
+			$this->Tanggal_Stuffing->TooltipValue = "";
 
 			// Destination_id
 			$this->Destination_id->LinkCustomAttributes = "";
@@ -1060,61 +1109,41 @@ class t103_trucking_view extends t103_trucking
 			$this->Feeder_id->LinkCustomAttributes = "";
 			$this->Feeder_id->HrefValue = "";
 			$this->Feeder_id->TooltipValue = "";
-
-			// ETA_ETD
-			$this->ETA_ETD->LinkCustomAttributes = "";
-			$this->ETA_ETD->HrefValue = "";
-			$this->ETA_ETD->TooltipValue = "";
-
-			// Liner_id
-			$this->Liner_id->LinkCustomAttributes = "";
-			$this->Liner_id->HrefValue = "";
-			$this->Liner_id->TooltipValue = "";
-
-			// Remark
-			$this->Remark->LinkCustomAttributes = "";
-			$this->Remark->HrefValue = "";
-			$this->Remark->TooltipValue = "";
-
-			// TruckingVendor_id
-			$this->TruckingVendor_id->LinkCustomAttributes = "";
-			$this->TruckingVendor_id->HrefValue = "";
-			$this->TruckingVendor_id->TooltipValue = "";
-
-			// Driver_id
-			$this->Driver_id->LinkCustomAttributes = "";
-			$this->Driver_id->HrefValue = "";
-			$this->Driver_id->TooltipValue = "";
-
-			// No_Pol_1
-			$this->No_Pol_1->LinkCustomAttributes = "";
-			$this->No_Pol_1->HrefValue = "";
-			$this->No_Pol_1->TooltipValue = "";
-
-			// No_Pol_2
-			$this->No_Pol_2->LinkCustomAttributes = "";
-			$this->No_Pol_2->HrefValue = "";
-			$this->No_Pol_2->TooltipValue = "";
-
-			// No_Pol_3
-			$this->No_Pol_3->LinkCustomAttributes = "";
-			$this->No_Pol_3->HrefValue = "";
-			$this->No_Pol_3->TooltipValue = "";
-
-			// Nomor_Container_1
-			$this->Nomor_Container_1->LinkCustomAttributes = "";
-			$this->Nomor_Container_1->HrefValue = "";
-			$this->Nomor_Container_1->TooltipValue = "";
-
-			// Nomor_Container_2
-			$this->Nomor_Container_2->LinkCustomAttributes = "";
-			$this->Nomor_Container_2->HrefValue = "";
-			$this->Nomor_Container_2->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
 		if ($this->RowType <> ROWTYPE_AGGREGATEINIT)
 			$this->Row_Rendered();
+	}
+
+	// Set up detail parms based on QueryString
+	protected function setupDetailParms()
+	{
+
+		// Get the keys for master table
+		if (Get(TABLE_SHOW_DETAIL) !== NULL) {
+			$detailTblVar = Get(TABLE_SHOW_DETAIL);
+			$this->setCurrentDetailTable($detailTblVar);
+		} else {
+			$detailTblVar = $this->getCurrentDetailTable();
+		}
+		if ($detailTblVar <> "") {
+			$detailTblVar = explode(",", $detailTblVar);
+			if (in_array("t101_jo_detail", $detailTblVar)) {
+				if (!isset($GLOBALS["t101_jo_detail_grid"]))
+					$GLOBALS["t101_jo_detail_grid"] = new t101_jo_detail_grid();
+				if ($GLOBALS["t101_jo_detail_grid"]->DetailView) {
+					$GLOBALS["t101_jo_detail_grid"]->CurrentMode = "view";
+
+					// Save current master table to detail table
+					$GLOBALS["t101_jo_detail_grid"]->setCurrentMasterTable($this->TableVar);
+					$GLOBALS["t101_jo_detail_grid"]->setStartRecordNumber(1);
+					$GLOBALS["t101_jo_detail_grid"]->JOHead_id->IsDetailKey = TRUE;
+					$GLOBALS["t101_jo_detail_grid"]->JOHead_id->CurrentValue = $this->id->CurrentValue;
+					$GLOBALS["t101_jo_detail_grid"]->JOHead_id->setSessionValue($GLOBALS["t101_jo_detail_grid"]->JOHead_id->CurrentValue);
+				}
+			}
+		}
 	}
 
 	// Set up Breadcrumb
@@ -1123,7 +1152,7 @@ class t103_trucking_view extends t103_trucking
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new Breadcrumb();
 		$url = substr(CurrentUrl(), strrpos(CurrentUrl(), "/")+1);
-		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t103_truckinglist.php"), "", $this->TableVar, TRUE);
+		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t101_jo_headlist.php"), "", $this->TableVar, TRUE);
 		$pageId = "view";
 		$Breadcrumb->add("view", $pageId, $url);
 	}
@@ -1159,6 +1188,12 @@ class t103_trucking_view extends t103_trucking
 
 					// Format the field values
 					switch ($fld->FieldVar) {
+						case "x_Shipper_id":
+							break;
+						case "x_Destination_id":
+							break;
+						case "x_Feeder_id":
+							break;
 					}
 					$ar[strval($row[0])] = $row;
 					$rs->moveNext();

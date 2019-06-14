@@ -4,7 +4,7 @@ namespace PHPMaker2019\emkl_prj;
 /**
  * Page class
  */
-class t102_jo_list extends t102_jo
+class t101_jo_detail_list extends t101_jo_detail
 {
 
 	// Page ID
@@ -14,13 +14,13 @@ class t102_jo_list extends t102_jo
 	public $ProjectID = "{D4B21A3D-A1C8-4ED3-BA65-212E10E691E7}";
 
 	// Table name
-	public $TableName = 't102_jo';
+	public $TableName = 't101_jo_detail';
 
 	// Page object name
-	public $PageObjName = "t102_jo_list";
+	public $PageObjName = "t101_jo_detail_list";
 
 	// Grid form hidden field names
-	public $FormName = "ft102_jolist";
+	public $FormName = "ft101_jo_detaillist";
 	public $FormActionName = "k_action";
 	public $FormKeyName = "k_key";
 	public $FormOldKeyName = "k_oldkey";
@@ -383,10 +383,10 @@ class t102_jo_list extends t102_jo
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (t102_jo)
-		if (!isset($GLOBALS["t102_jo"]) || get_class($GLOBALS["t102_jo"]) == PROJECT_NAMESPACE . "t102_jo") {
-			$GLOBALS["t102_jo"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["t102_jo"];
+		// Table object (t101_jo_detail)
+		if (!isset($GLOBALS["t101_jo_detail"]) || get_class($GLOBALS["t101_jo_detail"]) == PROJECT_NAMESPACE . "t101_jo_detail") {
+			$GLOBALS["t101_jo_detail"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["t101_jo_detail"];
 		}
 
 		// Initialize URLs
@@ -397,13 +397,17 @@ class t102_jo_list extends t102_jo
 		$this->ExportXmlUrl = $this->pageUrl() . "export=xml";
 		$this->ExportCsvUrl = $this->pageUrl() . "export=csv";
 		$this->ExportPdfUrl = $this->pageUrl() . "export=pdf";
-		$this->AddUrl = "t102_joadd.php";
+		$this->AddUrl = "t101_jo_detailadd.php";
 		$this->InlineAddUrl = $this->pageUrl() . "action=add";
 		$this->GridAddUrl = $this->pageUrl() . "action=gridadd";
 		$this->GridEditUrl = $this->pageUrl() . "action=gridedit";
-		$this->MultiDeleteUrl = "t102_jodelete.php";
-		$this->MultiUpdateUrl = "t102_joupdate.php";
+		$this->MultiDeleteUrl = "t101_jo_detaildelete.php";
+		$this->MultiUpdateUrl = "t101_jo_detailupdate.php";
 		$this->CancelUrl = $this->pageUrl() . "action=cancel";
+
+		// Table object (t101_jo_head)
+		if (!isset($GLOBALS['t101_jo_head']))
+			$GLOBALS['t101_jo_head'] = new t101_jo_head();
 
 		// Page ID
 		if (!defined(PROJECT_NAMESPACE . "PAGE_ID"))
@@ -411,7 +415,7 @@ class t102_jo_list extends t102_jo
 
 		// Table name (for backward compatibility)
 		if (!defined(PROJECT_NAMESPACE . "TABLE_NAME"))
-			define(PROJECT_NAMESPACE . "TABLE_NAME", 't102_jo');
+			define(PROJECT_NAMESPACE . "TABLE_NAME", 't101_jo_detail');
 
 		// Start timer
 		if (!isset($GLOBALS["DebugTimer"]))
@@ -454,7 +458,7 @@ class t102_jo_list extends t102_jo
 		// Filter options
 		$this->FilterOptions = new ListOptions();
 		$this->FilterOptions->Tag = "div";
-		$this->FilterOptions->TagClassName = "ew-filter-option ft102_jolistsrch";
+		$this->FilterOptions->TagClassName = "ew-filter-option ft101_jo_detaillistsrch";
 
 		// List actions
 		$this->ListActions = new ListActions();
@@ -472,14 +476,14 @@ class t102_jo_list extends t102_jo
 		Page_Unloaded();
 
 		// Export
-		global $EXPORT, $t102_jo;
+		global $EXPORT, $t101_jo_detail;
 		if ($this->CustomExport && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EXPORT)) {
 				$content = ob_get_contents();
 			if ($ExportFileName == "")
 				$ExportFileName = $this->TableVar;
 			$class = PROJECT_NAMESPACE . $EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($t102_jo);
+				$doc = new $class($t101_jo_detail);
 				$doc->Text = @$content;
 				if ($this->isExport("email"))
 					echo $this->exportEmail($doc->Text);
@@ -664,7 +668,14 @@ class t102_jo_list extends t102_jo
 		// Set up list options
 		$this->setupListOptions();
 		$this->id->setVisibility();
-		$this->Nomor_JO->setVisibility();
+		$this->JOHead_id->setVisibility();
+		$this->TruckingVendor_id->setVisibility();
+		$this->Driver_id->setVisibility();
+		$this->Nomor_Polisi_1->setVisibility();
+		$this->Nomor_Polisi_2->setVisibility();
+		$this->Nomor_Polisi_3->setVisibility();
+		$this->Nomor_Container_1->setVisibility();
+		$this->Nomor_Container_2->setVisibility();
 		$this->hideFieldsForAddEdit();
 
 		// Global Page Loading event (in userfn*.php)
@@ -682,6 +693,9 @@ class t102_jo_list extends t102_jo
 		// Create Token
 		$this->createToken();
 
+		// Set up master detail parameters
+		$this->setupMasterParms();
+
 		// Setup other options
 		$this->setupOtherOptions();
 
@@ -698,8 +712,10 @@ class t102_jo_list extends t102_jo
 		}
 
 		// Set up lookup cache
-		// Search filters
+		$this->setupLookupOptions($this->TruckingVendor_id);
+		$this->setupLookupOptions($this->Driver_id);
 
+		// Search filters
 		$srchAdvanced = ""; // Advanced search filter
 		$srchBasic = ""; // Basic search filter
 		$filter = "";
@@ -804,8 +820,28 @@ class t102_jo_list extends t102_jo
 
 		// Build filter
 		$filter = "";
+
+		// Restore master/detail filter
+		$this->DbMasterFilter = $this->getMasterFilter(); // Restore master filter
+		$this->DbDetailFilter = $this->getDetailFilter(); // Restore detail filter
 		AddFilter($filter, $this->DbDetailFilter);
 		AddFilter($filter, $this->SearchWhere);
+
+		// Load master record
+		if ($this->CurrentMode <> "add" && $this->getMasterFilter() <> "" && $this->getCurrentMasterTable() == "t101_jo_head") {
+			global $t101_jo_head;
+			$rsmaster = $t101_jo_head->loadRs($this->DbMasterFilter);
+			$this->MasterRecordExists = ($rsmaster && !$rsmaster->EOF);
+			if (!$this->MasterRecordExists) {
+				$this->setFailureMessage($Language->phrase("NoRecord")); // Set no record found
+				$this->terminate("t101_jo_headlist.php"); // Return to master page
+			} else {
+				$t101_jo_head->loadListRowValues($rsmaster);
+				$t101_jo_head->RowType = ROWTYPE_MASTER; // Master row
+				$t101_jo_head->renderListRow();
+				$rsmaster->close();
+			}
+		}
 
 		// Set up filter
 		if ($this->Command == "json") {
@@ -908,7 +944,14 @@ class t102_jo_list extends t102_jo
 		$filterList = "";
 		$savedFilterList = "";
 		$filterList = Concat($filterList, $this->id->AdvancedSearch->toJson(), ","); // Field id
-		$filterList = Concat($filterList, $this->Nomor_JO->AdvancedSearch->toJson(), ","); // Field Nomor_JO
+		$filterList = Concat($filterList, $this->JOHead_id->AdvancedSearch->toJson(), ","); // Field JOHead_id
+		$filterList = Concat($filterList, $this->TruckingVendor_id->AdvancedSearch->toJson(), ","); // Field TruckingVendor_id
+		$filterList = Concat($filterList, $this->Driver_id->AdvancedSearch->toJson(), ","); // Field Driver_id
+		$filterList = Concat($filterList, $this->Nomor_Polisi_1->AdvancedSearch->toJson(), ","); // Field Nomor_Polisi_1
+		$filterList = Concat($filterList, $this->Nomor_Polisi_2->AdvancedSearch->toJson(), ","); // Field Nomor_Polisi_2
+		$filterList = Concat($filterList, $this->Nomor_Polisi_3->AdvancedSearch->toJson(), ","); // Field Nomor_Polisi_3
+		$filterList = Concat($filterList, $this->Nomor_Container_1->AdvancedSearch->toJson(), ","); // Field Nomor_Container_1
+		$filterList = Concat($filterList, $this->Nomor_Container_2->AdvancedSearch->toJson(), ","); // Field Nomor_Container_2
 		if ($this->BasicSearch->Keyword <> "") {
 			$wrk = "\"" . TABLE_BASIC_SEARCH . "\":\"" . JsEncode($this->BasicSearch->Keyword) . "\",\"" . TABLE_BASIC_SEARCH_TYPE . "\":\"" . JsEncode($this->BasicSearch->Type) . "\"";
 			$filterList = Concat($filterList, $wrk, ",");
@@ -928,7 +971,7 @@ class t102_jo_list extends t102_jo
 		global $UserProfile;
 		if (Post("ajax") == "savefilters") { // Save filter request (Ajax)
 			$filters = Post("filters");
-			$UserProfile->setSearchFilters(CurrentUserName(), "ft102_jolistsrch", $filters);
+			$UserProfile->setSearchFilters(CurrentUserName(), "ft101_jo_detaillistsrch", $filters);
 			WriteJson([["success" => TRUE]]); // Success
 			return TRUE;
 		} elseif (Post("cmd") == "resetfilter") {
@@ -955,13 +998,69 @@ class t102_jo_list extends t102_jo
 		$this->id->AdvancedSearch->SearchOperator2 = @$filter["w_id"];
 		$this->id->AdvancedSearch->save();
 
-		// Field Nomor_JO
-		$this->Nomor_JO->AdvancedSearch->SearchValue = @$filter["x_Nomor_JO"];
-		$this->Nomor_JO->AdvancedSearch->SearchOperator = @$filter["z_Nomor_JO"];
-		$this->Nomor_JO->AdvancedSearch->SearchCondition = @$filter["v_Nomor_JO"];
-		$this->Nomor_JO->AdvancedSearch->SearchValue2 = @$filter["y_Nomor_JO"];
-		$this->Nomor_JO->AdvancedSearch->SearchOperator2 = @$filter["w_Nomor_JO"];
-		$this->Nomor_JO->AdvancedSearch->save();
+		// Field JOHead_id
+		$this->JOHead_id->AdvancedSearch->SearchValue = @$filter["x_JOHead_id"];
+		$this->JOHead_id->AdvancedSearch->SearchOperator = @$filter["z_JOHead_id"];
+		$this->JOHead_id->AdvancedSearch->SearchCondition = @$filter["v_JOHead_id"];
+		$this->JOHead_id->AdvancedSearch->SearchValue2 = @$filter["y_JOHead_id"];
+		$this->JOHead_id->AdvancedSearch->SearchOperator2 = @$filter["w_JOHead_id"];
+		$this->JOHead_id->AdvancedSearch->save();
+
+		// Field TruckingVendor_id
+		$this->TruckingVendor_id->AdvancedSearch->SearchValue = @$filter["x_TruckingVendor_id"];
+		$this->TruckingVendor_id->AdvancedSearch->SearchOperator = @$filter["z_TruckingVendor_id"];
+		$this->TruckingVendor_id->AdvancedSearch->SearchCondition = @$filter["v_TruckingVendor_id"];
+		$this->TruckingVendor_id->AdvancedSearch->SearchValue2 = @$filter["y_TruckingVendor_id"];
+		$this->TruckingVendor_id->AdvancedSearch->SearchOperator2 = @$filter["w_TruckingVendor_id"];
+		$this->TruckingVendor_id->AdvancedSearch->save();
+
+		// Field Driver_id
+		$this->Driver_id->AdvancedSearch->SearchValue = @$filter["x_Driver_id"];
+		$this->Driver_id->AdvancedSearch->SearchOperator = @$filter["z_Driver_id"];
+		$this->Driver_id->AdvancedSearch->SearchCondition = @$filter["v_Driver_id"];
+		$this->Driver_id->AdvancedSearch->SearchValue2 = @$filter["y_Driver_id"];
+		$this->Driver_id->AdvancedSearch->SearchOperator2 = @$filter["w_Driver_id"];
+		$this->Driver_id->AdvancedSearch->save();
+
+		// Field Nomor_Polisi_1
+		$this->Nomor_Polisi_1->AdvancedSearch->SearchValue = @$filter["x_Nomor_Polisi_1"];
+		$this->Nomor_Polisi_1->AdvancedSearch->SearchOperator = @$filter["z_Nomor_Polisi_1"];
+		$this->Nomor_Polisi_1->AdvancedSearch->SearchCondition = @$filter["v_Nomor_Polisi_1"];
+		$this->Nomor_Polisi_1->AdvancedSearch->SearchValue2 = @$filter["y_Nomor_Polisi_1"];
+		$this->Nomor_Polisi_1->AdvancedSearch->SearchOperator2 = @$filter["w_Nomor_Polisi_1"];
+		$this->Nomor_Polisi_1->AdvancedSearch->save();
+
+		// Field Nomor_Polisi_2
+		$this->Nomor_Polisi_2->AdvancedSearch->SearchValue = @$filter["x_Nomor_Polisi_2"];
+		$this->Nomor_Polisi_2->AdvancedSearch->SearchOperator = @$filter["z_Nomor_Polisi_2"];
+		$this->Nomor_Polisi_2->AdvancedSearch->SearchCondition = @$filter["v_Nomor_Polisi_2"];
+		$this->Nomor_Polisi_2->AdvancedSearch->SearchValue2 = @$filter["y_Nomor_Polisi_2"];
+		$this->Nomor_Polisi_2->AdvancedSearch->SearchOperator2 = @$filter["w_Nomor_Polisi_2"];
+		$this->Nomor_Polisi_2->AdvancedSearch->save();
+
+		// Field Nomor_Polisi_3
+		$this->Nomor_Polisi_3->AdvancedSearch->SearchValue = @$filter["x_Nomor_Polisi_3"];
+		$this->Nomor_Polisi_3->AdvancedSearch->SearchOperator = @$filter["z_Nomor_Polisi_3"];
+		$this->Nomor_Polisi_3->AdvancedSearch->SearchCondition = @$filter["v_Nomor_Polisi_3"];
+		$this->Nomor_Polisi_3->AdvancedSearch->SearchValue2 = @$filter["y_Nomor_Polisi_3"];
+		$this->Nomor_Polisi_3->AdvancedSearch->SearchOperator2 = @$filter["w_Nomor_Polisi_3"];
+		$this->Nomor_Polisi_3->AdvancedSearch->save();
+
+		// Field Nomor_Container_1
+		$this->Nomor_Container_1->AdvancedSearch->SearchValue = @$filter["x_Nomor_Container_1"];
+		$this->Nomor_Container_1->AdvancedSearch->SearchOperator = @$filter["z_Nomor_Container_1"];
+		$this->Nomor_Container_1->AdvancedSearch->SearchCondition = @$filter["v_Nomor_Container_1"];
+		$this->Nomor_Container_1->AdvancedSearch->SearchValue2 = @$filter["y_Nomor_Container_1"];
+		$this->Nomor_Container_1->AdvancedSearch->SearchOperator2 = @$filter["w_Nomor_Container_1"];
+		$this->Nomor_Container_1->AdvancedSearch->save();
+
+		// Field Nomor_Container_2
+		$this->Nomor_Container_2->AdvancedSearch->SearchValue = @$filter["x_Nomor_Container_2"];
+		$this->Nomor_Container_2->AdvancedSearch->SearchOperator = @$filter["z_Nomor_Container_2"];
+		$this->Nomor_Container_2->AdvancedSearch->SearchCondition = @$filter["v_Nomor_Container_2"];
+		$this->Nomor_Container_2->AdvancedSearch->SearchValue2 = @$filter["y_Nomor_Container_2"];
+		$this->Nomor_Container_2->AdvancedSearch->SearchOperator2 = @$filter["w_Nomor_Container_2"];
+		$this->Nomor_Container_2->AdvancedSearch->save();
 		$this->BasicSearch->setKeyword(@$filter[TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[TABLE_BASIC_SEARCH_TYPE]);
 	}
@@ -970,7 +1069,11 @@ class t102_jo_list extends t102_jo
 	protected function basicSearchSql($arKeywords, $type)
 	{
 		$where = "";
-		$this->buildBasicSearchSql($where, $this->Nomor_JO, $arKeywords, $type);
+		$this->buildBasicSearchSql($where, $this->Nomor_Polisi_1, $arKeywords, $type);
+		$this->buildBasicSearchSql($where, $this->Nomor_Polisi_2, $arKeywords, $type);
+		$this->buildBasicSearchSql($where, $this->Nomor_Polisi_3, $arKeywords, $type);
+		$this->buildBasicSearchSql($where, $this->Nomor_Container_1, $arKeywords, $type);
+		$this->buildBasicSearchSql($where, $this->Nomor_Container_2, $arKeywords, $type);
 		return $where;
 	}
 
@@ -1124,12 +1227,22 @@ class t102_jo_list extends t102_jo
 	protected function setupSortOrder()
 	{
 
+		// Check for Ctrl pressed
+		$ctrl = Get("ctrl") !== NULL;
+
 		// Check for "order" parameter
 		if (Get("order") !== NULL) {
 			$this->CurrentOrder = Get("order");
 			$this->CurrentOrderType = Get("ordertype", "");
-			$this->updateSort($this->id); // id
-			$this->updateSort($this->Nomor_JO); // Nomor_JO
+			$this->updateSort($this->id, $ctrl); // id
+			$this->updateSort($this->JOHead_id, $ctrl); // JOHead_id
+			$this->updateSort($this->TruckingVendor_id, $ctrl); // TruckingVendor_id
+			$this->updateSort($this->Driver_id, $ctrl); // Driver_id
+			$this->updateSort($this->Nomor_Polisi_1, $ctrl); // Nomor_Polisi_1
+			$this->updateSort($this->Nomor_Polisi_2, $ctrl); // Nomor_Polisi_2
+			$this->updateSort($this->Nomor_Polisi_3, $ctrl); // Nomor_Polisi_3
+			$this->updateSort($this->Nomor_Container_1, $ctrl); // Nomor_Container_1
+			$this->updateSort($this->Nomor_Container_2, $ctrl); // Nomor_Container_2
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1161,12 +1274,27 @@ class t102_jo_list extends t102_jo
 			if ($this->Command == "reset" || $this->Command == "resetall")
 				$this->resetSearchParms();
 
+			// Reset master/detail keys
+			if ($this->Command == "resetall") {
+				$this->setCurrentMasterTable(""); // Clear master table
+				$this->DbMasterFilter = "";
+				$this->DbDetailFilter = "";
+				$this->JOHead_id->setSessionValue("");
+			}
+
 			// Reset sorting order
 			if ($this->Command == "resetsort") {
 				$orderBy = "";
 				$this->setSessionOrderBy($orderBy);
 				$this->id->setSort("");
-				$this->Nomor_JO->setSort("");
+				$this->JOHead_id->setSort("");
+				$this->TruckingVendor_id->setSort("");
+				$this->Driver_id->setSort("");
+				$this->Nomor_Polisi_1->setSort("");
+				$this->Nomor_Polisi_2->setSort("");
+				$this->Nomor_Polisi_3->setSort("");
+				$this->Nomor_Container_1->setSort("");
+				$this->Nomor_Container_2->setSort("");
 			}
 
 			// Reset start position
@@ -1183,37 +1311,37 @@ class t102_jo_list extends t102_jo
 		// Add group option item
 		$item = &$this->ListOptions->add($this->ListOptions->GroupOptionName);
 		$item->Body = "";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 
 		// "view"
 		$item = &$this->ListOptions->add("view");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "edit"
 		$item = &$this->ListOptions->add("edit");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "copy"
 		$item = &$this->ListOptions->add("copy");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "delete"
 		$item = &$this->ListOptions->add("delete");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// List actions
 		$item = &$this->ListOptions->add("listactions");
 		$item->CssClass = "text-nowrap";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 		$item->ShowInDropDown = FALSE;
@@ -1221,9 +1349,16 @@ class t102_jo_list extends t102_jo
 		// "checkbox"
 		$item = &$this->ListOptions->add("checkbox");
 		$item->Visible = FALSE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Header = "<input type=\"checkbox\" name=\"key\" id=\"key\" onclick=\"ew.selectAllKey(this);\">";
-		$item->moveTo(0);
+		$item->ShowInDropDown = FALSE;
+		$item->ShowInButtonGroup = FALSE;
+
+		// "sequence"
+		$item = &$this->ListOptions->add("sequence");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = TRUE;
+		$item->OnLeft = TRUE; // Always on left
 		$item->ShowInDropDown = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 
@@ -1251,6 +1386,10 @@ class t102_jo_list extends t102_jo
 
 		// Call ListOptions_Rendering event
 		$this->ListOptions_Rendering();
+
+		// "sequence"
+		$opt = &$this->ListOptions->Items["sequence"];
+		$opt->Body = FormatSequenceNumber($this->RecCnt);
 
 		// "view"
 		$opt = &$this->ListOptions->Items["view"];
@@ -1354,10 +1493,10 @@ class t102_jo_list extends t102_jo
 
 		// Filter button
 		$item = &$this->FilterOptions->add("savecurrentfilter");
-		$item->Body = "<a class=\"ew-save-filter\" data-form=\"ft102_jolistsrch\" href=\"#\">" . $Language->phrase("SaveCurrentFilter") . "</a>";
+		$item->Body = "<a class=\"ew-save-filter\" data-form=\"ft101_jo_detaillistsrch\" href=\"#\">" . $Language->phrase("SaveCurrentFilter") . "</a>";
 		$item->Visible = TRUE;
 		$item = &$this->FilterOptions->add("deletefilter");
-		$item->Body = "<a class=\"ew-delete-filter\" data-form=\"ft102_jolistsrch\" href=\"#\">" . $Language->phrase("DeleteFilter") . "</a>";
+		$item->Body = "<a class=\"ew-delete-filter\" data-form=\"ft101_jo_detaillistsrch\" href=\"#\">" . $Language->phrase("DeleteFilter") . "</a>";
 		$item->Visible = TRUE;
 		$this->FilterOptions->UseDropDownButton = TRUE;
 		$this->FilterOptions->UseButtonGroup = !$this->FilterOptions->UseDropDownButton;
@@ -1382,7 +1521,7 @@ class t102_jo_list extends t102_jo
 					$item = &$option->add("custom_" . $listaction->Action);
 					$caption = $listaction->Caption;
 					$icon = ($listaction->Icon <> "") ? "<i class=\"" . HtmlEncode($listaction->Icon) . "\" data-caption=\"" . HtmlEncode($caption) . "\"></i> " . $caption : $caption;
-					$item->Body = "<a class=\"ew-action ew-list-action\" title=\"" . HtmlEncode($caption) . "\" data-caption=\"" . HtmlEncode($caption) . "\" href=\"\" onclick=\"ew.submitAction(event,jQuery.extend({f:document.ft102_jolist}," . $listaction->toJson(TRUE) . "));return false;\">" . $icon . "</a>";
+					$item->Body = "<a class=\"ew-action ew-list-action\" title=\"" . HtmlEncode($caption) . "\" data-caption=\"" . HtmlEncode($caption) . "\" href=\"\" onclick=\"ew.submitAction(event,jQuery.extend({f:document.ft101_jo_detaillist}," . $listaction->toJson(TRUE) . "));return false;\">" . $icon . "</a>";
 					$item->Visible = $listaction->Allow;
 				}
 			}
@@ -1489,7 +1628,7 @@ class t102_jo_list extends t102_jo
 		// Search button
 		$item = &$this->SearchOptions->add("searchtoggle");
 		$searchToggleClass = ($this->SearchWhere <> "") ? " active" : " active";
-		$item->Body = "<button type=\"button\" class=\"btn btn-default ew-search-toggle" . $searchToggleClass . "\" title=\"" . $Language->phrase("SearchPanel") . "\" data-caption=\"" . $Language->phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"ft102_jolistsrch\">" . $Language->phrase("SearchLink") . "</button>";
+		$item->Body = "<button type=\"button\" class=\"btn btn-default ew-search-toggle" . $searchToggleClass . "\" title=\"" . $Language->phrase("SearchPanel") . "\" data-caption=\"" . $Language->phrase("SearchPanel") . "\" data-toggle=\"button\" data-form=\"ft101_jo_detaillistsrch\">" . $Language->phrase("SearchLink") . "</button>";
 		$item->Visible = TRUE;
 
 		// Show all button
@@ -1629,7 +1768,14 @@ class t102_jo_list extends t102_jo
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
-		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
+		$this->JOHead_id->setDbValue($row['JOHead_id']);
+		$this->TruckingVendor_id->setDbValue($row['TruckingVendor_id']);
+		$this->Driver_id->setDbValue($row['Driver_id']);
+		$this->Nomor_Polisi_1->setDbValue($row['Nomor_Polisi_1']);
+		$this->Nomor_Polisi_2->setDbValue($row['Nomor_Polisi_2']);
+		$this->Nomor_Polisi_3->setDbValue($row['Nomor_Polisi_3']);
+		$this->Nomor_Container_1->setDbValue($row['Nomor_Container_1']);
+		$this->Nomor_Container_2->setDbValue($row['Nomor_Container_2']);
 	}
 
 	// Return a row with default values
@@ -1637,7 +1783,14 @@ class t102_jo_list extends t102_jo
 	{
 		$row = [];
 		$row['id'] = NULL;
-		$row['Nomor_JO'] = NULL;
+		$row['JOHead_id'] = NULL;
+		$row['TruckingVendor_id'] = NULL;
+		$row['Driver_id'] = NULL;
+		$row['Nomor_Polisi_1'] = NULL;
+		$row['Nomor_Polisi_2'] = NULL;
+		$row['Nomor_Polisi_3'] = NULL;
+		$row['Nomor_Container_1'] = NULL;
+		$row['Nomor_Container_2'] = NULL;
 		return $row;
 	}
 
@@ -1682,7 +1835,14 @@ class t102_jo_list extends t102_jo
 
 		// Common render codes for all row types
 		// id
-		// Nomor_JO
+		// JOHead_id
+		// TruckingVendor_id
+		// Driver_id
+		// Nomor_Polisi_1
+		// Nomor_Polisi_2
+		// Nomor_Polisi_3
+		// Nomor_Container_1
+		// Nomor_Container_2
 
 		if ($this->RowType == ROWTYPE_VIEW) { // View row
 
@@ -1690,24 +1850,195 @@ class t102_jo_list extends t102_jo
 			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
 
-			// Nomor_JO
-			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
-			$this->Nomor_JO->ViewCustomAttributes = "";
+			// JOHead_id
+			$this->JOHead_id->ViewValue = $this->JOHead_id->CurrentValue;
+			$this->JOHead_id->ViewValue = FormatNumber($this->JOHead_id->ViewValue, 0, -2, -2, -2);
+			$this->JOHead_id->ViewCustomAttributes = "";
+
+			// TruckingVendor_id
+			$curVal = strval($this->TruckingVendor_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->lookupCacheOption($curVal);
+				if ($this->TruckingVendor_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->TruckingVendor_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->TruckingVendor_id->ViewValue = NULL;
+			}
+			$this->TruckingVendor_id->ViewCustomAttributes = "";
+
+			// Driver_id
+			$curVal = strval($this->Driver_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->Driver_id->ViewValue = $this->Driver_id->lookupCacheOption($curVal);
+				if ($this->Driver_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->Driver_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->Driver_id->ViewValue = $this->Driver_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->Driver_id->ViewValue = $this->Driver_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->Driver_id->ViewValue = NULL;
+			}
+			$this->Driver_id->ViewCustomAttributes = "";
+
+			// Nomor_Polisi_1
+			$this->Nomor_Polisi_1->ViewValue = $this->Nomor_Polisi_1->CurrentValue;
+			$this->Nomor_Polisi_1->ViewCustomAttributes = "";
+
+			// Nomor_Polisi_2
+			$this->Nomor_Polisi_2->ViewValue = $this->Nomor_Polisi_2->CurrentValue;
+			$this->Nomor_Polisi_2->ViewCustomAttributes = "";
+
+			// Nomor_Polisi_3
+			$this->Nomor_Polisi_3->ViewValue = $this->Nomor_Polisi_3->CurrentValue;
+			$this->Nomor_Polisi_3->ViewCustomAttributes = "";
+
+			// Nomor_Container_1
+			$this->Nomor_Container_1->ViewValue = $this->Nomor_Container_1->CurrentValue;
+			$this->Nomor_Container_1->ViewCustomAttributes = "";
+
+			// Nomor_Container_2
+			$this->Nomor_Container_2->ViewValue = $this->Nomor_Container_2->CurrentValue;
+			$this->Nomor_Container_2->ViewCustomAttributes = "";
 
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
 			$this->id->TooltipValue = "";
 
-			// Nomor_JO
-			$this->Nomor_JO->LinkCustomAttributes = "";
-			$this->Nomor_JO->HrefValue = "";
-			$this->Nomor_JO->TooltipValue = "";
+			// JOHead_id
+			$this->JOHead_id->LinkCustomAttributes = "";
+			$this->JOHead_id->HrefValue = "";
+			$this->JOHead_id->TooltipValue = "";
+
+			// TruckingVendor_id
+			$this->TruckingVendor_id->LinkCustomAttributes = "";
+			$this->TruckingVendor_id->HrefValue = "";
+			$this->TruckingVendor_id->TooltipValue = "";
+
+			// Driver_id
+			$this->Driver_id->LinkCustomAttributes = "";
+			$this->Driver_id->HrefValue = "";
+			$this->Driver_id->TooltipValue = "";
+
+			// Nomor_Polisi_1
+			$this->Nomor_Polisi_1->LinkCustomAttributes = "";
+			$this->Nomor_Polisi_1->HrefValue = "";
+			$this->Nomor_Polisi_1->TooltipValue = "";
+
+			// Nomor_Polisi_2
+			$this->Nomor_Polisi_2->LinkCustomAttributes = "";
+			$this->Nomor_Polisi_2->HrefValue = "";
+			$this->Nomor_Polisi_2->TooltipValue = "";
+
+			// Nomor_Polisi_3
+			$this->Nomor_Polisi_3->LinkCustomAttributes = "";
+			$this->Nomor_Polisi_3->HrefValue = "";
+			$this->Nomor_Polisi_3->TooltipValue = "";
+
+			// Nomor_Container_1
+			$this->Nomor_Container_1->LinkCustomAttributes = "";
+			$this->Nomor_Container_1->HrefValue = "";
+			$this->Nomor_Container_1->TooltipValue = "";
+
+			// Nomor_Container_2
+			$this->Nomor_Container_2->LinkCustomAttributes = "";
+			$this->Nomor_Container_2->HrefValue = "";
+			$this->Nomor_Container_2->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
 		if ($this->RowType <> ROWTYPE_AGGREGATEINIT)
 			$this->Row_Rendered();
+	}
+
+	// Set up master/detail based on QueryString
+	protected function setupMasterParms()
+	{
+		$validMaster = FALSE;
+
+		// Get the keys for master table
+		if (Get(TABLE_SHOW_MASTER) !== NULL) {
+			$masterTblVar = Get(TABLE_SHOW_MASTER);
+			if ($masterTblVar == "") {
+				$validMaster = TRUE;
+				$this->DbMasterFilter = "";
+				$this->DbDetailFilter = "";
+			}
+			if ($masterTblVar == "t101_jo_head") {
+				$validMaster = TRUE;
+				if (Get("fk_id") !== NULL) {
+					$this->JOHead_id->setQueryStringValue(Get("fk_id"));
+					$this->JOHead_id->setSessionValue($this->JOHead_id->QueryStringValue);
+					if (!is_numeric($this->JOHead_id->QueryStringValue))
+						$validMaster = FALSE;
+				} else {
+					$validMaster = FALSE;
+				}
+			}
+		} elseif (Post(TABLE_SHOW_MASTER) !== NULL) {
+			$masterTblVar = Post(TABLE_SHOW_MASTER);
+			if ($masterTblVar == "") {
+				$validMaster = TRUE;
+				$this->DbMasterFilter = "";
+				$this->DbDetailFilter = "";
+			}
+			if ($masterTblVar == "t101_jo_head") {
+				$validMaster = TRUE;
+				if (Post("fk_id") !== NULL) {
+					$this->JOHead_id->setFormValue(Post("fk_id"));
+					$this->JOHead_id->setSessionValue($this->JOHead_id->FormValue);
+					if (!is_numeric($this->JOHead_id->FormValue))
+						$validMaster = FALSE;
+				} else {
+					$validMaster = FALSE;
+				}
+			}
+		}
+		if ($validMaster) {
+
+			// Update URL
+			$this->AddUrl = $this->addMasterUrl($this->AddUrl);
+			$this->InlineAddUrl = $this->addMasterUrl($this->InlineAddUrl);
+			$this->GridAddUrl = $this->addMasterUrl($this->GridAddUrl);
+			$this->GridEditUrl = $this->addMasterUrl($this->GridEditUrl);
+			$this->CancelUrl = $this->addMasterUrl($this->CancelUrl);
+
+			// Save current master table
+			$this->setCurrentMasterTable($masterTblVar);
+
+			// Reset start record counter (new master key)
+			if (!$this->isAddOrEdit()) {
+				$this->StartRec = 1;
+				$this->setStartRecordNumber($this->StartRec);
+			}
+
+			// Clear previous master key from Session
+			if ($masterTblVar <> "t101_jo_head") {
+				if ($this->JOHead_id->CurrentValue == "")
+					$this->JOHead_id->setSessionValue("");
+			}
+		}
+		$this->DbMasterFilter = $this->getMasterFilter(); // Get master filter
+		$this->DbDetailFilter = $this->getDetailFilter(); // Get detail filter
 	}
 
 	// Set up Breadcrumb
@@ -1751,6 +2082,10 @@ class t102_jo_list extends t102_jo
 
 					// Format the field values
 					switch ($fld->FieldVar) {
+						case "x_TruckingVendor_id":
+							break;
+						case "x_Driver_id":
+							break;
 					}
 					$ar[strval($row[0])] = $row;
 					$rs->moveNext();

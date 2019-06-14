@@ -566,7 +566,6 @@ class t101_tagihan_trucking_delete extends t101_tagihan_trucking
 		$this->createToken();
 
 		// Set up lookup cache
-		$this->setupLookupOptions($this->JO_id);
 		$this->setupLookupOptions($this->Shipper_id);
 
 		// Set up Breadcrumb
@@ -759,25 +758,8 @@ class t101_tagihan_trucking_delete extends t101_tagihan_trucking
 			$this->id->ViewCustomAttributes = "";
 
 			// JO_id
-			$curVal = strval($this->JO_id->CurrentValue);
-			if ($curVal <> "") {
-				$this->JO_id->ViewValue = $this->JO_id->lookupCacheOption($curVal);
-				if ($this->JO_id->ViewValue === NULL) { // Lookup from database
-					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
-					$sqlWrk = $this->JO_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
-					$rswrk = Conn()->execute($sqlWrk);
-					if ($rswrk && !$rswrk->EOF) { // Lookup values found
-						$arwrk = array();
-						$arwrk[1] = $rswrk->fields('df');
-						$this->JO_id->ViewValue = $this->JO_id->displayValue($arwrk);
-						$rswrk->Close();
-					} else {
-						$this->JO_id->ViewValue = $this->JO_id->CurrentValue;
-					}
-				}
-			} else {
-				$this->JO_id->ViewValue = NULL;
-			}
+			$this->JO_id->ViewValue = $this->JO_id->CurrentValue;
+			$this->JO_id->ViewValue = FormatNumber($this->JO_id->ViewValue, 0, -2, -2, -2);
 			$this->JO_id->ViewCustomAttributes = "";
 
 			// Nomor_Polisi_1
@@ -1052,8 +1034,6 @@ class t101_tagihan_trucking_delete extends t101_tagihan_trucking
 
 					// Format the field values
 					switch ($fld->FieldVar) {
-						case "x_JO_id":
-							break;
 						case "x_Shipper_id":
 							break;
 					}

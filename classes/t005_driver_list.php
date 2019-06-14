@@ -405,6 +405,10 @@ class t005_driver_list extends t005_driver
 		$this->MultiUpdateUrl = "t005_driverupdate.php";
 		$this->CancelUrl = $this->pageUrl() . "action=cancel";
 
+		// Table object (t006_trucking_vendor)
+		if (!isset($GLOBALS['t006_trucking_vendor']))
+			$GLOBALS['t006_trucking_vendor'] = new t006_trucking_vendor();
+
 		// Page ID
 		if (!defined(PROJECT_NAMESPACE . "PAGE_ID"))
 			define(PROJECT_NAMESPACE . "PAGE_ID", 'list');
@@ -685,6 +689,9 @@ class t005_driver_list extends t005_driver
 		// Create Token
 		$this->createToken();
 
+		// Set up master detail parameters
+		$this->setupMasterParms();
+
 		// Setup other options
 		$this->setupOtherOptions();
 
@@ -807,8 +814,28 @@ class t005_driver_list extends t005_driver
 
 		// Build filter
 		$filter = "";
+
+		// Restore master/detail filter
+		$this->DbMasterFilter = $this->getMasterFilter(); // Restore master filter
+		$this->DbDetailFilter = $this->getDetailFilter(); // Restore detail filter
 		AddFilter($filter, $this->DbDetailFilter);
 		AddFilter($filter, $this->SearchWhere);
+
+		// Load master record
+		if ($this->CurrentMode <> "add" && $this->getMasterFilter() <> "" && $this->getCurrentMasterTable() == "t006_trucking_vendor") {
+			global $t006_trucking_vendor;
+			$rsmaster = $t006_trucking_vendor->loadRs($this->DbMasterFilter);
+			$this->MasterRecordExists = ($rsmaster && !$rsmaster->EOF);
+			if (!$this->MasterRecordExists) {
+				$this->setFailureMessage($Language->phrase("NoRecord")); // Set no record found
+				$this->terminate("t006_trucking_vendorlist.php"); // Return to master page
+			} else {
+				$t006_trucking_vendor->loadListRowValues($rsmaster);
+				$t006_trucking_vendor->RowType = ROWTYPE_MASTER; // Master row
+				$t006_trucking_vendor->renderListRow();
+				$rsmaster->close();
+			}
+		}
 
 		// Set up filter
 		if ($this->Command == "json") {
@@ -1156,15 +1183,18 @@ class t005_driver_list extends t005_driver
 	protected function setupSortOrder()
 	{
 
+		// Check for Ctrl pressed
+		$ctrl = Get("ctrl") !== NULL;
+
 		// Check for "order" parameter
 		if (Get("order") !== NULL) {
 			$this->CurrentOrder = Get("order");
 			$this->CurrentOrderType = Get("ordertype", "");
-			$this->updateSort($this->id); // id
-			$this->updateSort($this->TruckingVendor_id); // TruckingVendor_id
-			$this->updateSort($this->Nama); // Nama
-			$this->updateSort($this->No_HP_1); // No_HP_1
-			$this->updateSort($this->No_HP_2); // No_HP_2
+			$this->updateSort($this->id, $ctrl); // id
+			$this->updateSort($this->TruckingVendor_id, $ctrl); // TruckingVendor_id
+			$this->updateSort($this->Nama, $ctrl); // Nama
+			$this->updateSort($this->No_HP_1, $ctrl); // No_HP_1
+			$this->updateSort($this->No_HP_2, $ctrl); // No_HP_2
 			$this->setStartRecordNumber(1); // Reset start position
 		}
 	}
@@ -1196,6 +1226,14 @@ class t005_driver_list extends t005_driver
 			if ($this->Command == "reset" || $this->Command == "resetall")
 				$this->resetSearchParms();
 
+			// Reset master/detail keys
+			if ($this->Command == "resetall") {
+				$this->setCurrentMasterTable(""); // Clear master table
+				$this->DbMasterFilter = "";
+				$this->DbDetailFilter = "";
+				$this->TruckingVendor_id->setSessionValue("");
+			}
+
 			// Reset sorting order
 			if ($this->Command == "resetsort") {
 				$orderBy = "";
@@ -1221,37 +1259,37 @@ class t005_driver_list extends t005_driver
 		// Add group option item
 		$item = &$this->ListOptions->add($this->ListOptions->GroupOptionName);
 		$item->Body = "";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 
 		// "view"
 		$item = &$this->ListOptions->add("view");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "edit"
 		$item = &$this->ListOptions->add("edit");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "copy"
 		$item = &$this->ListOptions->add("copy");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// "delete"
 		$item = &$this->ListOptions->add("delete");
 		$item->CssClass = "text-nowrap";
 		$item->Visible = TRUE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 
 		// List actions
 		$item = &$this->ListOptions->add("listactions");
 		$item->CssClass = "text-nowrap";
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Visible = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 		$item->ShowInDropDown = FALSE;
@@ -1259,9 +1297,16 @@ class t005_driver_list extends t005_driver
 		// "checkbox"
 		$item = &$this->ListOptions->add("checkbox");
 		$item->Visible = FALSE;
-		$item->OnLeft = TRUE;
+		$item->OnLeft = FALSE;
 		$item->Header = "<input type=\"checkbox\" name=\"key\" id=\"key\" onclick=\"ew.selectAllKey(this);\">";
-		$item->moveTo(0);
+		$item->ShowInDropDown = FALSE;
+		$item->ShowInButtonGroup = FALSE;
+
+		// "sequence"
+		$item = &$this->ListOptions->add("sequence");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = TRUE;
+		$item->OnLeft = TRUE; // Always on left
 		$item->ShowInDropDown = FALSE;
 		$item->ShowInButtonGroup = FALSE;
 
@@ -1289,6 +1334,10 @@ class t005_driver_list extends t005_driver
 
 		// Call ListOptions_Rendering event
 		$this->ListOptions_Rendering();
+
+		// "sequence"
+		$opt = &$this->ListOptions->Items["sequence"];
+		$opt->Body = FormatSequenceNumber($this->RecCnt);
 
 		// "view"
 		$opt = &$this->ListOptions->Items["view"];
@@ -1783,6 +1832,77 @@ class t005_driver_list extends t005_driver
 		// Call Row Rendered event
 		if ($this->RowType <> ROWTYPE_AGGREGATEINIT)
 			$this->Row_Rendered();
+	}
+
+	// Set up master/detail based on QueryString
+	protected function setupMasterParms()
+	{
+		$validMaster = FALSE;
+
+		// Get the keys for master table
+		if (Get(TABLE_SHOW_MASTER) !== NULL) {
+			$masterTblVar = Get(TABLE_SHOW_MASTER);
+			if ($masterTblVar == "") {
+				$validMaster = TRUE;
+				$this->DbMasterFilter = "";
+				$this->DbDetailFilter = "";
+			}
+			if ($masterTblVar == "t006_trucking_vendor") {
+				$validMaster = TRUE;
+				if (Get("fk_id") !== NULL) {
+					$this->TruckingVendor_id->setQueryStringValue(Get("fk_id"));
+					$this->TruckingVendor_id->setSessionValue($this->TruckingVendor_id->QueryStringValue);
+					if (!is_numeric($this->TruckingVendor_id->QueryStringValue))
+						$validMaster = FALSE;
+				} else {
+					$validMaster = FALSE;
+				}
+			}
+		} elseif (Post(TABLE_SHOW_MASTER) !== NULL) {
+			$masterTblVar = Post(TABLE_SHOW_MASTER);
+			if ($masterTblVar == "") {
+				$validMaster = TRUE;
+				$this->DbMasterFilter = "";
+				$this->DbDetailFilter = "";
+			}
+			if ($masterTblVar == "t006_trucking_vendor") {
+				$validMaster = TRUE;
+				if (Post("fk_id") !== NULL) {
+					$this->TruckingVendor_id->setFormValue(Post("fk_id"));
+					$this->TruckingVendor_id->setSessionValue($this->TruckingVendor_id->FormValue);
+					if (!is_numeric($this->TruckingVendor_id->FormValue))
+						$validMaster = FALSE;
+				} else {
+					$validMaster = FALSE;
+				}
+			}
+		}
+		if ($validMaster) {
+
+			// Update URL
+			$this->AddUrl = $this->addMasterUrl($this->AddUrl);
+			$this->InlineAddUrl = $this->addMasterUrl($this->InlineAddUrl);
+			$this->GridAddUrl = $this->addMasterUrl($this->GridAddUrl);
+			$this->GridEditUrl = $this->addMasterUrl($this->GridEditUrl);
+			$this->CancelUrl = $this->addMasterUrl($this->CancelUrl);
+
+			// Save current master table
+			$this->setCurrentMasterTable($masterTblVar);
+
+			// Reset start record counter (new master key)
+			if (!$this->isAddOrEdit()) {
+				$this->StartRec = 1;
+				$this->setStartRecordNumber($this->StartRec);
+			}
+
+			// Clear previous master key from Session
+			if ($masterTblVar <> "t006_trucking_vendor") {
+				if ($this->TruckingVendor_id->CurrentValue == "")
+					$this->TruckingVendor_id->setSessionValue("");
+			}
+		}
+		$this->DbMasterFilter = $this->getMasterFilter(); // Get master filter
+		$this->DbDetailFilter = $this->getDetailFilter(); // Get detail filter
 	}
 
 	// Set up Breadcrumb

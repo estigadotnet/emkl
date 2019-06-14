@@ -58,6 +58,7 @@ var ft006_trucking_vendorlistsrch = currentSearchForm = new ew.Form("ft006_truck
 // Filters
 ft006_trucking_vendorlistsrch.filterList = <?php echo $t006_trucking_vendor_list->getFilterList() ?>;
 </script>
+<script src="phpjs/ewscrolltable.js"></script>
 <script>
 
 // Write your client script here, no need to add script tags.
@@ -141,7 +142,7 @@ $t006_trucking_vendor_list->ListOptions->render("header", "left");
 	<?php if ($t006_trucking_vendor->sortUrl($t006_trucking_vendor->id) == "") { ?>
 		<th data-name="id" class="<?php echo $t006_trucking_vendor->id->headerCellClass() ?>"><div id="elh_t006_trucking_vendor_id" class="t006_trucking_vendor_id"><div class="ew-table-header-caption"><?php echo $t006_trucking_vendor->id->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="id" class="<?php echo $t006_trucking_vendor->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t006_trucking_vendor->SortUrl($t006_trucking_vendor->id) ?>',1);"><div id="elh_t006_trucking_vendor_id" class="t006_trucking_vendor_id">
+		<th data-name="id" class="<?php echo $t006_trucking_vendor->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t006_trucking_vendor->SortUrl($t006_trucking_vendor->id) ?>',2);"><div id="elh_t006_trucking_vendor_id" class="t006_trucking_vendor_id">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t006_trucking_vendor->id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t006_trucking_vendor->id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t006_trucking_vendor->id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -150,7 +151,7 @@ $t006_trucking_vendor_list->ListOptions->render("header", "left");
 	<?php if ($t006_trucking_vendor->sortUrl($t006_trucking_vendor->Nama) == "") { ?>
 		<th data-name="Nama" class="<?php echo $t006_trucking_vendor->Nama->headerCellClass() ?>"><div id="elh_t006_trucking_vendor_Nama" class="t006_trucking_vendor_Nama"><div class="ew-table-header-caption"><?php echo $t006_trucking_vendor->Nama->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Nama" class="<?php echo $t006_trucking_vendor->Nama->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t006_trucking_vendor->SortUrl($t006_trucking_vendor->Nama) ?>',1);"><div id="elh_t006_trucking_vendor_Nama" class="t006_trucking_vendor_Nama">
+		<th data-name="Nama" class="<?php echo $t006_trucking_vendor->Nama->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t006_trucking_vendor->SortUrl($t006_trucking_vendor->Nama) ?>',2);"><div id="elh_t006_trucking_vendor_Nama" class="t006_trucking_vendor_Nama">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t006_trucking_vendor->Nama->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t006_trucking_vendor->Nama->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t006_trucking_vendor->Nama->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -340,6 +341,11 @@ if (DEBUG_ENABLED)
 // document.write("page loaded");
 
 </script>
+<?php if (!$t006_trucking_vendor->isExport()) { ?>
+<script>
+ew.scrollableTable("gmp_t006_trucking_vendor", "100%", "");
+</script>
+<?php } ?>
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php

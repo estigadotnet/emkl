@@ -4,7 +4,7 @@ namespace PHPMaker2019\emkl_prj;
 /**
  * Page class
  */
-class t102_jo_delete extends t102_jo
+class t101_jo_head_delete extends t101_jo_head
 {
 
 	// Page ID
@@ -14,10 +14,10 @@ class t102_jo_delete extends t102_jo
 	public $ProjectID = "{D4B21A3D-A1C8-4ED3-BA65-212E10E691E7}";
 
 	// Table name
-	public $TableName = 't102_jo';
+	public $TableName = 't101_jo_head';
 
 	// Page object name
-	public $PageObjName = "t102_jo_delete";
+	public $PageObjName = "t101_jo_head_delete";
 
 	// Page headings
 	public $Heading = "";
@@ -342,10 +342,10 @@ class t102_jo_delete extends t102_jo
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (t102_jo)
-		if (!isset($GLOBALS["t102_jo"]) || get_class($GLOBALS["t102_jo"]) == PROJECT_NAMESPACE . "t102_jo") {
-			$GLOBALS["t102_jo"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["t102_jo"];
+		// Table object (t101_jo_head)
+		if (!isset($GLOBALS["t101_jo_head"]) || get_class($GLOBALS["t101_jo_head"]) == PROJECT_NAMESPACE . "t101_jo_head") {
+			$GLOBALS["t101_jo_head"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["t101_jo_head"];
 		}
 		$this->CancelUrl = $this->pageUrl() . "action=cancel";
 
@@ -355,7 +355,7 @@ class t102_jo_delete extends t102_jo
 
 		// Table name (for backward compatibility)
 		if (!defined(PROJECT_NAMESPACE . "TABLE_NAME"))
-			define(PROJECT_NAMESPACE . "TABLE_NAME", 't102_jo');
+			define(PROJECT_NAMESPACE . "TABLE_NAME", 't101_jo_head');
 
 		// Start timer
 		if (!isset($GLOBALS["DebugTimer"]))
@@ -381,14 +381,14 @@ class t102_jo_delete extends t102_jo
 		Page_Unloaded();
 
 		// Export
-		global $EXPORT, $t102_jo;
+		global $EXPORT, $t101_jo_head;
 		if ($this->CustomExport && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EXPORT)) {
 				$content = ob_get_contents();
 			if ($ExportFileName == "")
 				$ExportFileName = $this->TableVar;
 			$class = PROJECT_NAMESPACE . $EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($t102_jo);
+				$doc = new $class($t101_jo_head);
 				$doc->Text = @$content;
 				if ($this->isExport("email"))
 					echo $this->exportEmail($doc->Text);
@@ -533,6 +533,12 @@ class t102_jo_delete extends t102_jo
 		$this->CurrentAction = Param("action"); // Set up current action
 		$this->id->setVisibility();
 		$this->Nomor_JO->setVisibility();
+		$this->Shipper_id->setVisibility();
+		$this->Party->setVisibility();
+		$this->Container->setVisibility();
+		$this->Tanggal_Stuffing->setVisibility();
+		$this->Destination_id->setVisibility();
+		$this->Feeder_id->setVisibility();
 		$this->hideFieldsForAddEdit();
 
 		// Do not use lookup cache
@@ -554,15 +560,18 @@ class t102_jo_delete extends t102_jo
 		$this->createToken();
 
 		// Set up lookup cache
-		// Set up Breadcrumb
+		$this->setupLookupOptions($this->Shipper_id);
+		$this->setupLookupOptions($this->Destination_id);
+		$this->setupLookupOptions($this->Feeder_id);
 
+		// Set up Breadcrumb
 		$this->setupBreadcrumb();
 
 		// Load key parameters
 		$this->RecKeys = $this->getRecordKeys(); // Load record keys
 		$filter = $this->getFilterFromRecordKeys();
 		if ($filter == "") {
-			$this->terminate("t102_jolist.php"); // Prevent SQL injection, return to list
+			$this->terminate("t101_jo_headlist.php"); // Prevent SQL injection, return to list
 			return;
 		}
 
@@ -604,7 +613,7 @@ class t102_jo_delete extends t102_jo
 			if ($this->TotalRecs <= 0) { // No record found, exit
 				if ($this->Recordset)
 					$this->Recordset->close();
-				$this->terminate("t102_jolist.php"); // Return to list
+				$this->terminate("t101_jo_headlist.php"); // Return to list
 			}
 		}
 	}
@@ -673,6 +682,12 @@ class t102_jo_delete extends t102_jo
 			return;
 		$this->id->setDbValue($row['id']);
 		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
+		$this->Shipper_id->setDbValue($row['Shipper_id']);
+		$this->Party->setDbValue($row['Party']);
+		$this->Container->setDbValue($row['Container']);
+		$this->Tanggal_Stuffing->setDbValue($row['Tanggal_Stuffing']);
+		$this->Destination_id->setDbValue($row['Destination_id']);
+		$this->Feeder_id->setDbValue($row['Feeder_id']);
 	}
 
 	// Return a row with default values
@@ -681,6 +696,12 @@ class t102_jo_delete extends t102_jo
 		$row = [];
 		$row['id'] = NULL;
 		$row['Nomor_JO'] = NULL;
+		$row['Shipper_id'] = NULL;
+		$row['Party'] = NULL;
+		$row['Container'] = NULL;
+		$row['Tanggal_Stuffing'] = NULL;
+		$row['Destination_id'] = NULL;
+		$row['Feeder_id'] = NULL;
 		return $row;
 	}
 
@@ -697,6 +718,12 @@ class t102_jo_delete extends t102_jo
 		// Common render codes for all row types
 		// id
 		// Nomor_JO
+		// Shipper_id
+		// Party
+		// Container
+		// Tanggal_Stuffing
+		// Destination_id
+		// Feeder_id
 
 		if ($this->RowType == ROWTYPE_VIEW) { // View row
 
@@ -708,6 +735,90 @@ class t102_jo_delete extends t102_jo
 			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
 			$this->Nomor_JO->ViewCustomAttributes = "";
 
+			// Shipper_id
+			$curVal = strval($this->Shipper_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->Shipper_id->ViewValue = $this->Shipper_id->lookupCacheOption($curVal);
+				if ($this->Shipper_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->Shipper_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->Shipper_id->ViewValue = $this->Shipper_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->Shipper_id->ViewValue = $this->Shipper_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->Shipper_id->ViewValue = NULL;
+			}
+			$this->Shipper_id->ViewCustomAttributes = "";
+
+			// Party
+			$this->Party->ViewValue = $this->Party->CurrentValue;
+			$this->Party->ViewValue = FormatNumber($this->Party->ViewValue, 0, -2, -2, -2);
+			$this->Party->ViewCustomAttributes = "";
+
+			// Container
+			if (strval($this->Container->CurrentValue) <> "") {
+				$this->Container->ViewValue = $this->Container->optionCaption($this->Container->CurrentValue);
+			} else {
+				$this->Container->ViewValue = NULL;
+			}
+			$this->Container->ViewCustomAttributes = "";
+
+			// Tanggal_Stuffing
+			$this->Tanggal_Stuffing->ViewValue = $this->Tanggal_Stuffing->CurrentValue;
+			$this->Tanggal_Stuffing->ViewValue = FormatDateTime($this->Tanggal_Stuffing->ViewValue, 11);
+			$this->Tanggal_Stuffing->ViewCustomAttributes = "";
+
+			// Destination_id
+			$curVal = strval($this->Destination_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->Destination_id->ViewValue = $this->Destination_id->lookupCacheOption($curVal);
+				if ($this->Destination_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->Destination_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->Destination_id->ViewValue = $this->Destination_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->Destination_id->ViewValue = $this->Destination_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->Destination_id->ViewValue = NULL;
+			}
+			$this->Destination_id->ViewCustomAttributes = "";
+
+			// Feeder_id
+			$curVal = strval($this->Feeder_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->Feeder_id->ViewValue = $this->Feeder_id->lookupCacheOption($curVal);
+				if ($this->Feeder_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->Feeder_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->Feeder_id->ViewValue = $this->Feeder_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->Feeder_id->ViewValue = $this->Feeder_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->Feeder_id->ViewValue = NULL;
+			}
+			$this->Feeder_id->ViewCustomAttributes = "";
+
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
@@ -717,6 +828,36 @@ class t102_jo_delete extends t102_jo
 			$this->Nomor_JO->LinkCustomAttributes = "";
 			$this->Nomor_JO->HrefValue = "";
 			$this->Nomor_JO->TooltipValue = "";
+
+			// Shipper_id
+			$this->Shipper_id->LinkCustomAttributes = "";
+			$this->Shipper_id->HrefValue = "";
+			$this->Shipper_id->TooltipValue = "";
+
+			// Party
+			$this->Party->LinkCustomAttributes = "";
+			$this->Party->HrefValue = "";
+			$this->Party->TooltipValue = "";
+
+			// Container
+			$this->Container->LinkCustomAttributes = "";
+			$this->Container->HrefValue = "";
+			$this->Container->TooltipValue = "";
+
+			// Tanggal_Stuffing
+			$this->Tanggal_Stuffing->LinkCustomAttributes = "";
+			$this->Tanggal_Stuffing->HrefValue = "";
+			$this->Tanggal_Stuffing->TooltipValue = "";
+
+			// Destination_id
+			$this->Destination_id->LinkCustomAttributes = "";
+			$this->Destination_id->HrefValue = "";
+			$this->Destination_id->TooltipValue = "";
+
+			// Feeder_id
+			$this->Feeder_id->LinkCustomAttributes = "";
+			$this->Feeder_id->HrefValue = "";
+			$this->Feeder_id->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -816,7 +957,7 @@ class t102_jo_delete extends t102_jo
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new Breadcrumb();
 		$url = substr(CurrentUrl(), strrpos(CurrentUrl(), "/")+1);
-		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t102_jolist.php"), "", $this->TableVar, TRUE);
+		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t101_jo_headlist.php"), "", $this->TableVar, TRUE);
 		$pageId = "delete";
 		$Breadcrumb->add("delete", $pageId, $url);
 	}
@@ -852,6 +993,12 @@ class t102_jo_delete extends t102_jo
 
 					// Format the field values
 					switch ($fld->FieldVar) {
+						case "x_Shipper_id":
+							break;
+						case "x_Destination_id":
+							break;
+						case "x_Feeder_id":
+							break;
 					}
 					$ar[strval($row[0])] = $row;
 					$rs->moveNext();

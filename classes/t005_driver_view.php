@@ -394,6 +394,10 @@ class t005_driver_view extends t005_driver
 		$this->ExportPdfUrl = $this->pageUrl() . "export=pdf" . $keyUrl;
 		$this->CancelUrl = $this->pageUrl() . "action=cancel";
 
+		// Table object (t006_trucking_vendor)
+		if (!isset($GLOBALS['t006_trucking_vendor']))
+			$GLOBALS['t006_trucking_vendor'] = new t006_trucking_vendor();
+
 		// Page ID
 		if (!defined(PROJECT_NAMESPACE . "PAGE_ID"))
 			define(PROJECT_NAMESPACE . "PAGE_ID", 'view');
@@ -647,6 +651,9 @@ class t005_driver_view extends t005_driver
 			$SkipHeaderFooter = TRUE;
 		$returnUrl = "";
 		$matchRecord = FALSE;
+
+		// Set up master/detail parameters
+		$this->setupMasterParms();
 		if ($this->isPageRequest()) { // Validate request
 			if (Get("id") !== NULL) {
 				$this->id->setQueryStringValue(Get("id"));
@@ -930,6 +937,71 @@ class t005_driver_view extends t005_driver
 		// Call Row Rendered event
 		if ($this->RowType <> ROWTYPE_AGGREGATEINIT)
 			$this->Row_Rendered();
+	}
+
+	// Set up master/detail based on QueryString
+	protected function setupMasterParms()
+	{
+		$validMaster = FALSE;
+
+		// Get the keys for master table
+		if (Get(TABLE_SHOW_MASTER) !== NULL) {
+			$masterTblVar = Get(TABLE_SHOW_MASTER);
+			if ($masterTblVar == "") {
+				$validMaster = TRUE;
+				$this->DbMasterFilter = "";
+				$this->DbDetailFilter = "";
+			}
+			if ($masterTblVar == "t006_trucking_vendor") {
+				$validMaster = TRUE;
+				if (Get("fk_id") !== NULL) {
+					$this->TruckingVendor_id->setQueryStringValue(Get("fk_id"));
+					$this->TruckingVendor_id->setSessionValue($this->TruckingVendor_id->QueryStringValue);
+					if (!is_numeric($this->TruckingVendor_id->QueryStringValue))
+						$validMaster = FALSE;
+				} else {
+					$validMaster = FALSE;
+				}
+			}
+		} elseif (Post(TABLE_SHOW_MASTER) !== NULL) {
+			$masterTblVar = Post(TABLE_SHOW_MASTER);
+			if ($masterTblVar == "") {
+				$validMaster = TRUE;
+				$this->DbMasterFilter = "";
+				$this->DbDetailFilter = "";
+			}
+			if ($masterTblVar == "t006_trucking_vendor") {
+				$validMaster = TRUE;
+				if (Post("fk_id") !== NULL) {
+					$this->TruckingVendor_id->setFormValue(Post("fk_id"));
+					$this->TruckingVendor_id->setSessionValue($this->TruckingVendor_id->FormValue);
+					if (!is_numeric($this->TruckingVendor_id->FormValue))
+						$validMaster = FALSE;
+				} else {
+					$validMaster = FALSE;
+				}
+			}
+		}
+		if ($validMaster) {
+
+			// Save current master table
+			$this->setCurrentMasterTable($masterTblVar);
+			$this->setSessionWhere($this->getDetailFilter());
+
+			// Reset start record counter (new master key)
+			if (!$this->isAddOrEdit()) {
+				$this->StartRec = 1;
+				$this->setStartRecordNumber($this->StartRec);
+			}
+
+			// Clear previous master key from Session
+			if ($masterTblVar <> "t006_trucking_vendor") {
+				if ($this->TruckingVendor_id->CurrentValue == "")
+					$this->TruckingVendor_id->setSessionValue("");
+			}
+		}
+		$this->DbMasterFilter = $this->getMasterFilter(); // Get master filter
+		$this->DbDetailFilter = $this->getDetailFilter(); // Get detail filter
 	}
 
 	// Set up Breadcrumb

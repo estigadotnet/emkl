@@ -4,7 +4,7 @@ namespace PHPMaker2019\emkl_prj;
 /**
  * Page class
  */
-class t102_jo_view extends t102_jo
+class t101_jo_detail_view extends t101_jo_detail
 {
 
 	// Page ID
@@ -14,10 +14,10 @@ class t102_jo_view extends t102_jo
 	public $ProjectID = "{D4B21A3D-A1C8-4ED3-BA65-212E10E691E7}";
 
 	// Table name
-	public $TableName = 't102_jo';
+	public $TableName = 't101_jo_detail';
 
 	// Page object name
-	public $PageObjName = "t102_jo_view";
+	public $PageObjName = "t101_jo_detail_view";
 
 	// Page URLs
 	public $AddUrl;
@@ -375,10 +375,10 @@ class t102_jo_view extends t102_jo
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (t102_jo)
-		if (!isset($GLOBALS["t102_jo"]) || get_class($GLOBALS["t102_jo"]) == PROJECT_NAMESPACE . "t102_jo") {
-			$GLOBALS["t102_jo"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["t102_jo"];
+		// Table object (t101_jo_detail)
+		if (!isset($GLOBALS["t101_jo_detail"]) || get_class($GLOBALS["t101_jo_detail"]) == PROJECT_NAMESPACE . "t101_jo_detail") {
+			$GLOBALS["t101_jo_detail"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["t101_jo_detail"];
 		}
 		$keyUrl = "";
 		if (Get("id") !== NULL) {
@@ -394,13 +394,17 @@ class t102_jo_view extends t102_jo
 		$this->ExportPdfUrl = $this->pageUrl() . "export=pdf" . $keyUrl;
 		$this->CancelUrl = $this->pageUrl() . "action=cancel";
 
+		// Table object (t101_jo_head)
+		if (!isset($GLOBALS['t101_jo_head']))
+			$GLOBALS['t101_jo_head'] = new t101_jo_head();
+
 		// Page ID
 		if (!defined(PROJECT_NAMESPACE . "PAGE_ID"))
 			define(PROJECT_NAMESPACE . "PAGE_ID", 'view');
 
 		// Table name (for backward compatibility)
 		if (!defined(PROJECT_NAMESPACE . "TABLE_NAME"))
-			define(PROJECT_NAMESPACE . "TABLE_NAME", 't102_jo');
+			define(PROJECT_NAMESPACE . "TABLE_NAME", 't101_jo_detail');
 
 		// Start timer
 		if (!isset($GLOBALS["DebugTimer"]))
@@ -441,14 +445,14 @@ class t102_jo_view extends t102_jo
 		Page_Unloaded();
 
 		// Export
-		global $EXPORT, $t102_jo;
+		global $EXPORT, $t101_jo_detail;
 		if ($this->CustomExport && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EXPORT)) {
 				$content = ob_get_contents();
 			if ($ExportFileName == "")
 				$ExportFileName = $this->TableVar;
 			$class = PROJECT_NAMESPACE . $EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($t102_jo);
+				$doc = new $class($t101_jo_detail);
 				$doc->Text = @$content;
 				if ($this->isExport("email"))
 					echo $this->exportEmail($doc->Text);
@@ -483,7 +487,7 @@ class t102_jo_view extends t102_jo
 				$pageName = GetPageName($url);
 				if ($pageName != $this->getListUrl()) { // Not List page
 					$row["caption"] = $this->getModalCaption($pageName);
-					if ($pageName == "t102_joview.php")
+					if ($pageName == "t101_jo_detailview.php")
 						$row["view"] = "1";
 				} else { // List page should not be shown as modal => error
 					$row["error"] = $this->getFailureMessage();
@@ -616,7 +620,14 @@ class t102_jo_view extends t102_jo
 		$this->IsModal = (Param("modal") == "1");
 		$this->CurrentAction = Param("action"); // Set up current action
 		$this->id->setVisibility();
-		$this->Nomor_JO->setVisibility();
+		$this->JOHead_id->setVisibility();
+		$this->TruckingVendor_id->setVisibility();
+		$this->Driver_id->setVisibility();
+		$this->Nomor_Polisi_1->setVisibility();
+		$this->Nomor_Polisi_2->setVisibility();
+		$this->Nomor_Polisi_3->setVisibility();
+		$this->Nomor_Container_1->setVisibility();
+		$this->Nomor_Container_2->setVisibility();
 		$this->hideFieldsForAddEdit();
 
 		// Do not use lookup cache
@@ -638,12 +649,17 @@ class t102_jo_view extends t102_jo
 		$this->createToken();
 
 		// Set up lookup cache
-		// Check modal
+		$this->setupLookupOptions($this->TruckingVendor_id);
+		$this->setupLookupOptions($this->Driver_id);
 
+		// Check modal
 		if ($this->IsModal)
 			$SkipHeaderFooter = TRUE;
 		$returnUrl = "";
 		$matchRecord = FALSE;
+
+		// Set up master/detail parameters
+		$this->setupMasterParms();
 		if ($this->isPageRequest()) { // Validate request
 			if (Get("id") !== NULL) {
 				$this->id->setQueryStringValue(Get("id"));
@@ -658,7 +674,7 @@ class t102_jo_view extends t102_jo
 				$this->id->setFormValue(Route(2));
 				$this->RecKey["id"] = $this->id->FormValue;
 			} else {
-				$returnUrl = "t102_jolist.php"; // Return to list
+				$returnUrl = "t101_jo_detaillist.php"; // Return to list
 			}
 
 			// Get action
@@ -680,11 +696,11 @@ class t102_jo_view extends t102_jo
 					if (!$res) { // Load record based on key
 						if ($this->getSuccessMessage() == "" && $this->getFailureMessage() == "")
 							$this->setFailureMessage($Language->phrase("NoRecord")); // Set no record message
-						$returnUrl = "t102_jolist.php"; // No matching record, return to list
+						$returnUrl = "t101_jo_detaillist.php"; // No matching record, return to list
 					}
 			}
 		} else {
-			$returnUrl = "t102_jolist.php"; // Not page request, return to list
+			$returnUrl = "t101_jo_detaillist.php"; // Not page request, return to list
 		}
 		if ($returnUrl <> "") {
 			$this->terminate($returnUrl);
@@ -834,7 +850,14 @@ class t102_jo_view extends t102_jo
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
-		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
+		$this->JOHead_id->setDbValue($row['JOHead_id']);
+		$this->TruckingVendor_id->setDbValue($row['TruckingVendor_id']);
+		$this->Driver_id->setDbValue($row['Driver_id']);
+		$this->Nomor_Polisi_1->setDbValue($row['Nomor_Polisi_1']);
+		$this->Nomor_Polisi_2->setDbValue($row['Nomor_Polisi_2']);
+		$this->Nomor_Polisi_3->setDbValue($row['Nomor_Polisi_3']);
+		$this->Nomor_Container_1->setDbValue($row['Nomor_Container_1']);
+		$this->Nomor_Container_2->setDbValue($row['Nomor_Container_2']);
 	}
 
 	// Return a row with default values
@@ -842,7 +865,14 @@ class t102_jo_view extends t102_jo
 	{
 		$row = [];
 		$row['id'] = NULL;
-		$row['Nomor_JO'] = NULL;
+		$row['JOHead_id'] = NULL;
+		$row['TruckingVendor_id'] = NULL;
+		$row['Driver_id'] = NULL;
+		$row['Nomor_Polisi_1'] = NULL;
+		$row['Nomor_Polisi_2'] = NULL;
+		$row['Nomor_Polisi_3'] = NULL;
+		$row['Nomor_Container_1'] = NULL;
+		$row['Nomor_Container_2'] = NULL;
 		return $row;
 	}
 
@@ -864,7 +894,14 @@ class t102_jo_view extends t102_jo
 
 		// Common render codes for all row types
 		// id
-		// Nomor_JO
+		// JOHead_id
+		// TruckingVendor_id
+		// Driver_id
+		// Nomor_Polisi_1
+		// Nomor_Polisi_2
+		// Nomor_Polisi_3
+		// Nomor_Container_1
+		// Nomor_Container_2
 
 		if ($this->RowType == ROWTYPE_VIEW) { // View row
 
@@ -872,24 +909,189 @@ class t102_jo_view extends t102_jo
 			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
 
-			// Nomor_JO
-			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
-			$this->Nomor_JO->ViewCustomAttributes = "";
+			// JOHead_id
+			$this->JOHead_id->ViewValue = $this->JOHead_id->CurrentValue;
+			$this->JOHead_id->ViewValue = FormatNumber($this->JOHead_id->ViewValue, 0, -2, -2, -2);
+			$this->JOHead_id->ViewCustomAttributes = "";
+
+			// TruckingVendor_id
+			$curVal = strval($this->TruckingVendor_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->lookupCacheOption($curVal);
+				if ($this->TruckingVendor_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->TruckingVendor_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->TruckingVendor_id->ViewValue = NULL;
+			}
+			$this->TruckingVendor_id->ViewCustomAttributes = "";
+
+			// Driver_id
+			$curVal = strval($this->Driver_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->Driver_id->ViewValue = $this->Driver_id->lookupCacheOption($curVal);
+				if ($this->Driver_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->Driver_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->Driver_id->ViewValue = $this->Driver_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->Driver_id->ViewValue = $this->Driver_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->Driver_id->ViewValue = NULL;
+			}
+			$this->Driver_id->ViewCustomAttributes = "";
+
+			// Nomor_Polisi_1
+			$this->Nomor_Polisi_1->ViewValue = $this->Nomor_Polisi_1->CurrentValue;
+			$this->Nomor_Polisi_1->ViewCustomAttributes = "";
+
+			// Nomor_Polisi_2
+			$this->Nomor_Polisi_2->ViewValue = $this->Nomor_Polisi_2->CurrentValue;
+			$this->Nomor_Polisi_2->ViewCustomAttributes = "";
+
+			// Nomor_Polisi_3
+			$this->Nomor_Polisi_3->ViewValue = $this->Nomor_Polisi_3->CurrentValue;
+			$this->Nomor_Polisi_3->ViewCustomAttributes = "";
+
+			// Nomor_Container_1
+			$this->Nomor_Container_1->ViewValue = $this->Nomor_Container_1->CurrentValue;
+			$this->Nomor_Container_1->ViewCustomAttributes = "";
+
+			// Nomor_Container_2
+			$this->Nomor_Container_2->ViewValue = $this->Nomor_Container_2->CurrentValue;
+			$this->Nomor_Container_2->ViewCustomAttributes = "";
 
 			// id
 			$this->id->LinkCustomAttributes = "";
 			$this->id->HrefValue = "";
 			$this->id->TooltipValue = "";
 
-			// Nomor_JO
-			$this->Nomor_JO->LinkCustomAttributes = "";
-			$this->Nomor_JO->HrefValue = "";
-			$this->Nomor_JO->TooltipValue = "";
+			// JOHead_id
+			$this->JOHead_id->LinkCustomAttributes = "";
+			$this->JOHead_id->HrefValue = "";
+			$this->JOHead_id->TooltipValue = "";
+
+			// TruckingVendor_id
+			$this->TruckingVendor_id->LinkCustomAttributes = "";
+			$this->TruckingVendor_id->HrefValue = "";
+			$this->TruckingVendor_id->TooltipValue = "";
+
+			// Driver_id
+			$this->Driver_id->LinkCustomAttributes = "";
+			$this->Driver_id->HrefValue = "";
+			$this->Driver_id->TooltipValue = "";
+
+			// Nomor_Polisi_1
+			$this->Nomor_Polisi_1->LinkCustomAttributes = "";
+			$this->Nomor_Polisi_1->HrefValue = "";
+			$this->Nomor_Polisi_1->TooltipValue = "";
+
+			// Nomor_Polisi_2
+			$this->Nomor_Polisi_2->LinkCustomAttributes = "";
+			$this->Nomor_Polisi_2->HrefValue = "";
+			$this->Nomor_Polisi_2->TooltipValue = "";
+
+			// Nomor_Polisi_3
+			$this->Nomor_Polisi_3->LinkCustomAttributes = "";
+			$this->Nomor_Polisi_3->HrefValue = "";
+			$this->Nomor_Polisi_3->TooltipValue = "";
+
+			// Nomor_Container_1
+			$this->Nomor_Container_1->LinkCustomAttributes = "";
+			$this->Nomor_Container_1->HrefValue = "";
+			$this->Nomor_Container_1->TooltipValue = "";
+
+			// Nomor_Container_2
+			$this->Nomor_Container_2->LinkCustomAttributes = "";
+			$this->Nomor_Container_2->HrefValue = "";
+			$this->Nomor_Container_2->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
 		if ($this->RowType <> ROWTYPE_AGGREGATEINIT)
 			$this->Row_Rendered();
+	}
+
+	// Set up master/detail based on QueryString
+	protected function setupMasterParms()
+	{
+		$validMaster = FALSE;
+
+		// Get the keys for master table
+		if (Get(TABLE_SHOW_MASTER) !== NULL) {
+			$masterTblVar = Get(TABLE_SHOW_MASTER);
+			if ($masterTblVar == "") {
+				$validMaster = TRUE;
+				$this->DbMasterFilter = "";
+				$this->DbDetailFilter = "";
+			}
+			if ($masterTblVar == "t101_jo_head") {
+				$validMaster = TRUE;
+				if (Get("fk_id") !== NULL) {
+					$this->JOHead_id->setQueryStringValue(Get("fk_id"));
+					$this->JOHead_id->setSessionValue($this->JOHead_id->QueryStringValue);
+					if (!is_numeric($this->JOHead_id->QueryStringValue))
+						$validMaster = FALSE;
+				} else {
+					$validMaster = FALSE;
+				}
+			}
+		} elseif (Post(TABLE_SHOW_MASTER) !== NULL) {
+			$masterTblVar = Post(TABLE_SHOW_MASTER);
+			if ($masterTblVar == "") {
+				$validMaster = TRUE;
+				$this->DbMasterFilter = "";
+				$this->DbDetailFilter = "";
+			}
+			if ($masterTblVar == "t101_jo_head") {
+				$validMaster = TRUE;
+				if (Post("fk_id") !== NULL) {
+					$this->JOHead_id->setFormValue(Post("fk_id"));
+					$this->JOHead_id->setSessionValue($this->JOHead_id->FormValue);
+					if (!is_numeric($this->JOHead_id->FormValue))
+						$validMaster = FALSE;
+				} else {
+					$validMaster = FALSE;
+				}
+			}
+		}
+		if ($validMaster) {
+
+			// Save current master table
+			$this->setCurrentMasterTable($masterTblVar);
+			$this->setSessionWhere($this->getDetailFilter());
+
+			// Reset start record counter (new master key)
+			if (!$this->isAddOrEdit()) {
+				$this->StartRec = 1;
+				$this->setStartRecordNumber($this->StartRec);
+			}
+
+			// Clear previous master key from Session
+			if ($masterTblVar <> "t101_jo_head") {
+				if ($this->JOHead_id->CurrentValue == "")
+					$this->JOHead_id->setSessionValue("");
+			}
+		}
+		$this->DbMasterFilter = $this->getMasterFilter(); // Get master filter
+		$this->DbDetailFilter = $this->getDetailFilter(); // Get detail filter
 	}
 
 	// Set up Breadcrumb
@@ -898,7 +1100,7 @@ class t102_jo_view extends t102_jo
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new Breadcrumb();
 		$url = substr(CurrentUrl(), strrpos(CurrentUrl(), "/")+1);
-		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t102_jolist.php"), "", $this->TableVar, TRUE);
+		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t101_jo_detaillist.php"), "", $this->TableVar, TRUE);
 		$pageId = "view";
 		$Breadcrumb->add("view", $pageId, $url);
 	}
@@ -934,6 +1136,10 @@ class t102_jo_view extends t102_jo
 
 					// Format the field values
 					switch ($fld->FieldVar) {
+						case "x_TruckingVendor_id":
+							break;
+						case "x_Driver_id":
+							break;
 					}
 					$ar[strval($row[0])] = $row;
 					$rs->moveNext();

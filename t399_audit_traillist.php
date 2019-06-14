@@ -142,7 +142,7 @@ $t399_audit_trail_list->ListOptions->render("header", "left");
 	<?php if ($t399_audit_trail->sortUrl($t399_audit_trail->id) == "") { ?>
 		<th data-name="id" class="<?php echo $t399_audit_trail->id->headerCellClass() ?>"><div id="elh_t399_audit_trail_id" class="t399_audit_trail_id"><div class="ew-table-header-caption"><?php echo $t399_audit_trail->id->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="id" class="<?php echo $t399_audit_trail->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->id) ?>',1);"><div id="elh_t399_audit_trail_id" class="t399_audit_trail_id">
+		<th data-name="id" class="<?php echo $t399_audit_trail->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->id) ?>',2);"><div id="elh_t399_audit_trail_id" class="t399_audit_trail_id">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t399_audit_trail->id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t399_audit_trail->id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t399_audit_trail->id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -151,7 +151,7 @@ $t399_audit_trail_list->ListOptions->render("header", "left");
 	<?php if ($t399_audit_trail->sortUrl($t399_audit_trail->datetime) == "") { ?>
 		<th data-name="datetime" class="<?php echo $t399_audit_trail->datetime->headerCellClass() ?>"><div id="elh_t399_audit_trail_datetime" class="t399_audit_trail_datetime"><div class="ew-table-header-caption"><?php echo $t399_audit_trail->datetime->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="datetime" class="<?php echo $t399_audit_trail->datetime->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->datetime) ?>',1);"><div id="elh_t399_audit_trail_datetime" class="t399_audit_trail_datetime">
+		<th data-name="datetime" class="<?php echo $t399_audit_trail->datetime->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->datetime) ?>',2);"><div id="elh_t399_audit_trail_datetime" class="t399_audit_trail_datetime">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t399_audit_trail->datetime->caption() ?></span><span class="ew-table-header-sort"><?php if ($t399_audit_trail->datetime->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t399_audit_trail->datetime->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -160,7 +160,7 @@ $t399_audit_trail_list->ListOptions->render("header", "left");
 	<?php if ($t399_audit_trail->sortUrl($t399_audit_trail->script) == "") { ?>
 		<th data-name="script" class="<?php echo $t399_audit_trail->script->headerCellClass() ?>"><div id="elh_t399_audit_trail_script" class="t399_audit_trail_script"><div class="ew-table-header-caption"><?php echo $t399_audit_trail->script->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="script" class="<?php echo $t399_audit_trail->script->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->script) ?>',1);"><div id="elh_t399_audit_trail_script" class="t399_audit_trail_script">
+		<th data-name="script" class="<?php echo $t399_audit_trail->script->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->script) ?>',2);"><div id="elh_t399_audit_trail_script" class="t399_audit_trail_script">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t399_audit_trail->script->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t399_audit_trail->script->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t399_audit_trail->script->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -169,7 +169,7 @@ $t399_audit_trail_list->ListOptions->render("header", "left");
 	<?php if ($t399_audit_trail->sortUrl($t399_audit_trail->user) == "") { ?>
 		<th data-name="user" class="<?php echo $t399_audit_trail->user->headerCellClass() ?>"><div id="elh_t399_audit_trail_user" class="t399_audit_trail_user"><div class="ew-table-header-caption"><?php echo $t399_audit_trail->user->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="user" class="<?php echo $t399_audit_trail->user->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->user) ?>',1);"><div id="elh_t399_audit_trail_user" class="t399_audit_trail_user">
+		<th data-name="user" class="<?php echo $t399_audit_trail->user->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->user) ?>',2);"><div id="elh_t399_audit_trail_user" class="t399_audit_trail_user">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t399_audit_trail->user->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t399_audit_trail->user->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t399_audit_trail->user->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -178,7 +178,7 @@ $t399_audit_trail_list->ListOptions->render("header", "left");
 	<?php if ($t399_audit_trail->sortUrl($t399_audit_trail->_action) == "") { ?>
 		<th data-name="_action" class="<?php echo $t399_audit_trail->_action->headerCellClass() ?>"><div id="elh_t399_audit_trail__action" class="t399_audit_trail__action"><div class="ew-table-header-caption"><?php echo $t399_audit_trail->_action->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="_action" class="<?php echo $t399_audit_trail->_action->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->_action) ?>',1);"><div id="elh_t399_audit_trail__action" class="t399_audit_trail__action">
+		<th data-name="_action" class="<?php echo $t399_audit_trail->_action->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->_action) ?>',2);"><div id="elh_t399_audit_trail__action" class="t399_audit_trail__action">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t399_audit_trail->_action->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t399_audit_trail->_action->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t399_audit_trail->_action->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -187,7 +187,7 @@ $t399_audit_trail_list->ListOptions->render("header", "left");
 	<?php if ($t399_audit_trail->sortUrl($t399_audit_trail->_table) == "") { ?>
 		<th data-name="_table" class="<?php echo $t399_audit_trail->_table->headerCellClass() ?>"><div id="elh_t399_audit_trail__table" class="t399_audit_trail__table"><div class="ew-table-header-caption"><?php echo $t399_audit_trail->_table->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="_table" class="<?php echo $t399_audit_trail->_table->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->_table) ?>',1);"><div id="elh_t399_audit_trail__table" class="t399_audit_trail__table">
+		<th data-name="_table" class="<?php echo $t399_audit_trail->_table->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->_table) ?>',2);"><div id="elh_t399_audit_trail__table" class="t399_audit_trail__table">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t399_audit_trail->_table->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t399_audit_trail->_table->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t399_audit_trail->_table->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -196,7 +196,7 @@ $t399_audit_trail_list->ListOptions->render("header", "left");
 	<?php if ($t399_audit_trail->sortUrl($t399_audit_trail->field) == "") { ?>
 		<th data-name="field" class="<?php echo $t399_audit_trail->field->headerCellClass() ?>"><div id="elh_t399_audit_trail_field" class="t399_audit_trail_field"><div class="ew-table-header-caption"><?php echo $t399_audit_trail->field->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="field" class="<?php echo $t399_audit_trail->field->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->field) ?>',1);"><div id="elh_t399_audit_trail_field" class="t399_audit_trail_field">
+		<th data-name="field" class="<?php echo $t399_audit_trail->field->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t399_audit_trail->SortUrl($t399_audit_trail->field) ?>',2);"><div id="elh_t399_audit_trail_field" class="t399_audit_trail_field">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t399_audit_trail->field->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t399_audit_trail->field->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t399_audit_trail->field->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>

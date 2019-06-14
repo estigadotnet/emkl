@@ -17,10 +17,10 @@ include_once "autoload.php";
 WriteHeader(FALSE);
 
 // Create page object
-$t102_jo_addopt = new t102_jo_addopt();
+$t003_feeder_addopt = new t003_feeder_addopt();
 
 // Run the page
-$t102_jo_addopt->run();
+$t003_feeder_addopt->run();
 
 // Setup login status
 SetClientVar("login", LoginStatus());
@@ -29,16 +29,16 @@ SetClientVar("login", LoginStatus());
 Page_Rendering();
 
 // Page Rendering event
-$t102_jo_addopt->Page_Render();
+$t003_feeder_addopt->Page_Render();
 ?>
 <script>
 
 // Form object
 currentPageID = ew.PAGE_ID = "addopt";
-var ft102_joaddopt = currentForm = new ew.Form("ft102_joaddopt", "addopt");
+var ft003_feederaddopt = currentForm = new ew.Form("ft003_feederaddopt", "addopt");
 
 // Validate form
-ft102_joaddopt.validate = function() {
+ft003_feederaddopt.validate = function() {
 	if (!this.validateRequired)
 		return true; // Ignore validation
 	var $ = jQuery, fobj = this.getForm(), $fobj = $(fobj);
@@ -52,10 +52,10 @@ ft102_joaddopt.validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
-		<?php if ($t102_jo_addopt->Nomor_JO->Required) { ?>
-			elm = this.getElements("x" + infix + "_Nomor_JO");
+		<?php if ($t003_feeder_addopt->Nama->Required) { ?>
+			elm = this.getElements("x" + infix + "_Nama");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
-				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t102_jo->Nomor_JO->caption(), $t102_jo->Nomor_JO->RequiredErrorMessage)) ?>");
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t003_feeder->Nama->caption(), $t003_feeder->Nama->RequiredErrorMessage)) ?>");
 		<?php } ?>
 
 			// Fire Form_CustomValidate event
@@ -66,14 +66,14 @@ ft102_joaddopt.validate = function() {
 }
 
 // Form_CustomValidate event
-ft102_joaddopt.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LINE!
+ft003_feederaddopt.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LINE!
 
 	// Your custom validation code here, return false if invalid.
 	return true;
 }
 
 // Use JavaScript validation or not
-ft102_joaddopt.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
+ft003_feederaddopt.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
 // Form object for search
@@ -83,27 +83,27 @@ ft102_joaddopt.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Write your client script here, no need to add script tags.
 </script>
-<?php $t102_jo_addopt->showPageHeader(); ?>
+<?php $t003_feeder_addopt->showPageHeader(); ?>
 <?php
-$t102_jo_addopt->showMessage();
+$t003_feeder_addopt->showMessage();
 ?>
-<form name="ft102_joaddopt" id="ft102_joaddopt" class="ew-form ew-horizontal" action="<?php echo API_URL ?>" method="post">
-<?php //if ($t102_jo_addopt->CheckToken) { ?>
-<input type="hidden" name="<?php echo TOKEN_NAME ?>" value="<?php echo $t102_jo_addopt->Token ?>">
+<form name="ft003_feederaddopt" id="ft003_feederaddopt" class="ew-form ew-horizontal" action="<?php echo API_URL ?>" method="post">
+<?php //if ($t003_feeder_addopt->CheckToken) { ?>
+<input type="hidden" name="<?php echo TOKEN_NAME ?>" value="<?php echo $t003_feeder_addopt->Token ?>">
 <?php //} ?>
 <input type="hidden" name="<?php echo API_ACTION_NAME ?>" id="<?php echo API_ACTION_NAME ?>" value="<?php echo API_ADD_ACTION ?>">
-<input type="hidden" name="<?php echo API_OBJECT_NAME ?>" id="<?php echo API_OBJECT_NAME ?>" value="<?php echo $t102_jo_addopt->TableVar ?>">
-<?php if ($t102_jo->Nomor_JO->Visible) { // Nomor_JO ?>
+<input type="hidden" name="<?php echo API_OBJECT_NAME ?>" id="<?php echo API_OBJECT_NAME ?>" value="<?php echo $t003_feeder_addopt->TableVar ?>">
+<?php if ($t003_feeder->Nama->Visible) { // Nama ?>
 	<div class="form-group row">
-		<label class="col-sm-2 col-form-label ew-label" for="x_Nomor_JO"><?php echo $t102_jo->Nomor_JO->caption() ?><?php echo ($t102_jo->Nomor_JO->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
+		<label class="col-sm-2 col-form-label ew-label" for="x_Nama"><?php echo $t003_feeder->Nama->caption() ?><?php echo ($t003_feeder->Nama->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
 		<div class="col-sm-10">
-<input type="text" data-table="t102_jo" data-field="x_Nomor_JO" name="x_Nomor_JO" id="x_Nomor_JO" size="30" maxlength="50" placeholder="<?php echo HtmlEncode($t102_jo->Nomor_JO->getPlaceHolder()) ?>" value="<?php echo $t102_jo->Nomor_JO->EditValue ?>"<?php echo $t102_jo->Nomor_JO->editAttributes() ?>>
-<?php echo $t102_jo->Nomor_JO->CustomMsg ?></div>
+<input type="text" data-table="t003_feeder" data-field="x_Nama" name="x_Nama" id="x_Nama" size="30" maxlength="50" placeholder="<?php echo HtmlEncode($t003_feeder->Nama->getPlaceHolder()) ?>" value="<?php echo $t003_feeder->Nama->EditValue ?>"<?php echo $t003_feeder->Nama->editAttributes() ?>>
+<?php echo $t003_feeder->Nama->CustomMsg ?></div>
 	</div>
 <?php } ?>
 </form>
 <?php
-$t102_jo_addopt->showPageFooter();
+$t003_feeder_addopt->showPageFooter();
 if (DEBUG_ENABLED)
 	echo GetDebugMessage();
 ?>
@@ -114,5 +114,5 @@ if (DEBUG_ENABLED)
 
 </script>
 <?php
-$t102_jo_addopt->terminate();
+$t003_feeder_addopt->terminate();
 ?>

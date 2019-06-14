@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<configuration date="2019/06/13" author="e.World Technology Ltd.">
-  <project id="{D4B21A3D-A1C8-4ED3-BA65-212E10E691E7}" file="C:\xampp\htdocs\emkl\emkl_prj.pmp" name="emkl_prj" product="PHPMaker" version="15.0" datetime="2019/06/13 17:15:59" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;">
+<configuration date="2019/06/14" author="e.World Technology Ltd.">
+  <project id="{D4B21A3D-A1C8-4ED3-BA65-212E10E691E7}" file="C:\xampp\htdocs\emkl\emkl_prj.pmp" name="emkl_prj" product="PHPMaker" version="15.0" datetime="2019/06/14 19:19:35" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;">
+    <table id="cf301_home" name="cf301_home.php" caption="Home" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
     <table id="t001_shipper" name="t001_shipper" caption="Shipper" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
     <table id="t002_destination" name="t002_destination" caption="Destination" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
     <table id="t003_feeder" name="t003_feeder" caption="Feeder" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
@@ -10,9 +11,9 @@
     <table id="t096_employees" name="t096_employees" caption="t 096 employees" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
     <table id="t097_userlevels" name="t097_userlevels" caption="t 097 userlevels" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
     <table id="t098_userlevelpermissions" name="t098_userlevelpermissions" caption="t 098 userlevelpermissions" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
+    <table id="t101_jo_detail" name="t101_jo_detail" caption="Trucking" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
+    <table id="t101_jo_head" name="t101_jo_head" caption="Job Order" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
     <table id="t101_tagihan_trucking" name="t101_tagihan_trucking" caption="Tagihan Trucking" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
-    <table id="t102_jo" name="t102_jo" caption="JO" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
-    <table id="t103_trucking" name="t103_trucking" caption="Trucking" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
     <table id="t399_audit_trail" name="t399_audit_trail" caption="t 399 audit trail" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
   </project>
 </configuration>

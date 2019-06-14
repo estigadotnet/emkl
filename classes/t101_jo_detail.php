@@ -2,9 +2,9 @@
 namespace PHPMaker2019\emkl_prj;
 
 /**
- * Table class for t103_trucking
+ * Table class for t101_jo_detail
  */
-class t103_trucking extends DbTable
+class t101_jo_detail extends DbTable
 {
 	protected $SqlFrom = "";
 	protected $SqlSelect = "";
@@ -26,21 +26,12 @@ class t103_trucking extends DbTable
 
 	// Fields
 	public $id;
-	public $EI;
-	public $Shipper_id;
-	public $Party;
-	public $Jenis_Container;
-	public $Tgl_Stuffing;
-	public $Destination_id;
-	public $Feeder_id;
-	public $ETA_ETD;
-	public $Liner_id;
-	public $Remark;
+	public $JOHead_id;
 	public $TruckingVendor_id;
 	public $Driver_id;
-	public $No_Pol_1;
-	public $No_Pol_2;
-	public $No_Pol_3;
+	public $Nomor_Polisi_1;
+	public $Nomor_Polisi_2;
+	public $Nomor_Polisi_3;
 	public $Nomor_Container_1;
 	public $Nomor_Container_2;
 
@@ -52,12 +43,12 @@ class t103_trucking extends DbTable
 		// Language object
 		if (!isset($Language))
 			$Language = new Language();
-		$this->TableVar = 't103_trucking';
-		$this->TableName = 't103_trucking';
+		$this->TableVar = 't101_jo_detail';
+		$this->TableName = 't101_jo_detail';
 		$this->TableType = 'TABLE';
 
 		// Update Table
-		$this->UpdateTable = "`t103_trucking`";
+		$this->UpdateTable = "`t101_jo_detail`";
 		$this->Dbid = 'DB';
 		$this->ExportAll = TRUE;
 		$this->ExportPageBreakCount = 0; // Page break per every n record (PDF only)
@@ -67,9 +58,9 @@ class t103_trucking extends DbTable
 		$this->ExportExcelPageSize = ""; // Page size (PhpSpreadsheet only)
 		$this->ExportWordPageOrientation = "portrait"; // Page orientation (PHPWord only)
 		$this->ExportWordColumnWidth = NULL; // Cell width (PHPWord only)
-		$this->DetailAdd = FALSE; // Allow detail add
-		$this->DetailEdit = FALSE; // Allow detail edit
-		$this->DetailView = FALSE; // Allow detail view
+		$this->DetailAdd = TRUE; // Allow detail add
+		$this->DetailEdit = TRUE; // Allow detail edit
+		$this->DetailView = TRUE; // Allow detail view
 		$this->ShowMultipleDetails = FALSE; // Show multiple details
 		$this->GridAddRowCount = 5;
 		$this->AllowAddDeleteRow = TRUE; // Allow add/delete row
@@ -77,135 +68,74 @@ class t103_trucking extends DbTable
 		$this->BasicSearch = new BasicSearch($this->TableVar);
 
 		// id
-		$this->id = new DbField('t103_trucking', 't103_trucking', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
+		$this->id = new DbField('t101_jo_detail', 't101_jo_detail', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
 		$this->id->IsAutoIncrement = TRUE; // Autoincrement field
 		$this->id->IsPrimaryKey = TRUE; // Primary key field
 		$this->id->Sortable = TRUE; // Allow sort
 		$this->id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
 		$this->fields['id'] = &$this->id;
 
-		// EI
-		$this->EI = new DbField('t103_trucking', 't103_trucking', 'x_EI', 'EI', '`EI`', '`EI`', 202, -1, FALSE, '`EI`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
-		$this->EI->Nullable = FALSE; // NOT NULL field
-		$this->EI->Sortable = TRUE; // Allow sort
-		$this->EI->Lookup = new Lookup('EI', 't103_trucking', FALSE, '', ["","","",""], [], [], [], [], [], [], '', '');
-		$this->EI->OptionCount = 2;
-		$this->fields['EI'] = &$this->EI;
-
-		// Shipper_id
-		$this->Shipper_id = new DbField('t103_trucking', 't103_trucking', 'x_Shipper_id', 'Shipper_id', '`Shipper_id`', '`Shipper_id`', 3, -1, FALSE, '`Shipper_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->Shipper_id->Nullable = FALSE; // NOT NULL field
-		$this->Shipper_id->Required = TRUE; // Required field
-		$this->Shipper_id->Sortable = TRUE; // Allow sort
-		$this->Shipper_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
-		$this->fields['Shipper_id'] = &$this->Shipper_id;
-
-		// Party
-		$this->Party = new DbField('t103_trucking', 't103_trucking', 'x_Party', 'Party', '`Party`', '`Party`', 16, -1, FALSE, '`Party`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->Party->Nullable = FALSE; // NOT NULL field
-		$this->Party->Sortable = TRUE; // Allow sort
-		$this->Party->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
-		$this->fields['Party'] = &$this->Party;
-
-		// Jenis_Container
-		$this->Jenis_Container = new DbField('t103_trucking', 't103_trucking', 'x_Jenis_Container', 'Jenis_Container', '`Jenis_Container`', '`Jenis_Container`', 202, -1, FALSE, '`Jenis_Container`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
-		$this->Jenis_Container->Nullable = FALSE; // NOT NULL field
-		$this->Jenis_Container->Sortable = TRUE; // Allow sort
-		$this->Jenis_Container->Lookup = new Lookup('Jenis_Container', 't103_trucking', FALSE, '', ["","","",""], [], [], [], [], [], [], '', '');
-		$this->Jenis_Container->OptionCount = 2;
-		$this->fields['Jenis_Container'] = &$this->Jenis_Container;
-
-		// Tgl_Stuffing
-		$this->Tgl_Stuffing = new DbField('t103_trucking', 't103_trucking', 'x_Tgl_Stuffing', 'Tgl_Stuffing', '`Tgl_Stuffing`', CastDateFieldForLike('`Tgl_Stuffing`', 0, "DB"), 133, 0, FALSE, '`Tgl_Stuffing`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->Tgl_Stuffing->Nullable = FALSE; // NOT NULL field
-		$this->Tgl_Stuffing->Required = TRUE; // Required field
-		$this->Tgl_Stuffing->Sortable = TRUE; // Allow sort
-		$this->Tgl_Stuffing->DefaultErrorMessage = str_replace("%s", $GLOBALS["DATE_FORMAT"], $Language->phrase("IncorrectDate"));
-		$this->fields['Tgl_Stuffing'] = &$this->Tgl_Stuffing;
-
-		// Destination_id
-		$this->Destination_id = new DbField('t103_trucking', 't103_trucking', 'x_Destination_id', 'Destination_id', '`Destination_id`', '`Destination_id`', 3, -1, FALSE, '`Destination_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->Destination_id->Nullable = FALSE; // NOT NULL field
-		$this->Destination_id->Required = TRUE; // Required field
-		$this->Destination_id->Sortable = TRUE; // Allow sort
-		$this->Destination_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
-		$this->fields['Destination_id'] = &$this->Destination_id;
-
-		// Feeder_id
-		$this->Feeder_id = new DbField('t103_trucking', 't103_trucking', 'x_Feeder_id', 'Feeder_id', '`Feeder_id`', '`Feeder_id`', 3, -1, FALSE, '`Feeder_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->Feeder_id->Nullable = FALSE; // NOT NULL field
-		$this->Feeder_id->Required = TRUE; // Required field
-		$this->Feeder_id->Sortable = TRUE; // Allow sort
-		$this->Feeder_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
-		$this->fields['Feeder_id'] = &$this->Feeder_id;
-
-		// ETA_ETD
-		$this->ETA_ETD = new DbField('t103_trucking', 't103_trucking', 'x_ETA_ETD', 'ETA_ETD', '`ETA_ETD`', CastDateFieldForLike('`ETA_ETD`', 0, "DB"), 135, 0, FALSE, '`ETA_ETD`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->ETA_ETD->Nullable = FALSE; // NOT NULL field
-		$this->ETA_ETD->Required = TRUE; // Required field
-		$this->ETA_ETD->Sortable = TRUE; // Allow sort
-		$this->ETA_ETD->DefaultErrorMessage = str_replace("%s", $GLOBALS["DATE_FORMAT"], $Language->phrase("IncorrectDate"));
-		$this->fields['ETA_ETD'] = &$this->ETA_ETD;
-
-		// Liner_id
-		$this->Liner_id = new DbField('t103_trucking', 't103_trucking', 'x_Liner_id', 'Liner_id', '`Liner_id`', '`Liner_id`', 3, -1, FALSE, '`Liner_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->Liner_id->Nullable = FALSE; // NOT NULL field
-		$this->Liner_id->Required = TRUE; // Required field
-		$this->Liner_id->Sortable = TRUE; // Allow sort
-		$this->Liner_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
-		$this->fields['Liner_id'] = &$this->Liner_id;
-
-		// Remark
-		$this->Remark = new DbField('t103_trucking', 't103_trucking', 'x_Remark', 'Remark', '`Remark`', '`Remark`', 201, -1, FALSE, '`Remark`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXTAREA');
-		$this->Remark->Nullable = FALSE; // NOT NULL field
-		$this->Remark->Required = TRUE; // Required field
-		$this->Remark->Sortable = TRUE; // Allow sort
-		$this->fields['Remark'] = &$this->Remark;
+		// JOHead_id
+		$this->JOHead_id = new DbField('t101_jo_detail', 't101_jo_detail', 'x_JOHead_id', 'JOHead_id', '`JOHead_id`', '`JOHead_id`', 3, -1, FALSE, '`JOHead_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->JOHead_id->IsForeignKey = TRUE; // Foreign key field
+		$this->JOHead_id->Nullable = FALSE; // NOT NULL field
+		$this->JOHead_id->Required = TRUE; // Required field
+		$this->JOHead_id->Sortable = TRUE; // Allow sort
+		$this->JOHead_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
+		$this->fields['JOHead_id'] = &$this->JOHead_id;
 
 		// TruckingVendor_id
-		$this->TruckingVendor_id = new DbField('t103_trucking', 't103_trucking', 'x_TruckingVendor_id', 'TruckingVendor_id', '`TruckingVendor_id`', '`TruckingVendor_id`', 3, -1, FALSE, '`TruckingVendor_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->TruckingVendor_id = new DbField('t101_jo_detail', 't101_jo_detail', 'x_TruckingVendor_id', 'TruckingVendor_id', '`TruckingVendor_id`', '`TruckingVendor_id`', 3, -1, FALSE, '`TruckingVendor_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->TruckingVendor_id->Nullable = FALSE; // NOT NULL field
 		$this->TruckingVendor_id->Required = TRUE; // Required field
 		$this->TruckingVendor_id->Sortable = TRUE; // Allow sort
+		$this->TruckingVendor_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->TruckingVendor_id->PleaseSelectText = $Language->phrase("PleaseSelect"); // PleaseSelect text
+		$this->TruckingVendor_id->Lookup = new Lookup('TruckingVendor_id', 't006_trucking_vendor', FALSE, 'id', ["Nama","","",""], [], ["t101_jo_detail x_Driver_id"], [], [], [], [], '', '');
 		$this->TruckingVendor_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
 		$this->fields['TruckingVendor_id'] = &$this->TruckingVendor_id;
 
 		// Driver_id
-		$this->Driver_id = new DbField('t103_trucking', 't103_trucking', 'x_Driver_id', 'Driver_id', '`Driver_id`', '`Driver_id`', 3, -1, FALSE, '`Driver_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->Driver_id = new DbField('t101_jo_detail', 't101_jo_detail', 'x_Driver_id', 'Driver_id', '`Driver_id`', '`Driver_id`', 3, -1, FALSE, '`Driver_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->Driver_id->Nullable = FALSE; // NOT NULL field
 		$this->Driver_id->Required = TRUE; // Required field
 		$this->Driver_id->Sortable = TRUE; // Allow sort
+		$this->Driver_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->Driver_id->PleaseSelectText = $Language->phrase("PleaseSelect"); // PleaseSelect text
+		$this->Driver_id->Lookup = new Lookup('Driver_id', 't005_driver', FALSE, 'id', ["Nama","","",""], ["t101_jo_detail x_TruckingVendor_id"], [], ["TruckingVendor_id"], ["x_TruckingVendor_id"], [], [], '', '');
 		$this->Driver_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
 		$this->fields['Driver_id'] = &$this->Driver_id;
 
-		// No_Pol_1
-		$this->No_Pol_1 = new DbField('t103_trucking', 't103_trucking', 'x_No_Pol_1', 'No_Pol_1', '`No_Pol_1`', '`No_Pol_1`', 200, -1, FALSE, '`No_Pol_1`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->No_Pol_1->Nullable = FALSE; // NOT NULL field
-		$this->No_Pol_1->Sortable = TRUE; // Allow sort
-		$this->fields['No_Pol_1'] = &$this->No_Pol_1;
+		// Nomor_Polisi_1
+		$this->Nomor_Polisi_1 = new DbField('t101_jo_detail', 't101_jo_detail', 'x_Nomor_Polisi_1', 'Nomor_Polisi_1', '`Nomor_Polisi_1`', '`Nomor_Polisi_1`', 200, -1, FALSE, '`Nomor_Polisi_1`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->Nomor_Polisi_1->Nullable = FALSE; // NOT NULL field
+		$this->Nomor_Polisi_1->Required = TRUE; // Required field
+		$this->Nomor_Polisi_1->Sortable = TRUE; // Allow sort
+		$this->fields['Nomor_Polisi_1'] = &$this->Nomor_Polisi_1;
 
-		// No_Pol_2
-		$this->No_Pol_2 = new DbField('t103_trucking', 't103_trucking', 'x_No_Pol_2', 'No_Pol_2', '`No_Pol_2`', '`No_Pol_2`', 200, -1, FALSE, '`No_Pol_2`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->No_Pol_2->Nullable = FALSE; // NOT NULL field
-		$this->No_Pol_2->Required = TRUE; // Required field
-		$this->No_Pol_2->Sortable = TRUE; // Allow sort
-		$this->fields['No_Pol_2'] = &$this->No_Pol_2;
+		// Nomor_Polisi_2
+		$this->Nomor_Polisi_2 = new DbField('t101_jo_detail', 't101_jo_detail', 'x_Nomor_Polisi_2', 'Nomor_Polisi_2', '`Nomor_Polisi_2`', '`Nomor_Polisi_2`', 200, -1, FALSE, '`Nomor_Polisi_2`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->Nomor_Polisi_2->Nullable = FALSE; // NOT NULL field
+		$this->Nomor_Polisi_2->Required = TRUE; // Required field
+		$this->Nomor_Polisi_2->Sortable = TRUE; // Allow sort
+		$this->fields['Nomor_Polisi_2'] = &$this->Nomor_Polisi_2;
 
-		// No_Pol_3
-		$this->No_Pol_3 = new DbField('t103_trucking', 't103_trucking', 'x_No_Pol_3', 'No_Pol_3', '`No_Pol_3`', '`No_Pol_3`', 200, -1, FALSE, '`No_Pol_3`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->No_Pol_3->Nullable = FALSE; // NOT NULL field
-		$this->No_Pol_3->Sortable = TRUE; // Allow sort
-		$this->fields['No_Pol_3'] = &$this->No_Pol_3;
+		// Nomor_Polisi_3
+		$this->Nomor_Polisi_3 = new DbField('t101_jo_detail', 't101_jo_detail', 'x_Nomor_Polisi_3', 'Nomor_Polisi_3', '`Nomor_Polisi_3`', '`Nomor_Polisi_3`', 200, -1, FALSE, '`Nomor_Polisi_3`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->Nomor_Polisi_3->Nullable = FALSE; // NOT NULL field
+		$this->Nomor_Polisi_3->Required = TRUE; // Required field
+		$this->Nomor_Polisi_3->Sortable = TRUE; // Allow sort
+		$this->fields['Nomor_Polisi_3'] = &$this->Nomor_Polisi_3;
 
 		// Nomor_Container_1
-		$this->Nomor_Container_1 = new DbField('t103_trucking', 't103_trucking', 'x_Nomor_Container_1', 'Nomor_Container_1', '`Nomor_Container_1`', '`Nomor_Container_1`', 200, -1, FALSE, '`Nomor_Container_1`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->Nomor_Container_1 = new DbField('t101_jo_detail', 't101_jo_detail', 'x_Nomor_Container_1', 'Nomor_Container_1', '`Nomor_Container_1`', '`Nomor_Container_1`', 200, -1, FALSE, '`Nomor_Container_1`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->Nomor_Container_1->Nullable = FALSE; // NOT NULL field
 		$this->Nomor_Container_1->Required = TRUE; // Required field
 		$this->Nomor_Container_1->Sortable = TRUE; // Allow sort
 		$this->fields['Nomor_Container_1'] = &$this->Nomor_Container_1;
 
 		// Nomor_Container_2
-		$this->Nomor_Container_2 = new DbField('t103_trucking', 't103_trucking', 'x_Nomor_Container_2', 'Nomor_Container_2', '`Nomor_Container_2`', '`Nomor_Container_2`', 200, -1, FALSE, '`Nomor_Container_2`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->Nomor_Container_2 = new DbField('t101_jo_detail', 't101_jo_detail', 'x_Nomor_Container_2', 'Nomor_Container_2', '`Nomor_Container_2`', '`Nomor_Container_2`', 200, -1, FALSE, '`Nomor_Container_2`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->Nomor_Container_2->Nullable = FALSE; // NOT NULL field
 		$this->Nomor_Container_2->Required = TRUE; // Required field
 		$this->Nomor_Container_2->Sortable = TRUE; // Allow sort
@@ -230,8 +160,8 @@ class t103_trucking extends DbTable
 		}
 	}
 
-	// Single column sort
-	public function updateSort(&$fld)
+	// Multiple column sort
+	public function updateSort(&$fld, $ctrl)
 	{
 		if ($this->CurrentOrder == $fld->Name) {
 			$sortField = $fld->Expression;
@@ -242,16 +172,81 @@ class t103_trucking extends DbTable
 				$thisSort = ($lastSort == "ASC") ? "DESC" : "ASC";
 			}
 			$fld->setSort($thisSort);
-			$this->setSessionOrderBy($sortField . " " . $thisSort); // Save to Session
+			if ($ctrl) {
+				$orderBy = $this->getSessionOrderBy();
+				if (ContainsString($orderBy, $sortField . " " . $lastSort)) {
+					$orderBy = str_replace($sortField . " " . $lastSort, $sortField . " " . $thisSort, $orderBy);
+				} else {
+					if ($orderBy <> "")
+						$orderBy .= ", ";
+					$orderBy .= $sortField . " " . $thisSort;
+				}
+				$this->setSessionOrderBy($orderBy); // Save to Session
+			} else {
+				$this->setSessionOrderBy($sortField . " " . $thisSort); // Save to Session
+			}
 		} else {
-			$fld->setSort("");
+			if (!$ctrl)
+				$fld->setSort("");
 		}
+	}
+
+	// Current master table name
+	public function getCurrentMasterTable()
+	{
+		return @$_SESSION[PROJECT_NAME . "_" . $this->TableVar . "_" . TABLE_MASTER_TABLE];
+	}
+	public function setCurrentMasterTable($v)
+	{
+		$_SESSION[PROJECT_NAME . "_" . $this->TableVar . "_" . TABLE_MASTER_TABLE] = $v;
+	}
+
+	// Session master WHERE clause
+	public function getMasterFilter()
+	{
+
+		// Master filter
+		$masterFilter = "";
+		if ($this->getCurrentMasterTable() == "t101_jo_head") {
+			if ($this->JOHead_id->getSessionValue() <> "")
+				$masterFilter .= "`id`=" . QuotedValue($this->JOHead_id->getSessionValue(), DATATYPE_NUMBER, "DB");
+			else
+				return "";
+		}
+		return $masterFilter;
+	}
+
+	// Session detail WHERE clause
+	public function getDetailFilter()
+	{
+
+		// Detail filter
+		$detailFilter = "";
+		if ($this->getCurrentMasterTable() == "t101_jo_head") {
+			if ($this->JOHead_id->getSessionValue() <> "")
+				$detailFilter .= "`JOHead_id`=" . QuotedValue($this->JOHead_id->getSessionValue(), DATATYPE_NUMBER, "DB");
+			else
+				return "";
+		}
+		return $detailFilter;
+	}
+
+	// Master filter
+	public function sqlMasterFilter_t101_jo_head()
+	{
+		return "`id`=@id@";
+	}
+
+	// Detail filter
+	public function sqlDetailFilter_t101_jo_head()
+	{
+		return "`JOHead_id`=@JOHead_id@";
 	}
 
 	// Table level SQL
 	public function getSqlFrom() // From
 	{
-		return ($this->SqlFrom <> "") ? $this->SqlFrom : "`t103_trucking`";
+		return ($this->SqlFrom <> "") ? $this->SqlFrom : "`t101_jo_detail`";
 	}
 	public function sqlFrom() // For backward compatibility
 	{
@@ -553,21 +548,12 @@ class t103_trucking extends DbTable
 			return;
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
-		$this->EI->DbValue = $row['EI'];
-		$this->Shipper_id->DbValue = $row['Shipper_id'];
-		$this->Party->DbValue = $row['Party'];
-		$this->Jenis_Container->DbValue = $row['Jenis_Container'];
-		$this->Tgl_Stuffing->DbValue = $row['Tgl_Stuffing'];
-		$this->Destination_id->DbValue = $row['Destination_id'];
-		$this->Feeder_id->DbValue = $row['Feeder_id'];
-		$this->ETA_ETD->DbValue = $row['ETA_ETD'];
-		$this->Liner_id->DbValue = $row['Liner_id'];
-		$this->Remark->DbValue = $row['Remark'];
+		$this->JOHead_id->DbValue = $row['JOHead_id'];
 		$this->TruckingVendor_id->DbValue = $row['TruckingVendor_id'];
 		$this->Driver_id->DbValue = $row['Driver_id'];
-		$this->No_Pol_1->DbValue = $row['No_Pol_1'];
-		$this->No_Pol_2->DbValue = $row['No_Pol_2'];
-		$this->No_Pol_3->DbValue = $row['No_Pol_3'];
+		$this->Nomor_Polisi_1->DbValue = $row['Nomor_Polisi_1'];
+		$this->Nomor_Polisi_2->DbValue = $row['Nomor_Polisi_2'];
+		$this->Nomor_Polisi_3->DbValue = $row['Nomor_Polisi_3'];
 		$this->Nomor_Container_1->DbValue = $row['Nomor_Container_1'];
 		$this->Nomor_Container_2->DbValue = $row['Nomor_Container_2'];
 	}
@@ -609,7 +595,7 @@ class t103_trucking extends DbTable
 		if (@$_SESSION[$name] <> "") {
 			return $_SESSION[$name];
 		} else {
-			return "t103_truckinglist.php";
+			return "t101_jo_detaillist.php";
 		}
 	}
 	public function setReturnUrl($v)
@@ -621,11 +607,11 @@ class t103_trucking extends DbTable
 	public function getModalCaption($pageName)
 	{
 		global $Language;
-		if ($pageName == "t103_truckingview.php")
+		if ($pageName == "t101_jo_detailview.php")
 			return $Language->phrase("View");
-		elseif ($pageName == "t103_truckingedit.php")
+		elseif ($pageName == "t101_jo_detailedit.php")
 			return $Language->phrase("Edit");
-		elseif ($pageName == "t103_truckingadd.php")
+		elseif ($pageName == "t101_jo_detailadd.php")
 			return $Language->phrase("Add");
 		else
 			return "";
@@ -634,16 +620,16 @@ class t103_trucking extends DbTable
 	// List URL
 	public function getListUrl()
 	{
-		return "t103_truckinglist.php";
+		return "t101_jo_detaillist.php";
 	}
 
 	// View URL
 	public function getViewUrl($parm = "")
 	{
 		if ($parm <> "")
-			$url = $this->keyUrl("t103_truckingview.php", $this->getUrlParm($parm));
+			$url = $this->keyUrl("t101_jo_detailview.php", $this->getUrlParm($parm));
 		else
-			$url = $this->keyUrl("t103_truckingview.php", $this->getUrlParm(TABLE_SHOW_DETAIL . "="));
+			$url = $this->keyUrl("t101_jo_detailview.php", $this->getUrlParm(TABLE_SHOW_DETAIL . "="));
 		return $this->addMasterUrl($url);
 	}
 
@@ -651,16 +637,16 @@ class t103_trucking extends DbTable
 	public function getAddUrl($parm = "")
 	{
 		if ($parm <> "")
-			$url = "t103_truckingadd.php?" . $this->getUrlParm($parm);
+			$url = "t101_jo_detailadd.php?" . $this->getUrlParm($parm);
 		else
-			$url = "t103_truckingadd.php";
+			$url = "t101_jo_detailadd.php";
 		return $this->addMasterUrl($url);
 	}
 
 	// Edit URL
 	public function getEditUrl($parm = "")
 	{
-		$url = $this->keyUrl("t103_truckingedit.php", $this->getUrlParm($parm));
+		$url = $this->keyUrl("t101_jo_detailedit.php", $this->getUrlParm($parm));
 		return $this->addMasterUrl($url);
 	}
 
@@ -674,7 +660,7 @@ class t103_trucking extends DbTable
 	// Copy URL
 	public function getCopyUrl($parm = "")
 	{
-		$url = $this->keyUrl("t103_truckingadd.php", $this->getUrlParm($parm));
+		$url = $this->keyUrl("t101_jo_detailadd.php", $this->getUrlParm($parm));
 		return $this->addMasterUrl($url);
 	}
 
@@ -688,12 +674,16 @@ class t103_trucking extends DbTable
 	// Delete URL
 	public function getDeleteUrl()
 	{
-		return $this->keyUrl("t103_truckingdelete.php", $this->getUrlParm());
+		return $this->keyUrl("t101_jo_detaildelete.php", $this->getUrlParm());
 	}
 
 	// Add master url
 	public function addMasterUrl($url)
 	{
+		if ($this->getCurrentMasterTable() == "t101_jo_head" && !ContainsString($url, TABLE_SHOW_MASTER . "=")) {
+			$url .= (ContainsString($url, "?") ? "&" : "?") . TABLE_SHOW_MASTER . "=" . $this->getCurrentMasterTable();
+			$url .= "&fk_id=" . urlencode($this->JOHead_id->CurrentValue);
+		}
 		return $url;
 	}
 	public function keyToJson($htmlEncode = FALSE)
@@ -796,21 +786,12 @@ class t103_trucking extends DbTable
 	public function loadListRowValues(&$rs)
 	{
 		$this->id->setDbValue($rs->fields('id'));
-		$this->EI->setDbValue($rs->fields('EI'));
-		$this->Shipper_id->setDbValue($rs->fields('Shipper_id'));
-		$this->Party->setDbValue($rs->fields('Party'));
-		$this->Jenis_Container->setDbValue($rs->fields('Jenis_Container'));
-		$this->Tgl_Stuffing->setDbValue($rs->fields('Tgl_Stuffing'));
-		$this->Destination_id->setDbValue($rs->fields('Destination_id'));
-		$this->Feeder_id->setDbValue($rs->fields('Feeder_id'));
-		$this->ETA_ETD->setDbValue($rs->fields('ETA_ETD'));
-		$this->Liner_id->setDbValue($rs->fields('Liner_id'));
-		$this->Remark->setDbValue($rs->fields('Remark'));
+		$this->JOHead_id->setDbValue($rs->fields('JOHead_id'));
 		$this->TruckingVendor_id->setDbValue($rs->fields('TruckingVendor_id'));
 		$this->Driver_id->setDbValue($rs->fields('Driver_id'));
-		$this->No_Pol_1->setDbValue($rs->fields('No_Pol_1'));
-		$this->No_Pol_2->setDbValue($rs->fields('No_Pol_2'));
-		$this->No_Pol_3->setDbValue($rs->fields('No_Pol_3'));
+		$this->Nomor_Polisi_1->setDbValue($rs->fields('Nomor_Polisi_1'));
+		$this->Nomor_Polisi_2->setDbValue($rs->fields('Nomor_Polisi_2'));
+		$this->Nomor_Polisi_3->setDbValue($rs->fields('Nomor_Polisi_3'));
 		$this->Nomor_Container_1->setDbValue($rs->fields('Nomor_Container_1'));
 		$this->Nomor_Container_2->setDbValue($rs->fields('Nomor_Container_2'));
 	}
@@ -825,21 +806,12 @@ class t103_trucking extends DbTable
 
 		// Common render codes
 		// id
-		// EI
-		// Shipper_id
-		// Party
-		// Jenis_Container
-		// Tgl_Stuffing
-		// Destination_id
-		// Feeder_id
-		// ETA_ETD
-		// Liner_id
-		// Remark
+		// JOHead_id
 		// TruckingVendor_id
 		// Driver_id
-		// No_Pol_1
-		// No_Pol_2
-		// No_Pol_3
+		// Nomor_Polisi_1
+		// Nomor_Polisi_2
+		// Nomor_Polisi_3
 		// Nomor_Container_1
 		// Nomor_Container_2
 		// id
@@ -847,82 +819,66 @@ class t103_trucking extends DbTable
 		$this->id->ViewValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// EI
-		if (strval($this->EI->CurrentValue) <> "") {
-			$this->EI->ViewValue = $this->EI->optionCaption($this->EI->CurrentValue);
-		} else {
-			$this->EI->ViewValue = NULL;
-		}
-		$this->EI->ViewCustomAttributes = "";
-
-		// Shipper_id
-		$this->Shipper_id->ViewValue = $this->Shipper_id->CurrentValue;
-		$this->Shipper_id->ViewValue = FormatNumber($this->Shipper_id->ViewValue, 0, -2, -2, -2);
-		$this->Shipper_id->ViewCustomAttributes = "";
-
-		// Party
-		$this->Party->ViewValue = $this->Party->CurrentValue;
-		$this->Party->ViewValue = FormatNumber($this->Party->ViewValue, 0, -2, -2, -2);
-		$this->Party->ViewCustomAttributes = "";
-
-		// Jenis_Container
-		if (strval($this->Jenis_Container->CurrentValue) <> "") {
-			$this->Jenis_Container->ViewValue = $this->Jenis_Container->optionCaption($this->Jenis_Container->CurrentValue);
-		} else {
-			$this->Jenis_Container->ViewValue = NULL;
-		}
-		$this->Jenis_Container->ViewCustomAttributes = "";
-
-		// Tgl_Stuffing
-		$this->Tgl_Stuffing->ViewValue = $this->Tgl_Stuffing->CurrentValue;
-		$this->Tgl_Stuffing->ViewValue = FormatDateTime($this->Tgl_Stuffing->ViewValue, 0);
-		$this->Tgl_Stuffing->ViewCustomAttributes = "";
-
-		// Destination_id
-		$this->Destination_id->ViewValue = $this->Destination_id->CurrentValue;
-		$this->Destination_id->ViewValue = FormatNumber($this->Destination_id->ViewValue, 0, -2, -2, -2);
-		$this->Destination_id->ViewCustomAttributes = "";
-
-		// Feeder_id
-		$this->Feeder_id->ViewValue = $this->Feeder_id->CurrentValue;
-		$this->Feeder_id->ViewValue = FormatNumber($this->Feeder_id->ViewValue, 0, -2, -2, -2);
-		$this->Feeder_id->ViewCustomAttributes = "";
-
-		// ETA_ETD
-		$this->ETA_ETD->ViewValue = $this->ETA_ETD->CurrentValue;
-		$this->ETA_ETD->ViewValue = FormatDateTime($this->ETA_ETD->ViewValue, 0);
-		$this->ETA_ETD->ViewCustomAttributes = "";
-
-		// Liner_id
-		$this->Liner_id->ViewValue = $this->Liner_id->CurrentValue;
-		$this->Liner_id->ViewValue = FormatNumber($this->Liner_id->ViewValue, 0, -2, -2, -2);
-		$this->Liner_id->ViewCustomAttributes = "";
-
-		// Remark
-		$this->Remark->ViewValue = $this->Remark->CurrentValue;
-		$this->Remark->ViewCustomAttributes = "";
+		// JOHead_id
+		$this->JOHead_id->ViewValue = $this->JOHead_id->CurrentValue;
+		$this->JOHead_id->ViewValue = FormatNumber($this->JOHead_id->ViewValue, 0, -2, -2, -2);
+		$this->JOHead_id->ViewCustomAttributes = "";
 
 		// TruckingVendor_id
-		$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
-		$this->TruckingVendor_id->ViewValue = FormatNumber($this->TruckingVendor_id->ViewValue, 0, -2, -2, -2);
+		$curVal = strval($this->TruckingVendor_id->CurrentValue);
+		if ($curVal <> "") {
+			$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->lookupCacheOption($curVal);
+			if ($this->TruckingVendor_id->ViewValue === NULL) { // Lookup from database
+				$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+				$sqlWrk = $this->TruckingVendor_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = $rswrk->fields('df');
+					$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->displayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
+				}
+			}
+		} else {
+			$this->TruckingVendor_id->ViewValue = NULL;
+		}
 		$this->TruckingVendor_id->ViewCustomAttributes = "";
 
 		// Driver_id
-		$this->Driver_id->ViewValue = $this->Driver_id->CurrentValue;
-		$this->Driver_id->ViewValue = FormatNumber($this->Driver_id->ViewValue, 0, -2, -2, -2);
+		$curVal = strval($this->Driver_id->CurrentValue);
+		if ($curVal <> "") {
+			$this->Driver_id->ViewValue = $this->Driver_id->lookupCacheOption($curVal);
+			if ($this->Driver_id->ViewValue === NULL) { // Lookup from database
+				$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+				$sqlWrk = $this->Driver_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = $rswrk->fields('df');
+					$this->Driver_id->ViewValue = $this->Driver_id->displayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->Driver_id->ViewValue = $this->Driver_id->CurrentValue;
+				}
+			}
+		} else {
+			$this->Driver_id->ViewValue = NULL;
+		}
 		$this->Driver_id->ViewCustomAttributes = "";
 
-		// No_Pol_1
-		$this->No_Pol_1->ViewValue = $this->No_Pol_1->CurrentValue;
-		$this->No_Pol_1->ViewCustomAttributes = "";
+		// Nomor_Polisi_1
+		$this->Nomor_Polisi_1->ViewValue = $this->Nomor_Polisi_1->CurrentValue;
+		$this->Nomor_Polisi_1->ViewCustomAttributes = "";
 
-		// No_Pol_2
-		$this->No_Pol_2->ViewValue = $this->No_Pol_2->CurrentValue;
-		$this->No_Pol_2->ViewCustomAttributes = "";
+		// Nomor_Polisi_2
+		$this->Nomor_Polisi_2->ViewValue = $this->Nomor_Polisi_2->CurrentValue;
+		$this->Nomor_Polisi_2->ViewCustomAttributes = "";
 
-		// No_Pol_3
-		$this->No_Pol_3->ViewValue = $this->No_Pol_3->CurrentValue;
-		$this->No_Pol_3->ViewCustomAttributes = "";
+		// Nomor_Polisi_3
+		$this->Nomor_Polisi_3->ViewValue = $this->Nomor_Polisi_3->CurrentValue;
+		$this->Nomor_Polisi_3->ViewCustomAttributes = "";
 
 		// Nomor_Container_1
 		$this->Nomor_Container_1->ViewValue = $this->Nomor_Container_1->CurrentValue;
@@ -937,55 +893,10 @@ class t103_trucking extends DbTable
 		$this->id->HrefValue = "";
 		$this->id->TooltipValue = "";
 
-		// EI
-		$this->EI->LinkCustomAttributes = "";
-		$this->EI->HrefValue = "";
-		$this->EI->TooltipValue = "";
-
-		// Shipper_id
-		$this->Shipper_id->LinkCustomAttributes = "";
-		$this->Shipper_id->HrefValue = "";
-		$this->Shipper_id->TooltipValue = "";
-
-		// Party
-		$this->Party->LinkCustomAttributes = "";
-		$this->Party->HrefValue = "";
-		$this->Party->TooltipValue = "";
-
-		// Jenis_Container
-		$this->Jenis_Container->LinkCustomAttributes = "";
-		$this->Jenis_Container->HrefValue = "";
-		$this->Jenis_Container->TooltipValue = "";
-
-		// Tgl_Stuffing
-		$this->Tgl_Stuffing->LinkCustomAttributes = "";
-		$this->Tgl_Stuffing->HrefValue = "";
-		$this->Tgl_Stuffing->TooltipValue = "";
-
-		// Destination_id
-		$this->Destination_id->LinkCustomAttributes = "";
-		$this->Destination_id->HrefValue = "";
-		$this->Destination_id->TooltipValue = "";
-
-		// Feeder_id
-		$this->Feeder_id->LinkCustomAttributes = "";
-		$this->Feeder_id->HrefValue = "";
-		$this->Feeder_id->TooltipValue = "";
-
-		// ETA_ETD
-		$this->ETA_ETD->LinkCustomAttributes = "";
-		$this->ETA_ETD->HrefValue = "";
-		$this->ETA_ETD->TooltipValue = "";
-
-		// Liner_id
-		$this->Liner_id->LinkCustomAttributes = "";
-		$this->Liner_id->HrefValue = "";
-		$this->Liner_id->TooltipValue = "";
-
-		// Remark
-		$this->Remark->LinkCustomAttributes = "";
-		$this->Remark->HrefValue = "";
-		$this->Remark->TooltipValue = "";
+		// JOHead_id
+		$this->JOHead_id->LinkCustomAttributes = "";
+		$this->JOHead_id->HrefValue = "";
+		$this->JOHead_id->TooltipValue = "";
 
 		// TruckingVendor_id
 		$this->TruckingVendor_id->LinkCustomAttributes = "";
@@ -997,20 +908,20 @@ class t103_trucking extends DbTable
 		$this->Driver_id->HrefValue = "";
 		$this->Driver_id->TooltipValue = "";
 
-		// No_Pol_1
-		$this->No_Pol_1->LinkCustomAttributes = "";
-		$this->No_Pol_1->HrefValue = "";
-		$this->No_Pol_1->TooltipValue = "";
+		// Nomor_Polisi_1
+		$this->Nomor_Polisi_1->LinkCustomAttributes = "";
+		$this->Nomor_Polisi_1->HrefValue = "";
+		$this->Nomor_Polisi_1->TooltipValue = "";
 
-		// No_Pol_2
-		$this->No_Pol_2->LinkCustomAttributes = "";
-		$this->No_Pol_2->HrefValue = "";
-		$this->No_Pol_2->TooltipValue = "";
+		// Nomor_Polisi_2
+		$this->Nomor_Polisi_2->LinkCustomAttributes = "";
+		$this->Nomor_Polisi_2->HrefValue = "";
+		$this->Nomor_Polisi_2->TooltipValue = "";
 
-		// No_Pol_3
-		$this->No_Pol_3->LinkCustomAttributes = "";
-		$this->No_Pol_3->HrefValue = "";
-		$this->No_Pol_3->TooltipValue = "";
+		// Nomor_Polisi_3
+		$this->Nomor_Polisi_3->LinkCustomAttributes = "";
+		$this->Nomor_Polisi_3->HrefValue = "";
+		$this->Nomor_Polisi_3->TooltipValue = "";
 
 		// Nomor_Container_1
 		$this->Nomor_Container_1->LinkCustomAttributes = "";
@@ -1043,97 +954,50 @@ class t103_trucking extends DbTable
 		$this->id->EditValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
 
-		// EI
-		$this->EI->EditCustomAttributes = "";
-		$this->EI->EditValue = $this->EI->options(FALSE);
-
-		// Shipper_id
-		$this->Shipper_id->EditAttrs["class"] = "form-control";
-		$this->Shipper_id->EditCustomAttributes = "";
-		$this->Shipper_id->EditValue = $this->Shipper_id->CurrentValue;
-		$this->Shipper_id->PlaceHolder = RemoveHtml($this->Shipper_id->caption());
-
-		// Party
-		$this->Party->EditAttrs["class"] = "form-control";
-		$this->Party->EditCustomAttributes = "";
-		$this->Party->EditValue = $this->Party->CurrentValue;
-		$this->Party->PlaceHolder = RemoveHtml($this->Party->caption());
-
-		// Jenis_Container
-		$this->Jenis_Container->EditCustomAttributes = "";
-		$this->Jenis_Container->EditValue = $this->Jenis_Container->options(FALSE);
-
-		// Tgl_Stuffing
-		$this->Tgl_Stuffing->EditAttrs["class"] = "form-control";
-		$this->Tgl_Stuffing->EditCustomAttributes = "";
-		$this->Tgl_Stuffing->EditValue = FormatDateTime($this->Tgl_Stuffing->CurrentValue, 8);
-		$this->Tgl_Stuffing->PlaceHolder = RemoveHtml($this->Tgl_Stuffing->caption());
-
-		// Destination_id
-		$this->Destination_id->EditAttrs["class"] = "form-control";
-		$this->Destination_id->EditCustomAttributes = "";
-		$this->Destination_id->EditValue = $this->Destination_id->CurrentValue;
-		$this->Destination_id->PlaceHolder = RemoveHtml($this->Destination_id->caption());
-
-		// Feeder_id
-		$this->Feeder_id->EditAttrs["class"] = "form-control";
-		$this->Feeder_id->EditCustomAttributes = "";
-		$this->Feeder_id->EditValue = $this->Feeder_id->CurrentValue;
-		$this->Feeder_id->PlaceHolder = RemoveHtml($this->Feeder_id->caption());
-
-		// ETA_ETD
-		$this->ETA_ETD->EditAttrs["class"] = "form-control";
-		$this->ETA_ETD->EditCustomAttributes = "";
-		$this->ETA_ETD->EditValue = FormatDateTime($this->ETA_ETD->CurrentValue, 8);
-		$this->ETA_ETD->PlaceHolder = RemoveHtml($this->ETA_ETD->caption());
-
-		// Liner_id
-		$this->Liner_id->EditAttrs["class"] = "form-control";
-		$this->Liner_id->EditCustomAttributes = "";
-		$this->Liner_id->EditValue = $this->Liner_id->CurrentValue;
-		$this->Liner_id->PlaceHolder = RemoveHtml($this->Liner_id->caption());
-
-		// Remark
-		$this->Remark->EditAttrs["class"] = "form-control";
-		$this->Remark->EditCustomAttributes = "";
-		$this->Remark->EditValue = $this->Remark->CurrentValue;
-		$this->Remark->PlaceHolder = RemoveHtml($this->Remark->caption());
+		// JOHead_id
+		$this->JOHead_id->EditAttrs["class"] = "form-control";
+		$this->JOHead_id->EditCustomAttributes = "";
+		if ($this->JOHead_id->getSessionValue() <> "") {
+			$this->JOHead_id->CurrentValue = $this->JOHead_id->getSessionValue();
+		$this->JOHead_id->ViewValue = $this->JOHead_id->CurrentValue;
+		$this->JOHead_id->ViewValue = FormatNumber($this->JOHead_id->ViewValue, 0, -2, -2, -2);
+		$this->JOHead_id->ViewCustomAttributes = "";
+		} else {
+		$this->JOHead_id->EditValue = $this->JOHead_id->CurrentValue;
+		$this->JOHead_id->PlaceHolder = RemoveHtml($this->JOHead_id->caption());
+		}
 
 		// TruckingVendor_id
 		$this->TruckingVendor_id->EditAttrs["class"] = "form-control";
 		$this->TruckingVendor_id->EditCustomAttributes = "";
-		$this->TruckingVendor_id->EditValue = $this->TruckingVendor_id->CurrentValue;
-		$this->TruckingVendor_id->PlaceHolder = RemoveHtml($this->TruckingVendor_id->caption());
 
 		// Driver_id
 		$this->Driver_id->EditAttrs["class"] = "form-control";
 		$this->Driver_id->EditCustomAttributes = "";
-		$this->Driver_id->EditValue = $this->Driver_id->CurrentValue;
-		$this->Driver_id->PlaceHolder = RemoveHtml($this->Driver_id->caption());
 
-		// No_Pol_1
-		$this->No_Pol_1->EditAttrs["class"] = "form-control";
-		$this->No_Pol_1->EditCustomAttributes = "";
+		// Nomor_Polisi_1
+		$this->Nomor_Polisi_1->EditAttrs["class"] = "form-control";
+		$this->Nomor_Polisi_1->EditCustomAttributes = "";
 		if (REMOVE_XSS)
-			$this->No_Pol_1->CurrentValue = HtmlDecode($this->No_Pol_1->CurrentValue);
-		$this->No_Pol_1->EditValue = $this->No_Pol_1->CurrentValue;
-		$this->No_Pol_1->PlaceHolder = RemoveHtml($this->No_Pol_1->caption());
+			$this->Nomor_Polisi_1->CurrentValue = HtmlDecode($this->Nomor_Polisi_1->CurrentValue);
+		$this->Nomor_Polisi_1->EditValue = $this->Nomor_Polisi_1->CurrentValue;
+		$this->Nomor_Polisi_1->PlaceHolder = RemoveHtml($this->Nomor_Polisi_1->caption());
 
-		// No_Pol_2
-		$this->No_Pol_2->EditAttrs["class"] = "form-control";
-		$this->No_Pol_2->EditCustomAttributes = "";
+		// Nomor_Polisi_2
+		$this->Nomor_Polisi_2->EditAttrs["class"] = "form-control";
+		$this->Nomor_Polisi_2->EditCustomAttributes = "";
 		if (REMOVE_XSS)
-			$this->No_Pol_2->CurrentValue = HtmlDecode($this->No_Pol_2->CurrentValue);
-		$this->No_Pol_2->EditValue = $this->No_Pol_2->CurrentValue;
-		$this->No_Pol_2->PlaceHolder = RemoveHtml($this->No_Pol_2->caption());
+			$this->Nomor_Polisi_2->CurrentValue = HtmlDecode($this->Nomor_Polisi_2->CurrentValue);
+		$this->Nomor_Polisi_2->EditValue = $this->Nomor_Polisi_2->CurrentValue;
+		$this->Nomor_Polisi_2->PlaceHolder = RemoveHtml($this->Nomor_Polisi_2->caption());
 
-		// No_Pol_3
-		$this->No_Pol_3->EditAttrs["class"] = "form-control";
-		$this->No_Pol_3->EditCustomAttributes = "";
+		// Nomor_Polisi_3
+		$this->Nomor_Polisi_3->EditAttrs["class"] = "form-control";
+		$this->Nomor_Polisi_3->EditCustomAttributes = "";
 		if (REMOVE_XSS)
-			$this->No_Pol_3->CurrentValue = HtmlDecode($this->No_Pol_3->CurrentValue);
-		$this->No_Pol_3->EditValue = $this->No_Pol_3->CurrentValue;
-		$this->No_Pol_3->PlaceHolder = RemoveHtml($this->No_Pol_3->caption());
+			$this->Nomor_Polisi_3->CurrentValue = HtmlDecode($this->Nomor_Polisi_3->CurrentValue);
+		$this->Nomor_Polisi_3->EditValue = $this->Nomor_Polisi_3->CurrentValue;
+		$this->Nomor_Polisi_3->PlaceHolder = RemoveHtml($this->Nomor_Polisi_3->caption());
 
 		// Nomor_Container_1
 		$this->Nomor_Container_1->EditAttrs["class"] = "form-control";
@@ -1181,39 +1045,22 @@ class t103_trucking extends DbTable
 				$doc->beginExportRow();
 				if ($exportPageType == "view") {
 					$doc->exportCaption($this->id);
-					$doc->exportCaption($this->EI);
-					$doc->exportCaption($this->Shipper_id);
-					$doc->exportCaption($this->Party);
-					$doc->exportCaption($this->Jenis_Container);
-					$doc->exportCaption($this->Tgl_Stuffing);
-					$doc->exportCaption($this->Destination_id);
-					$doc->exportCaption($this->Feeder_id);
-					$doc->exportCaption($this->ETA_ETD);
-					$doc->exportCaption($this->Liner_id);
-					$doc->exportCaption($this->Remark);
+					$doc->exportCaption($this->JOHead_id);
 					$doc->exportCaption($this->TruckingVendor_id);
 					$doc->exportCaption($this->Driver_id);
-					$doc->exportCaption($this->No_Pol_1);
-					$doc->exportCaption($this->No_Pol_2);
-					$doc->exportCaption($this->No_Pol_3);
+					$doc->exportCaption($this->Nomor_Polisi_1);
+					$doc->exportCaption($this->Nomor_Polisi_2);
+					$doc->exportCaption($this->Nomor_Polisi_3);
 					$doc->exportCaption($this->Nomor_Container_1);
 					$doc->exportCaption($this->Nomor_Container_2);
 				} else {
 					$doc->exportCaption($this->id);
-					$doc->exportCaption($this->EI);
-					$doc->exportCaption($this->Shipper_id);
-					$doc->exportCaption($this->Party);
-					$doc->exportCaption($this->Jenis_Container);
-					$doc->exportCaption($this->Tgl_Stuffing);
-					$doc->exportCaption($this->Destination_id);
-					$doc->exportCaption($this->Feeder_id);
-					$doc->exportCaption($this->ETA_ETD);
-					$doc->exportCaption($this->Liner_id);
+					$doc->exportCaption($this->JOHead_id);
 					$doc->exportCaption($this->TruckingVendor_id);
 					$doc->exportCaption($this->Driver_id);
-					$doc->exportCaption($this->No_Pol_1);
-					$doc->exportCaption($this->No_Pol_2);
-					$doc->exportCaption($this->No_Pol_3);
+					$doc->exportCaption($this->Nomor_Polisi_1);
+					$doc->exportCaption($this->Nomor_Polisi_2);
+					$doc->exportCaption($this->Nomor_Polisi_3);
 					$doc->exportCaption($this->Nomor_Container_1);
 					$doc->exportCaption($this->Nomor_Container_2);
 				}
@@ -1248,39 +1095,22 @@ class t103_trucking extends DbTable
 					$doc->beginExportRow($rowCnt); // Allow CSS styles if enabled
 					if ($exportPageType == "view") {
 						$doc->exportField($this->id);
-						$doc->exportField($this->EI);
-						$doc->exportField($this->Shipper_id);
-						$doc->exportField($this->Party);
-						$doc->exportField($this->Jenis_Container);
-						$doc->exportField($this->Tgl_Stuffing);
-						$doc->exportField($this->Destination_id);
-						$doc->exportField($this->Feeder_id);
-						$doc->exportField($this->ETA_ETD);
-						$doc->exportField($this->Liner_id);
-						$doc->exportField($this->Remark);
+						$doc->exportField($this->JOHead_id);
 						$doc->exportField($this->TruckingVendor_id);
 						$doc->exportField($this->Driver_id);
-						$doc->exportField($this->No_Pol_1);
-						$doc->exportField($this->No_Pol_2);
-						$doc->exportField($this->No_Pol_3);
+						$doc->exportField($this->Nomor_Polisi_1);
+						$doc->exportField($this->Nomor_Polisi_2);
+						$doc->exportField($this->Nomor_Polisi_3);
 						$doc->exportField($this->Nomor_Container_1);
 						$doc->exportField($this->Nomor_Container_2);
 					} else {
 						$doc->exportField($this->id);
-						$doc->exportField($this->EI);
-						$doc->exportField($this->Shipper_id);
-						$doc->exportField($this->Party);
-						$doc->exportField($this->Jenis_Container);
-						$doc->exportField($this->Tgl_Stuffing);
-						$doc->exportField($this->Destination_id);
-						$doc->exportField($this->Feeder_id);
-						$doc->exportField($this->ETA_ETD);
-						$doc->exportField($this->Liner_id);
+						$doc->exportField($this->JOHead_id);
 						$doc->exportField($this->TruckingVendor_id);
 						$doc->exportField($this->Driver_id);
-						$doc->exportField($this->No_Pol_1);
-						$doc->exportField($this->No_Pol_2);
-						$doc->exportField($this->No_Pol_3);
+						$doc->exportField($this->Nomor_Polisi_1);
+						$doc->exportField($this->Nomor_Polisi_2);
+						$doc->exportField($this->Nomor_Polisi_3);
 						$doc->exportField($this->Nomor_Container_1);
 						$doc->exportField($this->Nomor_Container_2);
 					}

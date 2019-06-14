@@ -142,7 +142,7 @@ $t098_userlevelpermissions_list->ListOptions->render("header", "left");
 	<?php if ($t098_userlevelpermissions->sortUrl($t098_userlevelpermissions->userlevelid) == "") { ?>
 		<th data-name="userlevelid" class="<?php echo $t098_userlevelpermissions->userlevelid->headerCellClass() ?>"><div id="elh_t098_userlevelpermissions_userlevelid" class="t098_userlevelpermissions_userlevelid"><div class="ew-table-header-caption"><?php echo $t098_userlevelpermissions->userlevelid->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="userlevelid" class="<?php echo $t098_userlevelpermissions->userlevelid->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t098_userlevelpermissions->SortUrl($t098_userlevelpermissions->userlevelid) ?>',1);"><div id="elh_t098_userlevelpermissions_userlevelid" class="t098_userlevelpermissions_userlevelid">
+		<th data-name="userlevelid" class="<?php echo $t098_userlevelpermissions->userlevelid->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t098_userlevelpermissions->SortUrl($t098_userlevelpermissions->userlevelid) ?>',2);"><div id="elh_t098_userlevelpermissions_userlevelid" class="t098_userlevelpermissions_userlevelid">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t098_userlevelpermissions->userlevelid->caption() ?></span><span class="ew-table-header-sort"><?php if ($t098_userlevelpermissions->userlevelid->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t098_userlevelpermissions->userlevelid->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -151,7 +151,7 @@ $t098_userlevelpermissions_list->ListOptions->render("header", "left");
 	<?php if ($t098_userlevelpermissions->sortUrl($t098_userlevelpermissions->_tablename) == "") { ?>
 		<th data-name="_tablename" class="<?php echo $t098_userlevelpermissions->_tablename->headerCellClass() ?>"><div id="elh_t098_userlevelpermissions__tablename" class="t098_userlevelpermissions__tablename"><div class="ew-table-header-caption"><?php echo $t098_userlevelpermissions->_tablename->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="_tablename" class="<?php echo $t098_userlevelpermissions->_tablename->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t098_userlevelpermissions->SortUrl($t098_userlevelpermissions->_tablename) ?>',1);"><div id="elh_t098_userlevelpermissions__tablename" class="t098_userlevelpermissions__tablename">
+		<th data-name="_tablename" class="<?php echo $t098_userlevelpermissions->_tablename->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t098_userlevelpermissions->SortUrl($t098_userlevelpermissions->_tablename) ?>',2);"><div id="elh_t098_userlevelpermissions__tablename" class="t098_userlevelpermissions__tablename">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t098_userlevelpermissions->_tablename->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t098_userlevelpermissions->_tablename->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t098_userlevelpermissions->_tablename->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -160,7 +160,7 @@ $t098_userlevelpermissions_list->ListOptions->render("header", "left");
 	<?php if ($t098_userlevelpermissions->sortUrl($t098_userlevelpermissions->permission) == "") { ?>
 		<th data-name="permission" class="<?php echo $t098_userlevelpermissions->permission->headerCellClass() ?>"><div id="elh_t098_userlevelpermissions_permission" class="t098_userlevelpermissions_permission"><div class="ew-table-header-caption"><?php echo $t098_userlevelpermissions->permission->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="permission" class="<?php echo $t098_userlevelpermissions->permission->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t098_userlevelpermissions->SortUrl($t098_userlevelpermissions->permission) ?>',1);"><div id="elh_t098_userlevelpermissions_permission" class="t098_userlevelpermissions_permission">
+		<th data-name="permission" class="<?php echo $t098_userlevelpermissions->permission->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t098_userlevelpermissions->SortUrl($t098_userlevelpermissions->permission) ?>',2);"><div id="elh_t098_userlevelpermissions_permission" class="t098_userlevelpermissions_permission">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t098_userlevelpermissions->permission->caption() ?></span><span class="ew-table-header-sort"><?php if ($t098_userlevelpermissions->permission->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t098_userlevelpermissions->permission->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>

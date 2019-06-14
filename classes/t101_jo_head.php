@@ -2,9 +2,9 @@
 namespace PHPMaker2019\emkl_prj;
 
 /**
- * Table class for t102_jo
+ * Table class for t101_jo_head
  */
-class t102_jo extends DbTable
+class t101_jo_head extends DbTable
 {
 	protected $SqlFrom = "";
 	protected $SqlSelect = "";
@@ -27,6 +27,12 @@ class t102_jo extends DbTable
 	// Fields
 	public $id;
 	public $Nomor_JO;
+	public $Shipper_id;
+	public $Party;
+	public $Container;
+	public $Tanggal_Stuffing;
+	public $Destination_id;
+	public $Feeder_id;
 
 	// Constructor
 	public function __construct()
@@ -36,12 +42,12 @@ class t102_jo extends DbTable
 		// Language object
 		if (!isset($Language))
 			$Language = new Language();
-		$this->TableVar = 't102_jo';
-		$this->TableName = 't102_jo';
+		$this->TableVar = 't101_jo_head';
+		$this->TableName = 't101_jo_head';
 		$this->TableType = 'TABLE';
 
 		// Update Table
-		$this->UpdateTable = "`t102_jo`";
+		$this->UpdateTable = "`t101_jo_head`";
 		$this->Dbid = 'DB';
 		$this->ExportAll = TRUE;
 		$this->ExportPageBreakCount = 0; // Page break per every n record (PDF only)
@@ -61,19 +67,76 @@ class t102_jo extends DbTable
 		$this->BasicSearch = new BasicSearch($this->TableVar);
 
 		// id
-		$this->id = new DbField('t102_jo', 't102_jo', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
+		$this->id = new DbField('t101_jo_head', 't101_jo_head', 'x_id', 'id', '`id`', '`id`', 3, -1, FALSE, '`id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'NO');
 		$this->id->IsAutoIncrement = TRUE; // Autoincrement field
 		$this->id->IsPrimaryKey = TRUE; // Primary key field
+		$this->id->IsForeignKey = TRUE; // Foreign key field
 		$this->id->Sortable = TRUE; // Allow sort
 		$this->id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
 		$this->fields['id'] = &$this->id;
 
 		// Nomor_JO
-		$this->Nomor_JO = new DbField('t102_jo', 't102_jo', 'x_Nomor_JO', 'Nomor_JO', '`Nomor_JO`', '`Nomor_JO`', 200, -1, FALSE, '`Nomor_JO`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->Nomor_JO = new DbField('t101_jo_head', 't101_jo_head', 'x_Nomor_JO', 'Nomor_JO', '`Nomor_JO`', '`Nomor_JO`', 200, -1, FALSE, '`Nomor_JO`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
 		$this->Nomor_JO->Nullable = FALSE; // NOT NULL field
-		$this->Nomor_JO->Required = TRUE; // Required field
 		$this->Nomor_JO->Sortable = TRUE; // Allow sort
 		$this->fields['Nomor_JO'] = &$this->Nomor_JO;
+
+		// Shipper_id
+		$this->Shipper_id = new DbField('t101_jo_head', 't101_jo_head', 'x_Shipper_id', 'Shipper_id', '`Shipper_id`', '`Shipper_id`', 3, -1, FALSE, '`Shipper_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->Shipper_id->Nullable = FALSE; // NOT NULL field
+		$this->Shipper_id->Required = TRUE; // Required field
+		$this->Shipper_id->Sortable = TRUE; // Allow sort
+		$this->Shipper_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->Shipper_id->PleaseSelectText = $Language->phrase("PleaseSelect"); // PleaseSelect text
+		$this->Shipper_id->Lookup = new Lookup('Shipper_id', 't001_shipper', FALSE, 'id', ["Nama","","",""], [], [], [], [], [], [], '', '');
+		$this->Shipper_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
+		$this->fields['Shipper_id'] = &$this->Shipper_id;
+
+		// Party
+		$this->Party = new DbField('t101_jo_head', 't101_jo_head', 'x_Party', 'Party', '`Party`', '`Party`', 3, -1, FALSE, '`Party`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->Party->Nullable = FALSE; // NOT NULL field
+		$this->Party->Required = TRUE; // Required field
+		$this->Party->Sortable = TRUE; // Allow sort
+		$this->Party->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
+		$this->fields['Party'] = &$this->Party;
+
+		// Container
+		$this->Container = new DbField('t101_jo_head', 't101_jo_head', 'x_Container', 'Container', '`Container`', '`Container`', 202, -1, FALSE, '`Container`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->Container->Nullable = FALSE; // NOT NULL field
+		$this->Container->Sortable = TRUE; // Allow sort
+		$this->Container->Lookup = new Lookup('Container', 't101_jo_head', FALSE, '', ["","","",""], [], [], [], [], [], [], '', '');
+		$this->Container->OptionCount = 2;
+		$this->fields['Container'] = &$this->Container;
+
+		// Tanggal_Stuffing
+		$this->Tanggal_Stuffing = new DbField('t101_jo_head', 't101_jo_head', 'x_Tanggal_Stuffing', 'Tanggal_Stuffing', '`Tanggal_Stuffing`', CastDateFieldForLike('`Tanggal_Stuffing`', 11, "DB"), 135, 11, FALSE, '`Tanggal_Stuffing`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->Tanggal_Stuffing->Nullable = FALSE; // NOT NULL field
+		$this->Tanggal_Stuffing->Required = TRUE; // Required field
+		$this->Tanggal_Stuffing->Sortable = TRUE; // Allow sort
+		$this->Tanggal_Stuffing->DefaultErrorMessage = str_replace("%s", $GLOBALS["DATE_SEPARATOR"], $Language->phrase("IncorrectDateDMY"));
+		$this->fields['Tanggal_Stuffing'] = &$this->Tanggal_Stuffing;
+
+		// Destination_id
+		$this->Destination_id = new DbField('t101_jo_head', 't101_jo_head', 'x_Destination_id', 'Destination_id', '`Destination_id`', '`Destination_id`', 3, -1, FALSE, '`Destination_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->Destination_id->Nullable = FALSE; // NOT NULL field
+		$this->Destination_id->Required = TRUE; // Required field
+		$this->Destination_id->Sortable = TRUE; // Allow sort
+		$this->Destination_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->Destination_id->PleaseSelectText = $Language->phrase("PleaseSelect"); // PleaseSelect text
+		$this->Destination_id->Lookup = new Lookup('Destination_id', 't002_destination', FALSE, 'id', ["Nama","","",""], [], [], [], [], [], [], '', '');
+		$this->Destination_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
+		$this->fields['Destination_id'] = &$this->Destination_id;
+
+		// Feeder_id
+		$this->Feeder_id = new DbField('t101_jo_head', 't101_jo_head', 'x_Feeder_id', 'Feeder_id', '`Feeder_id`', '`Feeder_id`', 3, -1, FALSE, '`Feeder_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->Feeder_id->Nullable = FALSE; // NOT NULL field
+		$this->Feeder_id->Required = TRUE; // Required field
+		$this->Feeder_id->Sortable = TRUE; // Allow sort
+		$this->Feeder_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->Feeder_id->PleaseSelectText = $Language->phrase("PleaseSelect"); // PleaseSelect text
+		$this->Feeder_id->Lookup = new Lookup('Feeder_id', 't003_feeder', FALSE, 'id', ["Nama","","",""], [], [], [], [], [], [], '', '');
+		$this->Feeder_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
+		$this->fields['Feeder_id'] = &$this->Feeder_id;
 	}
 
 	// Field Visibility
@@ -94,8 +157,8 @@ class t102_jo extends DbTable
 		}
 	}
 
-	// Single column sort
-	public function updateSort(&$fld)
+	// Multiple column sort
+	public function updateSort(&$fld, $ctrl)
 	{
 		if ($this->CurrentOrder == $fld->Name) {
 			$sortField = $fld->Expression;
@@ -106,16 +169,54 @@ class t102_jo extends DbTable
 				$thisSort = ($lastSort == "ASC") ? "DESC" : "ASC";
 			}
 			$fld->setSort($thisSort);
-			$this->setSessionOrderBy($sortField . " " . $thisSort); // Save to Session
+			if ($ctrl) {
+				$orderBy = $this->getSessionOrderBy();
+				if (ContainsString($orderBy, $sortField . " " . $lastSort)) {
+					$orderBy = str_replace($sortField . " " . $lastSort, $sortField . " " . $thisSort, $orderBy);
+				} else {
+					if ($orderBy <> "")
+						$orderBy .= ", ";
+					$orderBy .= $sortField . " " . $thisSort;
+				}
+				$this->setSessionOrderBy($orderBy); // Save to Session
+			} else {
+				$this->setSessionOrderBy($sortField . " " . $thisSort); // Save to Session
+			}
 		} else {
-			$fld->setSort("");
+			if (!$ctrl)
+				$fld->setSort("");
 		}
+	}
+
+	// Current detail table name
+	public function getCurrentDetailTable()
+	{
+		return @$_SESSION[PROJECT_NAME . "_" . $this->TableVar . "_" . TABLE_DETAIL_TABLE];
+	}
+	public function setCurrentDetailTable($v)
+	{
+		$_SESSION[PROJECT_NAME . "_" . $this->TableVar . "_" . TABLE_DETAIL_TABLE] = $v;
+	}
+
+	// Get detail url
+	public function getDetailUrl()
+	{
+
+		// Detail url
+		$detailUrl = "";
+		if ($this->getCurrentDetailTable() == "t101_jo_detail") {
+			$detailUrl = $GLOBALS["t101_jo_detail"]->getListUrl() . "?" . TABLE_SHOW_MASTER . "=" . $this->TableVar;
+			$detailUrl .= "&fk_id=" . urlencode($this->id->CurrentValue);
+		}
+		if ($detailUrl == "")
+			$detailUrl = "t101_jo_headlist.php";
+		return $detailUrl;
 	}
 
 	// Table level SQL
 	public function getSqlFrom() // From
 	{
-		return ($this->SqlFrom <> "") ? $this->SqlFrom : "`t102_jo`";
+		return ($this->SqlFrom <> "") ? $this->SqlFrom : "`t101_jo_head`";
 	}
 	public function sqlFrom() // For backward compatibility
 	{
@@ -418,6 +519,12 @@ class t102_jo extends DbTable
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
 		$this->Nomor_JO->DbValue = $row['Nomor_JO'];
+		$this->Shipper_id->DbValue = $row['Shipper_id'];
+		$this->Party->DbValue = $row['Party'];
+		$this->Container->DbValue = $row['Container'];
+		$this->Tanggal_Stuffing->DbValue = $row['Tanggal_Stuffing'];
+		$this->Destination_id->DbValue = $row['Destination_id'];
+		$this->Feeder_id->DbValue = $row['Feeder_id'];
 	}
 
 	// Delete uploaded files
@@ -457,7 +564,7 @@ class t102_jo extends DbTable
 		if (@$_SESSION[$name] <> "") {
 			return $_SESSION[$name];
 		} else {
-			return "t102_jolist.php";
+			return "t101_jo_headlist.php";
 		}
 	}
 	public function setReturnUrl($v)
@@ -469,11 +576,11 @@ class t102_jo extends DbTable
 	public function getModalCaption($pageName)
 	{
 		global $Language;
-		if ($pageName == "t102_joview.php")
+		if ($pageName == "t101_jo_headview.php")
 			return $Language->phrase("View");
-		elseif ($pageName == "t102_joedit.php")
+		elseif ($pageName == "t101_jo_headedit.php")
 			return $Language->phrase("Edit");
-		elseif ($pageName == "t102_joadd.php")
+		elseif ($pageName == "t101_jo_headadd.php")
 			return $Language->phrase("Add");
 		else
 			return "";
@@ -482,16 +589,16 @@ class t102_jo extends DbTable
 	// List URL
 	public function getListUrl()
 	{
-		return "t102_jolist.php";
+		return "t101_jo_headlist.php";
 	}
 
 	// View URL
 	public function getViewUrl($parm = "")
 	{
 		if ($parm <> "")
-			$url = $this->keyUrl("t102_joview.php", $this->getUrlParm($parm));
+			$url = $this->keyUrl("t101_jo_headview.php", $this->getUrlParm($parm));
 		else
-			$url = $this->keyUrl("t102_joview.php", $this->getUrlParm(TABLE_SHOW_DETAIL . "="));
+			$url = $this->keyUrl("t101_jo_headview.php", $this->getUrlParm(TABLE_SHOW_DETAIL . "="));
 		return $this->addMasterUrl($url);
 	}
 
@@ -499,16 +606,19 @@ class t102_jo extends DbTable
 	public function getAddUrl($parm = "")
 	{
 		if ($parm <> "")
-			$url = "t102_joadd.php?" . $this->getUrlParm($parm);
+			$url = "t101_jo_headadd.php?" . $this->getUrlParm($parm);
 		else
-			$url = "t102_joadd.php";
+			$url = "t101_jo_headadd.php";
 		return $this->addMasterUrl($url);
 	}
 
 	// Edit URL
 	public function getEditUrl($parm = "")
 	{
-		$url = $this->keyUrl("t102_joedit.php", $this->getUrlParm($parm));
+		if ($parm <> "")
+			$url = $this->keyUrl("t101_jo_headedit.php", $this->getUrlParm($parm));
+		else
+			$url = $this->keyUrl("t101_jo_headedit.php", $this->getUrlParm(TABLE_SHOW_DETAIL . "="));
 		return $this->addMasterUrl($url);
 	}
 
@@ -522,7 +632,10 @@ class t102_jo extends DbTable
 	// Copy URL
 	public function getCopyUrl($parm = "")
 	{
-		$url = $this->keyUrl("t102_joadd.php", $this->getUrlParm($parm));
+		if ($parm <> "")
+			$url = $this->keyUrl("t101_jo_headadd.php", $this->getUrlParm($parm));
+		else
+			$url = $this->keyUrl("t101_jo_headadd.php", $this->getUrlParm(TABLE_SHOW_DETAIL . "="));
 		return $this->addMasterUrl($url);
 	}
 
@@ -536,7 +649,7 @@ class t102_jo extends DbTable
 	// Delete URL
 	public function getDeleteUrl()
 	{
-		return $this->keyUrl("t102_jodelete.php", $this->getUrlParm());
+		return $this->keyUrl("t101_jo_headdelete.php", $this->getUrlParm());
 	}
 
 	// Add master url
@@ -645,6 +758,12 @@ class t102_jo extends DbTable
 	{
 		$this->id->setDbValue($rs->fields('id'));
 		$this->Nomor_JO->setDbValue($rs->fields('Nomor_JO'));
+		$this->Shipper_id->setDbValue($rs->fields('Shipper_id'));
+		$this->Party->setDbValue($rs->fields('Party'));
+		$this->Container->setDbValue($rs->fields('Container'));
+		$this->Tanggal_Stuffing->setDbValue($rs->fields('Tanggal_Stuffing'));
+		$this->Destination_id->setDbValue($rs->fields('Destination_id'));
+		$this->Feeder_id->setDbValue($rs->fields('Feeder_id'));
 	}
 
 	// Render list row values
@@ -658,6 +777,12 @@ class t102_jo extends DbTable
 		// Common render codes
 		// id
 		// Nomor_JO
+		// Shipper_id
+		// Party
+		// Container
+		// Tanggal_Stuffing
+		// Destination_id
+		// Feeder_id
 		// id
 
 		$this->id->ViewValue = $this->id->CurrentValue;
@@ -666,6 +791,90 @@ class t102_jo extends DbTable
 		// Nomor_JO
 		$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
 		$this->Nomor_JO->ViewCustomAttributes = "";
+
+		// Shipper_id
+		$curVal = strval($this->Shipper_id->CurrentValue);
+		if ($curVal <> "") {
+			$this->Shipper_id->ViewValue = $this->Shipper_id->lookupCacheOption($curVal);
+			if ($this->Shipper_id->ViewValue === NULL) { // Lookup from database
+				$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+				$sqlWrk = $this->Shipper_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = $rswrk->fields('df');
+					$this->Shipper_id->ViewValue = $this->Shipper_id->displayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->Shipper_id->ViewValue = $this->Shipper_id->CurrentValue;
+				}
+			}
+		} else {
+			$this->Shipper_id->ViewValue = NULL;
+		}
+		$this->Shipper_id->ViewCustomAttributes = "";
+
+		// Party
+		$this->Party->ViewValue = $this->Party->CurrentValue;
+		$this->Party->ViewValue = FormatNumber($this->Party->ViewValue, 0, -2, -2, -2);
+		$this->Party->ViewCustomAttributes = "";
+
+		// Container
+		if (strval($this->Container->CurrentValue) <> "") {
+			$this->Container->ViewValue = $this->Container->optionCaption($this->Container->CurrentValue);
+		} else {
+			$this->Container->ViewValue = NULL;
+		}
+		$this->Container->ViewCustomAttributes = "";
+
+		// Tanggal_Stuffing
+		$this->Tanggal_Stuffing->ViewValue = $this->Tanggal_Stuffing->CurrentValue;
+		$this->Tanggal_Stuffing->ViewValue = FormatDateTime($this->Tanggal_Stuffing->ViewValue, 11);
+		$this->Tanggal_Stuffing->ViewCustomAttributes = "";
+
+		// Destination_id
+		$curVal = strval($this->Destination_id->CurrentValue);
+		if ($curVal <> "") {
+			$this->Destination_id->ViewValue = $this->Destination_id->lookupCacheOption($curVal);
+			if ($this->Destination_id->ViewValue === NULL) { // Lookup from database
+				$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+				$sqlWrk = $this->Destination_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = $rswrk->fields('df');
+					$this->Destination_id->ViewValue = $this->Destination_id->displayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->Destination_id->ViewValue = $this->Destination_id->CurrentValue;
+				}
+			}
+		} else {
+			$this->Destination_id->ViewValue = NULL;
+		}
+		$this->Destination_id->ViewCustomAttributes = "";
+
+		// Feeder_id
+		$curVal = strval($this->Feeder_id->CurrentValue);
+		if ($curVal <> "") {
+			$this->Feeder_id->ViewValue = $this->Feeder_id->lookupCacheOption($curVal);
+			if ($this->Feeder_id->ViewValue === NULL) { // Lookup from database
+				$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+				$sqlWrk = $this->Feeder_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = $rswrk->fields('df');
+					$this->Feeder_id->ViewValue = $this->Feeder_id->displayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->Feeder_id->ViewValue = $this->Feeder_id->CurrentValue;
+				}
+			}
+		} else {
+			$this->Feeder_id->ViewValue = NULL;
+		}
+		$this->Feeder_id->ViewCustomAttributes = "";
 
 		// id
 		$this->id->LinkCustomAttributes = "";
@@ -676,6 +885,36 @@ class t102_jo extends DbTable
 		$this->Nomor_JO->LinkCustomAttributes = "";
 		$this->Nomor_JO->HrefValue = "";
 		$this->Nomor_JO->TooltipValue = "";
+
+		// Shipper_id
+		$this->Shipper_id->LinkCustomAttributes = "";
+		$this->Shipper_id->HrefValue = "";
+		$this->Shipper_id->TooltipValue = "";
+
+		// Party
+		$this->Party->LinkCustomAttributes = "";
+		$this->Party->HrefValue = "";
+		$this->Party->TooltipValue = "";
+
+		// Container
+		$this->Container->LinkCustomAttributes = "";
+		$this->Container->HrefValue = "";
+		$this->Container->TooltipValue = "";
+
+		// Tanggal_Stuffing
+		$this->Tanggal_Stuffing->LinkCustomAttributes = "";
+		$this->Tanggal_Stuffing->HrefValue = "";
+		$this->Tanggal_Stuffing->TooltipValue = "";
+
+		// Destination_id
+		$this->Destination_id->LinkCustomAttributes = "";
+		$this->Destination_id->HrefValue = "";
+		$this->Destination_id->TooltipValue = "";
+
+		// Feeder_id
+		$this->Feeder_id->LinkCustomAttributes = "";
+		$this->Feeder_id->HrefValue = "";
+		$this->Feeder_id->TooltipValue = "";
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -705,6 +944,34 @@ class t102_jo extends DbTable
 			$this->Nomor_JO->CurrentValue = HtmlDecode($this->Nomor_JO->CurrentValue);
 		$this->Nomor_JO->EditValue = $this->Nomor_JO->CurrentValue;
 		$this->Nomor_JO->PlaceHolder = RemoveHtml($this->Nomor_JO->caption());
+
+		// Shipper_id
+		$this->Shipper_id->EditAttrs["class"] = "form-control";
+		$this->Shipper_id->EditCustomAttributes = "";
+
+		// Party
+		$this->Party->EditAttrs["class"] = "form-control";
+		$this->Party->EditCustomAttributes = "";
+		$this->Party->EditValue = $this->Party->CurrentValue;
+		$this->Party->PlaceHolder = RemoveHtml($this->Party->caption());
+
+		// Container
+		$this->Container->EditCustomAttributes = "";
+		$this->Container->EditValue = $this->Container->options(FALSE);
+
+		// Tanggal_Stuffing
+		$this->Tanggal_Stuffing->EditAttrs["class"] = "form-control";
+		$this->Tanggal_Stuffing->EditCustomAttributes = "";
+		$this->Tanggal_Stuffing->EditValue = FormatDateTime($this->Tanggal_Stuffing->CurrentValue, 11);
+		$this->Tanggal_Stuffing->PlaceHolder = RemoveHtml($this->Tanggal_Stuffing->caption());
+
+		// Destination_id
+		$this->Destination_id->EditAttrs["class"] = "form-control";
+		$this->Destination_id->EditCustomAttributes = "";
+
+		// Feeder_id
+		$this->Feeder_id->EditAttrs["class"] = "form-control";
+		$this->Feeder_id->EditCustomAttributes = "";
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -737,9 +1004,21 @@ class t102_jo extends DbTable
 				if ($exportPageType == "view") {
 					$doc->exportCaption($this->id);
 					$doc->exportCaption($this->Nomor_JO);
+					$doc->exportCaption($this->Shipper_id);
+					$doc->exportCaption($this->Party);
+					$doc->exportCaption($this->Container);
+					$doc->exportCaption($this->Tanggal_Stuffing);
+					$doc->exportCaption($this->Destination_id);
+					$doc->exportCaption($this->Feeder_id);
 				} else {
 					$doc->exportCaption($this->id);
 					$doc->exportCaption($this->Nomor_JO);
+					$doc->exportCaption($this->Shipper_id);
+					$doc->exportCaption($this->Party);
+					$doc->exportCaption($this->Container);
+					$doc->exportCaption($this->Tanggal_Stuffing);
+					$doc->exportCaption($this->Destination_id);
+					$doc->exportCaption($this->Feeder_id);
 				}
 				$doc->endExportRow();
 			}
@@ -773,9 +1052,21 @@ class t102_jo extends DbTable
 					if ($exportPageType == "view") {
 						$doc->exportField($this->id);
 						$doc->exportField($this->Nomor_JO);
+						$doc->exportField($this->Shipper_id);
+						$doc->exportField($this->Party);
+						$doc->exportField($this->Container);
+						$doc->exportField($this->Tanggal_Stuffing);
+						$doc->exportField($this->Destination_id);
+						$doc->exportField($this->Feeder_id);
 					} else {
 						$doc->exportField($this->id);
 						$doc->exportField($this->Nomor_JO);
+						$doc->exportField($this->Shipper_id);
+						$doc->exportField($this->Party);
+						$doc->exportField($this->Container);
+						$doc->exportField($this->Tanggal_Stuffing);
+						$doc->exportField($this->Destination_id);
+						$doc->exportField($this->Feeder_id);
 					}
 					$doc->endExportRow($rowCnt);
 				}

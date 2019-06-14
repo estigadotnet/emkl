@@ -58,6 +58,7 @@ var ft002_destinationlistsrch = currentSearchForm = new ew.Form("ft002_destinati
 // Filters
 ft002_destinationlistsrch.filterList = <?php echo $t002_destination_list->getFilterList() ?>;
 </script>
+<script src="phpjs/ewscrolltable.js"></script>
 <script>
 
 // Write your client script here, no need to add script tags.
@@ -141,7 +142,7 @@ $t002_destination_list->ListOptions->render("header", "left");
 	<?php if ($t002_destination->sortUrl($t002_destination->id) == "") { ?>
 		<th data-name="id" class="<?php echo $t002_destination->id->headerCellClass() ?>"><div id="elh_t002_destination_id" class="t002_destination_id"><div class="ew-table-header-caption"><?php echo $t002_destination->id->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="id" class="<?php echo $t002_destination->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t002_destination->SortUrl($t002_destination->id) ?>',1);"><div id="elh_t002_destination_id" class="t002_destination_id">
+		<th data-name="id" class="<?php echo $t002_destination->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t002_destination->SortUrl($t002_destination->id) ?>',2);"><div id="elh_t002_destination_id" class="t002_destination_id">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t002_destination->id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t002_destination->id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t002_destination->id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -150,7 +151,7 @@ $t002_destination_list->ListOptions->render("header", "left");
 	<?php if ($t002_destination->sortUrl($t002_destination->Nama) == "") { ?>
 		<th data-name="Nama" class="<?php echo $t002_destination->Nama->headerCellClass() ?>"><div id="elh_t002_destination_Nama" class="t002_destination_Nama"><div class="ew-table-header-caption"><?php echo $t002_destination->Nama->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="Nama" class="<?php echo $t002_destination->Nama->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t002_destination->SortUrl($t002_destination->Nama) ?>',1);"><div id="elh_t002_destination_Nama" class="t002_destination_Nama">
+		<th data-name="Nama" class="<?php echo $t002_destination->Nama->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t002_destination->SortUrl($t002_destination->Nama) ?>',2);"><div id="elh_t002_destination_Nama" class="t002_destination_Nama">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t002_destination->Nama->caption() ?><?php echo $Language->phrase("SrchLegend") ?></span><span class="ew-table-header-sort"><?php if ($t002_destination->Nama->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t002_destination->Nama->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
@@ -340,6 +341,11 @@ if (DEBUG_ENABLED)
 // document.write("page loaded");
 
 </script>
+<?php if (!$t002_destination->isExport()) { ?>
+<script>
+ew.scrollableTable("gmp_t002_destination", "100%", "");
+</script>
+<?php } ?>
 <?php } ?>
 <?php include_once "footer.php" ?>
 <?php

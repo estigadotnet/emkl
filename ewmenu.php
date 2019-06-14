@@ -9,16 +9,15 @@ else
 
 // Navbar menu
 $topMenu = new Menu("navbar", TRUE, TRUE);
+$topMenu->addMenuItem(25, "mi_cf301_home", $MenuLanguage->MenuPhrase("25", "MenuText"), "cf301_home.php", -1, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $topMenu->addMenuItem(14, "mci_Setup", $MenuLanguage->MenuPhrase("14", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "", "", TRUE);
 $topMenu->addMenuItem(6, "mi_t001_shipper", $MenuLanguage->MenuPhrase("6", "MenuText"), "t001_shipperlist.php", 14, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $topMenu->addMenuItem(15, "mi_t002_destination", $MenuLanguage->MenuPhrase("15", "MenuText"), "t002_destinationlist.php", 14, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $topMenu->addMenuItem(16, "mi_t003_feeder", $MenuLanguage->MenuPhrase("16", "MenuText"), "t003_feederlist.php", 14, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $topMenu->addMenuItem(17, "mi_t004_liner", $MenuLanguage->MenuPhrase("17", "MenuText"), "t004_linerlist.php", 14, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $topMenu->addMenuItem(18, "mi_t006_trucking_vendor", $MenuLanguage->MenuPhrase("18", "MenuText"), "t006_trucking_vendorlist.php", 14, "", TRUE, FALSE, FALSE, "", "", TRUE);
-$topMenu->addMenuItem(19, "mi_t005_driver", $MenuLanguage->MenuPhrase("19", "MenuText"), "t005_driverlist.php", 14, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $topMenu->addMenuItem(20, "mci_Transaksi", $MenuLanguage->MenuPhrase("20", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "", "", TRUE);
-$topMenu->addMenuItem(7, "mi_t102_jo", $MenuLanguage->MenuPhrase("7", "MenuText"), "t102_jolist.php", 20, "", TRUE, FALSE, FALSE, "", "", TRUE);
-$topMenu->addMenuItem(21, "mi_t103_trucking", $MenuLanguage->MenuPhrase("21", "MenuText"), "t103_truckinglist.php", 20, "", TRUE, FALSE, FALSE, "", "", TRUE);
+$topMenu->addMenuItem(27, "mi_t101_jo_head", $MenuLanguage->MenuPhrase("27", "MenuText"), "t101_jo_headlist.php", 20, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $topMenu->addMenuItem(1, "mi_t101_tagihan_trucking", $MenuLanguage->MenuPhrase("1", "MenuText"), "t101_tagihan_truckinglist.php", 20, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $topMenu->addMenuItem(22, "mci_General", $MenuLanguage->MenuPhrase("22", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "", "", TRUE);
 $topMenu->addMenuItem(2, "mi_t399_audit_trail", $MenuLanguage->MenuPhrase("2", "MenuText"), "t399_audit_traillist.php", 22, "", TRUE, FALSE, FALSE, "", "", TRUE);
@@ -29,16 +28,15 @@ echo $topMenu->toScript();
 
 // Sidebar menu
 $sideMenu = new Menu("menu", TRUE, FALSE);
+$sideMenu->addMenuItem(25, "mi_cf301_home", $MenuLanguage->MenuPhrase("25", "MenuText"), "cf301_home.php", -1, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $sideMenu->addMenuItem(14, "mci_Setup", $MenuLanguage->MenuPhrase("14", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "", "", TRUE);
 $sideMenu->addMenuItem(6, "mi_t001_shipper", $MenuLanguage->MenuPhrase("6", "MenuText"), "t001_shipperlist.php", 14, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $sideMenu->addMenuItem(15, "mi_t002_destination", $MenuLanguage->MenuPhrase("15", "MenuText"), "t002_destinationlist.php", 14, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $sideMenu->addMenuItem(16, "mi_t003_feeder", $MenuLanguage->MenuPhrase("16", "MenuText"), "t003_feederlist.php", 14, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $sideMenu->addMenuItem(17, "mi_t004_liner", $MenuLanguage->MenuPhrase("17", "MenuText"), "t004_linerlist.php", 14, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $sideMenu->addMenuItem(18, "mi_t006_trucking_vendor", $MenuLanguage->MenuPhrase("18", "MenuText"), "t006_trucking_vendorlist.php", 14, "", TRUE, FALSE, FALSE, "", "", TRUE);
-$sideMenu->addMenuItem(19, "mi_t005_driver", $MenuLanguage->MenuPhrase("19", "MenuText"), "t005_driverlist.php", 14, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $sideMenu->addMenuItem(20, "mci_Transaksi", $MenuLanguage->MenuPhrase("20", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "", "", TRUE);
-$sideMenu->addMenuItem(7, "mi_t102_jo", $MenuLanguage->MenuPhrase("7", "MenuText"), "t102_jolist.php", 20, "", TRUE, FALSE, FALSE, "", "", TRUE);
-$sideMenu->addMenuItem(21, "mi_t103_trucking", $MenuLanguage->MenuPhrase("21", "MenuText"), "t103_truckinglist.php", 20, "", TRUE, FALSE, FALSE, "", "", TRUE);
+$sideMenu->addMenuItem(27, "mi_t101_jo_head", $MenuLanguage->MenuPhrase("27", "MenuText"), "t101_jo_headlist.php", 20, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $sideMenu->addMenuItem(1, "mi_t101_tagihan_trucking", $MenuLanguage->MenuPhrase("1", "MenuText"), "t101_tagihan_truckinglist.php", 20, "", TRUE, FALSE, FALSE, "", "", TRUE);
 $sideMenu->addMenuItem(22, "mci_General", $MenuLanguage->MenuPhrase("22", "MenuText"), "", -1, "", TRUE, FALSE, TRUE, "", "", TRUE);
 $sideMenu->addMenuItem(2, "mi_t399_audit_trail", $MenuLanguage->MenuPhrase("2", "MenuText"), "t399_audit_traillist.php", 22, "", TRUE, FALSE, FALSE, "", "", TRUE);
