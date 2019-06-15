@@ -4,20 +4,20 @@ namespace PHPMaker2019\emkl_prj;
 /**
  * Page class
  */
-class t101_jo_head_delete extends t101_jo_head
+class t101_jo_detail_preview extends t101_jo_detail
 {
 
 	// Page ID
-	public $PageID = "delete";
+	public $PageID = "preview";
 
 	// Project ID
 	public $ProjectID = "{D4B21A3D-A1C8-4ED3-BA65-212E10E691E7}";
 
 	// Table name
-	public $TableName = 't101_jo_head';
+	public $TableName = 't101_jo_detail';
 
 	// Page object name
-	public $PageObjName = "t101_jo_head_delete";
+	public $PageObjName = "t101_jo_detail_preview";
 
 	// Page headings
 	public $Heading = "";
@@ -342,20 +342,24 @@ class t101_jo_head_delete extends t101_jo_head
 		// Parent constuctor
 		parent::__construct();
 
-		// Table object (t101_jo_head)
-		if (!isset($GLOBALS["t101_jo_head"]) || get_class($GLOBALS["t101_jo_head"]) == PROJECT_NAMESPACE . "t101_jo_head") {
-			$GLOBALS["t101_jo_head"] = &$this;
-			$GLOBALS["Table"] = &$GLOBALS["t101_jo_head"];
+		// Table object (t101_jo_detail)
+		if (!isset($GLOBALS["t101_jo_detail"]) || get_class($GLOBALS["t101_jo_detail"]) == PROJECT_NAMESPACE . "t101_jo_detail") {
+			$GLOBALS["t101_jo_detail"] = &$this;
+			$GLOBALS["Table"] = &$GLOBALS["t101_jo_detail"];
 		}
 		$this->CancelUrl = $this->pageUrl() . "action=cancel";
 
+		// Table object (t101_jo_head)
+		if (!isset($GLOBALS['t101_jo_head']))
+			$GLOBALS['t101_jo_head'] = new t101_jo_head();
+
 		// Page ID
 		if (!defined(PROJECT_NAMESPACE . "PAGE_ID"))
-			define(PROJECT_NAMESPACE . "PAGE_ID", 'delete');
+			define(PROJECT_NAMESPACE . "PAGE_ID", 'preview');
 
 		// Table name (for backward compatibility)
 		if (!defined(PROJECT_NAMESPACE . "TABLE_NAME"))
-			define(PROJECT_NAMESPACE . "TABLE_NAME", 't101_jo_head');
+			define(PROJECT_NAMESPACE . "TABLE_NAME", 't101_jo_detail');
 
 		// Start timer
 		if (!isset($GLOBALS["DebugTimer"]))
@@ -367,6 +371,17 @@ class t101_jo_head_delete extends t101_jo_head
 		// Open connection
 		if (!isset($GLOBALS["Conn"]))
 			$GLOBALS["Conn"] = &$this->getConnection();
+
+		// List options
+		$this->ListOptions = new ListOptions();
+		$this->ListOptions->TableVar = $this->TableVar;
+
+		// Other options
+		if (!$this->OtherOptions)
+			$this->OtherOptions = new ListOptionsArray();
+		$this->OtherOptions["addedit"] = new ListOptions();
+		$this->OtherOptions["addedit"]->Tag = "div";
+		$this->OtherOptions["addedit"]->TagClassName = "ew-add-edit-option";
 	}
 
 	// Terminate page
@@ -381,14 +396,14 @@ class t101_jo_head_delete extends t101_jo_head
 		Page_Unloaded();
 
 		// Export
-		global $EXPORT, $t101_jo_head;
+		global $EXPORT, $t101_jo_detail;
 		if ($this->CustomExport && $this->CustomExport == $this->Export && array_key_exists($this->CustomExport, $EXPORT)) {
 				$content = ob_get_contents();
 			if ($ExportFileName == "")
 				$ExportFileName = $this->TableVar;
 			$class = PROJECT_NAMESPACE . $EXPORT[$this->CustomExport];
 			if (class_exists($class)) {
-				$doc = new $class($t101_jo_head);
+				$doc = new $class($t101_jo_detail);
 				$doc->Text = @$content;
 				if ($this->isExport("email"))
 					echo $this->exportEmail($doc->Text);
@@ -507,14 +522,18 @@ class t101_jo_head_delete extends t101_jo_head
 		if ($this->isAdd() || $this->isCopy() || $this->isGridAdd())
 			$this->id->Visible = FALSE;
 	}
-	public $DbMasterFilter = "";
-	public $DbDetailFilter = "";
-	public $StartRec;
-	public $TotalRecs = 0;
-	public $RecCnt;
-	public $RecKeys = array();
-	public $StartRowCnt = 1;
-	public $RowCnt = 0;
+	public $Recordset;
+	public $TotalRecs;
+	public $RowCnt;
+	public $RecCount;
+	public $ListOptions; // List options
+	public $OtherOptions; // Other options
+	public $Pager;
+	public $StartRec = 1;
+	public $DisplayRecs = 0;
+	public $SortField = "";
+	public $SortOrder = "";
+	public $UseModalLinks = FALSE;
 
 	//
 	// Page run
@@ -531,15 +550,18 @@ class t101_jo_head_delete extends t101_jo_head
 				session_start();
 		}
 		$this->CurrentAction = Param("action"); // Set up current action
+
+		// Set up list options
+		$this->setupListOptions();
 		$this->id->Visible = FALSE;
-		$this->Export_Import->setVisibility();
-		$this->Nomor_JO->setVisibility();
-		$this->Shipper_id->setVisibility();
-		$this->Party->setVisibility();
-		$this->Container->setVisibility();
-		$this->Tanggal_Stuffing->setVisibility();
-		$this->Destination_id->setVisibility();
-		$this->Feeder_id->setVisibility();
+		$this->JOHead_id->Visible = FALSE;
+		$this->TruckingVendor_id->setVisibility();
+		$this->Driver_id->setVisibility();
+		$this->Nomor_Polisi_1->setVisibility();
+		$this->Nomor_Polisi_2->setVisibility();
+		$this->Nomor_Polisi_3->setVisibility();
+		$this->Nomor_Container_1->setVisibility();
+		$this->Nomor_Container_2->setVisibility();
 		$this->hideFieldsForAddEdit();
 
 		// Do not use lookup cache
@@ -560,407 +582,256 @@ class t101_jo_head_delete extends t101_jo_head
 		// Create Token
 		$this->createToken();
 
+		// Setup other options
+		$this->setupOtherOptions();
+
 		// Set up lookup cache
-		$this->setupLookupOptions($this->Shipper_id);
-		$this->setupLookupOptions($this->Destination_id);
-		$this->setupLookupOptions($this->Feeder_id);
+		$this->setupLookupOptions($this->TruckingVendor_id);
+		$this->setupLookupOptions($this->Driver_id);
 
-		// Set up Breadcrumb
-		$this->setupBreadcrumb();
+		// Load filter
+		$filter = Get("f", "");
+		$filter = Decrypt($filter);
+		if ($filter == "") $filter = "0=1";
+		$this->StartRec = (int)Get("start") ?: 1;
+		$this->SortField = Get("sort", "");
+		$this->SortOrder = Get("sortorder", "");
 
-		// Load key parameters
-		$this->RecKeys = $this->getRecordKeys(); // Load record keys
-		$filter = $this->getFilterFromRecordKeys();
-		if ($filter == "") {
-			$this->terminate("t101_jo_headlist.php"); // Prevent SQL injection, return to list
-			return;
-		}
+		// Set up foreign keys from filter
+		$this->setupForeignKeysFromFilter($filter);
 
-		// Set up filter (WHERE Clause)
-		$this->CurrentFilter = $filter;
-
-		// Get action
-		if (IsApi()) {
-			$this->CurrentAction = "delete"; // Delete record directly
-		} elseif (Post("action") !== NULL) {
-			$this->CurrentAction = Post("action");
-		} elseif (Get("action") == "1") {
-			$this->CurrentAction = "delete"; // Delete record directly
-		} else {
-			$this->CurrentAction = "show"; // Display record
-		}
-		if ($this->isDelete()) {
-			$this->SendEmail = TRUE; // Send email on delete success
-			if ($this->deleteRows()) { // Delete rows
-				if ($this->getSuccessMessage() == "")
-					$this->setSuccessMessage($Language->phrase("DeleteSuccess")); // Set up success message
-				if (IsApi()) {
-					$this->terminate(TRUE);
-					return;
-				} else {
-					$this->terminate($this->getReturnUrl()); // Return to caller
-				}
-			} else { // Delete failed
-				if (IsApi()) {
-					$this->terminate();
-					return;
-				}
-				$this->CurrentAction = "show"; // Display record
-			}
-		}
-		if ($this->isShow()) { // Load records for display
-			if ($this->Recordset = $this->loadRecordset())
-				$this->TotalRecs = $this->Recordset->RecordCount(); // Get record count
-			if ($this->TotalRecs <= 0) { // No record found, exit
-				if ($this->Recordset)
-					$this->Recordset->close();
-				$this->terminate("t101_jo_headlist.php"); // Return to list
-			}
-		}
-	}
-
-	// Load recordset
-	public function loadRecordset($offset = -1, $rowcnt = -1)
-	{
-
-		// Load List page SQL
-		$sql = $this->getListSql();
-		$conn = &$this->getConnection();
+		// Call Recordset Selecting event
+		$this->Recordset_Selecting($filter);
 
 		// Load recordset
-		$dbtype = GetConnectionType($this->Dbid);
-		if ($this->UseSelectLimit) {
-			$conn->raiseErrorFn = $GLOBALS["ERROR_FUNC"];
-			if ($dbtype == "MSSQL") {
-				$rs = $conn->selectLimit($sql, $rowcnt, $offset, ["_hasOrderBy" => trim($this->getOrderBy()) || trim($this->getSessionOrderBy())]);
-			} else {
-				$rs = $conn->selectLimit($sql, $rowcnt, $offset);
-			}
-			$conn->raiseErrorFn = '';
-		} else {
-			$rs = LoadRecordset($sql, $conn);
-		}
+		$filter = $this->applyUserIDFilters($filter);
+		$this->TotalRecs = $this->loadRecordCount($filter);
+		$sql = $this->previewSql($filter);
+		if ($this->DisplayRecs > 0)
+			$this->Recordset = $this->getConnection()->selectLimit($sql, $this->DisplayRecs, $this->StartRec - 1);
+		if (!$this->Recordset)
+			$this->Recordset = $this->getConnection()->execute($sql);
+		if ($this->Recordset && !$this->Recordset->EOF) {
 
-		// Call Recordset Selected event
-		$this->Recordset_Selected($rs);
-		return $rs;
+			// Call Recordset Selected event
+			$this->Recordset_Selected($this->Recordset);
+			$this->loadListRowValues($this->Recordset);
+		}
+		$this->renderOtherOptions();
 	}
 
-	// Load row based on key values
-	public function loadRow()
+	// Get preview SQL
+	protected function previewSql($filter)
+	{
+		$sortField = $this->SortField;
+		$sortOrder = $this->SortOrder;
+		$sort = "";
+		if (array_key_exists($sortField, $this->fields)) {
+			$fld = $this->fields[$sortField];
+			$sort = $fld->Expression;
+			if ($sortOrder == "ASC" || $sortOrder == "DESC")
+				$sort .= " " . $sortOrder;
+		}
+		return BuildSelectSql($this->getSqlSelect(), $this->getSqlWhere(), $this->getSqlGroupBy(),
+			$this->getSqlHaving(), $this->getSqlOrderBy(), $filter, $sort);
+	}
+
+	// Set up list options
+	protected function setupListOptions()
 	{
 		global $Security, $Language;
-		$filter = $this->getRecordFilter();
 
-		// Call Row Selecting event
-		$this->Row_Selecting($filter);
+		// Add group option item
+		$item = &$this->ListOptions->add($this->ListOptions->GroupOptionName);
+		$item->Body = "";
+		$item->OnLeft = FALSE;
+		$item->Visible = FALSE;
 
-		// Load SQL based on filter
-		$this->CurrentFilter = $filter;
-		$sql = $this->getCurrentSql();
-		$conn = &$this->getConnection();
-		$res = FALSE;
-		$rs = LoadRecordset($sql, $conn);
-		if ($rs && !$rs->EOF) {
-			$res = TRUE;
-			$this->loadRowValues($rs); // Load row values
-			$rs->close();
-		}
-		return $res;
+		// "view"
+		$item = &$this->ListOptions->add("view");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = TRUE;
+		$item->OnLeft = FALSE;
+
+		// "edit"
+		$item = &$this->ListOptions->add("edit");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = TRUE;
+		$item->OnLeft = FALSE;
+
+		// "copy"
+		$item = &$this->ListOptions->add("copy");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = TRUE;
+		$item->OnLeft = FALSE;
+
+		// "delete"
+		$item = &$this->ListOptions->add("delete");
+		$item->CssClass = "text-nowrap";
+		$item->Visible = TRUE;
+		$item->OnLeft = FALSE;
+
+		// Drop down button for ListOptions
+		$this->ListOptions->UseDropDownButton = FALSE;
+		$this->ListOptions->DropDownButtonPhrase = $Language->Phrase("ButtonListOptions");
+		$this->ListOptions->UseButtonGroup = FALSE;
+		$this->ListOptions->ButtonClass = ""; // Class for button group
+
+		// Call ListOptions_Load event
+		$this->ListOptions_Load();
+		$item = &$this->ListOptions->getItem($this->ListOptions->GroupOptionName);
+		$item->Visible = $this->ListOptions->groupOptionVisible();
 	}
 
-	// Load row values from recordset
-	public function loadRowValues($rs = NULL)
+	// Render list options
+	public function renderListOptions()
 	{
-		if ($rs && !$rs->EOF)
-			$row = $rs->fields;
-		else
-			$row = $this->newRow();
+		global $Security, $Language, $CurrentForm;
+		$this->ListOptions->loadDefault();
 
-		// Call Row Selected event
-		$this->Row_Selected($row);
-		if (!$rs || $rs->EOF)
-			return;
-		$this->id->setDbValue($row['id']);
-		$this->Export_Import->setDbValue($row['Export_Import']);
-		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
-		$this->Shipper_id->setDbValue($row['Shipper_id']);
-		$this->Party->setDbValue($row['Party']);
-		$this->Container->setDbValue($row['Container']);
-		$this->Tanggal_Stuffing->setDbValue($row['Tanggal_Stuffing']);
-		$this->Destination_id->setDbValue($row['Destination_id']);
-		$this->Feeder_id->setDbValue($row['Feeder_id']);
-	}
+		// Call ListOptions_Rendering event
+		$this->ListOptions_Rendering();
+		$masterKeyUrl = $this->masterKeyUrl();
 
-	// Return a row with default values
-	protected function newRow()
-	{
-		$row = [];
-		$row['id'] = NULL;
-		$row['Export_Import'] = NULL;
-		$row['Nomor_JO'] = NULL;
-		$row['Shipper_id'] = NULL;
-		$row['Party'] = NULL;
-		$row['Container'] = NULL;
-		$row['Tanggal_Stuffing'] = NULL;
-		$row['Destination_id'] = NULL;
-		$row['Feeder_id'] = NULL;
-		return $row;
-	}
-
-	// Render row values based on field settings
-	public function renderRow()
-	{
-		global $Security, $Language, $CurrentLanguage;
-
-		// Initialize URLs
-		// Call Row_Rendering event
-
-		$this->Row_Rendering();
-
-		// Common render codes for all row types
-		// id
-		// Export_Import
-		// Nomor_JO
-		// Shipper_id
-		// Party
-		// Container
-		// Tanggal_Stuffing
-		// Destination_id
-		// Feeder_id
-
-		if ($this->RowType == ROWTYPE_VIEW) { // View row
-
-			// id
-			$this->id->ViewValue = $this->id->CurrentValue;
-			$this->id->ViewCustomAttributes = "";
-
-			// Export_Import
-			if (strval($this->Export_Import->CurrentValue) <> "") {
-				$this->Export_Import->ViewValue = $this->Export_Import->optionCaption($this->Export_Import->CurrentValue);
-			} else {
-				$this->Export_Import->ViewValue = NULL;
-			}
-			$this->Export_Import->ViewCustomAttributes = "";
-
-			// Nomor_JO
-			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
-			$this->Nomor_JO->ViewCustomAttributes = "";
-
-			// Shipper_id
-			$curVal = strval($this->Shipper_id->CurrentValue);
-			if ($curVal <> "") {
-				$this->Shipper_id->ViewValue = $this->Shipper_id->lookupCacheOption($curVal);
-				if ($this->Shipper_id->ViewValue === NULL) { // Lookup from database
-					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
-					$sqlWrk = $this->Shipper_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
-					$rswrk = Conn()->execute($sqlWrk);
-					if ($rswrk && !$rswrk->EOF) { // Lookup values found
-						$arwrk = array();
-						$arwrk[1] = $rswrk->fields('df');
-						$this->Shipper_id->ViewValue = $this->Shipper_id->displayValue($arwrk);
-						$rswrk->Close();
-					} else {
-						$this->Shipper_id->ViewValue = $this->Shipper_id->CurrentValue;
-					}
-				}
-			} else {
-				$this->Shipper_id->ViewValue = NULL;
-			}
-			$this->Shipper_id->ViewCustomAttributes = "";
-
-			// Party
-			$this->Party->ViewValue = $this->Party->CurrentValue;
-			$this->Party->ViewValue = FormatNumber($this->Party->ViewValue, 0, -2, -2, -2);
-			$this->Party->ViewCustomAttributes = "";
-
-			// Container
-			if (strval($this->Container->CurrentValue) <> "") {
-				$this->Container->ViewValue = $this->Container->optionCaption($this->Container->CurrentValue);
-			} else {
-				$this->Container->ViewValue = NULL;
-			}
-			$this->Container->ViewCustomAttributes = "";
-
-			// Tanggal_Stuffing
-			$this->Tanggal_Stuffing->ViewValue = $this->Tanggal_Stuffing->CurrentValue;
-			$this->Tanggal_Stuffing->ViewValue = FormatDateTime($this->Tanggal_Stuffing->ViewValue, 11);
-			$this->Tanggal_Stuffing->ViewCustomAttributes = "";
-
-			// Destination_id
-			$curVal = strval($this->Destination_id->CurrentValue);
-			if ($curVal <> "") {
-				$this->Destination_id->ViewValue = $this->Destination_id->lookupCacheOption($curVal);
-				if ($this->Destination_id->ViewValue === NULL) { // Lookup from database
-					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
-					$sqlWrk = $this->Destination_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
-					$rswrk = Conn()->execute($sqlWrk);
-					if ($rswrk && !$rswrk->EOF) { // Lookup values found
-						$arwrk = array();
-						$arwrk[1] = $rswrk->fields('df');
-						$this->Destination_id->ViewValue = $this->Destination_id->displayValue($arwrk);
-						$rswrk->Close();
-					} else {
-						$this->Destination_id->ViewValue = $this->Destination_id->CurrentValue;
-					}
-				}
-			} else {
-				$this->Destination_id->ViewValue = NULL;
-			}
-			$this->Destination_id->ViewCustomAttributes = "";
-
-			// Feeder_id
-			$curVal = strval($this->Feeder_id->CurrentValue);
-			if ($curVal <> "") {
-				$this->Feeder_id->ViewValue = $this->Feeder_id->lookupCacheOption($curVal);
-				if ($this->Feeder_id->ViewValue === NULL) { // Lookup from database
-					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
-					$sqlWrk = $this->Feeder_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
-					$rswrk = Conn()->execute($sqlWrk);
-					if ($rswrk && !$rswrk->EOF) { // Lookup values found
-						$arwrk = array();
-						$arwrk[1] = $rswrk->fields('df');
-						$this->Feeder_id->ViewValue = $this->Feeder_id->displayValue($arwrk);
-						$rswrk->Close();
-					} else {
-						$this->Feeder_id->ViewValue = $this->Feeder_id->CurrentValue;
-					}
-				}
-			} else {
-				$this->Feeder_id->ViewValue = NULL;
-			}
-			$this->Feeder_id->ViewCustomAttributes = "";
-
-			// Export_Import
-			$this->Export_Import->LinkCustomAttributes = "";
-			$this->Export_Import->HrefValue = "";
-			$this->Export_Import->TooltipValue = "";
-
-			// Nomor_JO
-			$this->Nomor_JO->LinkCustomAttributes = "";
-			$this->Nomor_JO->HrefValue = "";
-			$this->Nomor_JO->TooltipValue = "";
-
-			// Shipper_id
-			$this->Shipper_id->LinkCustomAttributes = "";
-			$this->Shipper_id->HrefValue = "";
-			$this->Shipper_id->TooltipValue = "";
-
-			// Party
-			$this->Party->LinkCustomAttributes = "";
-			$this->Party->HrefValue = "";
-			$this->Party->TooltipValue = "";
-
-			// Container
-			$this->Container->LinkCustomAttributes = "";
-			$this->Container->HrefValue = "";
-			$this->Container->TooltipValue = "";
-
-			// Tanggal_Stuffing
-			$this->Tanggal_Stuffing->LinkCustomAttributes = "";
-			$this->Tanggal_Stuffing->HrefValue = "";
-			$this->Tanggal_Stuffing->TooltipValue = "";
-
-			// Destination_id
-			$this->Destination_id->LinkCustomAttributes = "";
-			$this->Destination_id->HrefValue = "";
-			$this->Destination_id->TooltipValue = "";
-
-			// Feeder_id
-			$this->Feeder_id->LinkCustomAttributes = "";
-			$this->Feeder_id->HrefValue = "";
-			$this->Feeder_id->TooltipValue = "";
+		// "view"
+		$opt = &$this->ListOptions->Items["view"];
+		if (TRUE) {
+			$viewCaption = $Language->phrase("ViewLink");
+			$viewTitle = HtmlTitle($viewCaption);
+			$viewUrl = $this->getViewUrl($masterKeyUrl);
+			if ($this->UseModalLinks && !IsMobile())
+				$opt->Body = "<a class=\"ew-row-link ew-view\" title=\"" . $viewTitle . "\" data-caption=\"" . $viewTitle . "\" href=\"javascript:void(0);\" onclick=\"ew.modalDialogShow({lnk:this,url:'" . HtmlEncode($viewUrl) . "',btn:null});\">" . $viewCaption . "</a>";
+			else
+				$opt->Body = "<a class=\"ew-row-link ew-view\" title=\"" . $viewTitle . "\" data-caption=\"" . $viewTitle . "\" href=\"" . HtmlEncode($viewUrl) . "\">" . $viewCaption . "</a>";
+		} else {
+			$opt->Body = "";
 		}
 
-		// Call Row Rendered event
-		if ($this->RowType <> ROWTYPE_AGGREGATEINIT)
-			$this->Row_Rendered();
+		// "edit"
+		$opt = &$this->ListOptions->Items["edit"];
+		if (TRUE) {
+			$editCaption = $Language->phrase("EditLink");
+			$editTitle = HtmlTitle($editCaption);
+			$editUrl = $this->getEditUrl($masterKeyUrl);
+			if ($this->UseModalLinks && !IsMobile())
+				$opt->Body = "<a class=\"ew-row-link ew-edit\" title=\"" . $editTitle . "\" data-caption=\"" . $editTitle . "\" href=\"javascript:void(0);\" onclick=\"ew.modalDialogShow({lnk:this,btn:'SaveBtn',url:'" . HtmlEncode($editUrl) . "'});\">" . $editCaption . "</a>";
+			else
+				$opt->Body = "<a class=\"ew-row-link ew-edit\" title=\"" . $editTitle . "\" data-caption=\"" . $editTitle . "\" href=\"" . HtmlEncode($editUrl) . "\">" . $editCaption . "</a>";
+		} else {
+			$opt->Body = "";
+		}
+
+		// "copy"
+		$opt = &$this->ListOptions->Items["copy"];
+		if (TRUE) {
+			$copyCaption = $Language->phrase("CopyLink");
+			$copyTitle = HtmlTitle($copyCaption);
+			$copyUrl = $this->getCopyUrl($masterKeyUrl);
+			if ($this->UseModalLinks && !IsMobile())
+				$opt->Body = "<a class=\"ew-row-link ew-copy\" title=\"" . $copyTitle . "\" data-caption=\"" . $copyTitle . "\" href=\"javascript:void(0);\" onclick=\"ew.modalDialogShow({lnk:this,btn:'AddBtn',url:'" . HtmlEncode($copyUrl) . "'});\">" . $copyCaption . "</a>";
+			else
+				$opt->Body = "<a class=\"ew-row-link ew-copy\" title=\"" . $copyTitle . "\" data-caption=\"" . $copyTitle . "\" href=\"" . HtmlEncode($copyUrl) . "\">" . $copyCaption . "</a>";
+		} else {
+			$opt->Body = "";
+		}
+
+		// "delete"
+		$opt = &$this->ListOptions->Items["delete"];
+		if (TRUE) {
+			$deleteCaption = $Language->phrase("DeleteLink");
+			$deleteTitle = HtmlTitle($deleteCaption);
+			$deleteUrl = $this->getDeleteUrl();
+			if ($this->UseModalLinks && !IsMobile())
+				$opt->Body = "<a class=\"ew-row-link ew-delete\" onclick=\"return ew.confirmDelete(this);\" title=\"" . $deleteTitle . "\" data-caption=\"" . $deleteTitle . "\" href=\"" . HtmlEncode($deleteUrl . "&action=1") . "\">" . $deleteCaption . "</a>";
+			else
+				$opt->Body = "<a class=\"ew-row-link ew-delete\"" . "" . " title=\"" . $deleteTitle . "\" data-caption=\"" . $deleteTitle . "\" href=\"" . HtmlEncode($deleteUrl) . "\">" . $deleteCaption . "</a>";
+		} else {
+			$opt->Body = "";
+		}
+
+		// Call ListOptions_Rendered event
+		$this->ListOptions_Rendered();
 	}
 
-	// Delete records based on current filter
-	protected function deleteRows()
+	// Set up other options
+	protected function setupOtherOptions()
 	{
 		global $Language, $Security;
-		$deleteRows = TRUE;
-		$sql = $this->getCurrentSql();
-		$conn = &$this->getConnection();
-		$conn->raiseErrorFn = $GLOBALS["ERROR_FUNC"];
-		$rs = $conn->execute($sql);
-		$conn->raiseErrorFn = '';
-		if ($rs === FALSE) {
-			return FALSE;
-		} elseif ($rs->EOF) {
-			$this->setFailureMessage($Language->phrase("NoRecord")); // No record found
-			$rs->close();
-			return FALSE;
-		}
-		$rows = ($rs) ? $rs->getRows() : [];
-		$conn->beginTrans();
+		$options = &$this->OtherOptions;
+		$option = $options["addedit"];
+		$option->UseButtonGroup = FALSE;
 
-		// Clone old rows
-		$rsold = $rows;
-		if ($rs)
-			$rs->close();
+		// Add group option item
+		$item = &$option->add($option->GroupOptionName);
+		$item->Body = "";
+		$item->OnLeft = FALSE;
+		$item->Visible = FALSE;
 
-		// Call row deleting event
-		if ($deleteRows) {
-			foreach ($rsold as $row) {
-				$deleteRows = $this->Row_Deleting($row);
-				if (!$deleteRows)
-					break;
-			}
-		}
-		if ($deleteRows) {
-			$key = "";
-			foreach ($rsold as $row) {
-				$thisKey = "";
-				if ($thisKey <> "")
-					$thisKey .= $GLOBALS["COMPOSITE_KEY_SEPARATOR"];
-				$thisKey .= $row['id'];
-				if (DELETE_UPLOADED_FILES) // Delete old files
-					$this->deleteUploadedFiles($row);
-				$conn->raiseErrorFn = $GLOBALS["ERROR_FUNC"];
-				$deleteRows = $this->delete($row); // Delete
-				$conn->raiseErrorFn = '';
-				if ($deleteRows === FALSE)
-					break;
-				if ($key <> "")
-					$key .= ", ";
-				$key .= $thisKey;
-			}
-		}
-		if (!$deleteRows) {
+		// Add
+		$item = &$option->add("add");
+		$item->Visible = TRUE;
+	}
 
-			// Set up error message
-			if ($this->getSuccessMessage() <> "" || $this->getFailureMessage() <> "") {
+	// Render other options
+	protected function renderOtherOptions()
+	{
+		global $Language, $Security;
+		$options = &$this->OtherOptions;
+		$option = $options["addedit"];
 
-				// Use the message, do nothing
-			} elseif ($this->CancelMessage <> "") {
-				$this->setFailureMessage($this->CancelMessage);
-				$this->CancelMessage = "";
-			} else {
-				$this->setFailureMessage($Language->phrase("DeleteCancelled"));
-			}
-		}
-		if ($deleteRows) {
-			$conn->commitTrans(); // Commit the changes
+		// Add
+		$item = &$option->getItem("add");
+		if (TRUE) {
+			$addCaption = $Language->Phrase("AddLink");
+			$addTitle = HtmlTitle($addCaption);
+			$addUrl = $this->getAddUrl($this->masterKeyUrl());
+			if ($this->UseModalLinks && !IsMobile())
+				$item->Body = "<a class=\"btn btn-default ew-add-edit ew-add\" title=\"" . $addTitle . "\" data-caption=\"" . $addTitle . "\" href=\"javascript:void(0);\" onclick=\"ew.modalDialogShow({lnk:this,btn:'AddBtn',url:'" . HtmlEncode($addUrl) . "'});\">" . $addCaption . "</a>";
+			else
+				$item->Body = "<a class=\"btn btn-default ew-add-edit ew-add\" title=\"" . $addTitle . "\" data-caption=\"" . $addTitle . "\" href=\"" . HtmlEncode($addUrl) . "\">" . $addCaption . "</a>";
 		} else {
-			$conn->rollbackTrans(); // Rollback changes
+			$item->Body = "";
 		}
+	}
 
-		// Call Row Deleted event
-		if ($deleteRows) {
-			foreach ($rsold as $row) {
-				$this->Row_Deleted($row);
+	// Get master foreign key url
+	protected function masterKeyUrl()
+	{
+		$masterTblVar = Get("t", "");
+		$url = "";
+		if ($masterTblVar == "t101_jo_head") {
+			$url = "" . TABLE_SHOW_MASTER . "=t101_jo_head&fk_id=" . urlencode(strval($this->JOHead_id->QueryStringValue)) . "";
+		}
+		return $url;
+	}
+
+	// Set up foreign keys from filter
+	protected function setupForeignKeysFromFilter($f)
+	{
+		$masterTblVar = Get("t", "");
+		if ($masterTblVar == "t101_jo_head") {
+			$find = "`JOHead_id`=";
+			$x = strpos($f, $find);
+			if ($x !== FALSE) {
+				$x += strlen($find);
+				$val = substr($f, $x);
+				$val = $this->unQuoteValue($val, "DB");
+ 				$this->JOHead_id->setQueryStringValue($val);
 			}
 		}
+	}
 
-		// Write JSON for API request (Support single row only)
-		if (IsApi() && $deleteRows) {
-			$row = $this->getRecordsFromRecordset($rsold, TRUE);
-			WriteJson(["success" => TRUE, $this->TableVar => $row]);
+	// Unquote value
+	protected function unQuoteValue($val, $dbid)
+	{
+		if (substr($val,0,1) == "'" && substr($val,strlen($val)-1) == "'") {
+			if (GetConnectionType($dbid) == "MYSQL")
+				return stripslashes(substr($val, 1, strlen($val)-2));
+			else
+				return str_replace("''", "'", substr($val, 1, strlen($val)-2));
+		} else {
+			return $val;
 		}
-		return $deleteRows;
 	}
 
 	// Set up Breadcrumb
@@ -969,9 +840,9 @@ class t101_jo_head_delete extends t101_jo_head
 		global $Breadcrumb, $Language;
 		$Breadcrumb = new Breadcrumb();
 		$url = substr(CurrentUrl(), strrpos(CurrentUrl(), "/")+1);
-		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t101_jo_headlist.php"), "", $this->TableVar, TRUE);
-		$pageId = "delete";
-		$Breadcrumb->add("delete", $pageId, $url);
+		$Breadcrumb->add("list", $this->TableVar, $this->addMasterUrl("t101_jo_detaillist.php"), "", $this->TableVar, TRUE);
+		$pageId = "preview";
+		$Breadcrumb->add("preview", $pageId, $url);
 	}
 
 	// Setup lookup options
@@ -1005,11 +876,9 @@ class t101_jo_head_delete extends t101_jo_head
 
 					// Format the field values
 					switch ($fld->FieldVar) {
-						case "x_Shipper_id":
+						case "x_TruckingVendor_id":
 							break;
-						case "x_Destination_id":
-							break;
-						case "x_Feeder_id":
+						case "x_Driver_id":
 							break;
 					}
 					$ar[strval($row[0])] = $row;
@@ -1079,6 +948,34 @@ class t101_jo_head_delete extends t101_jo_head
 
 		// Example:
 		//$footer = "your footer";
+
+	}
+
+	// ListOptions Load event
+	function ListOptions_Load() {
+
+		// Example:
+		//$opt = &$this->ListOptions->Add("new");
+		//$opt->Header = "xxx";
+		//$opt->OnLeft = TRUE; // Link on left
+		//$opt->MoveTo(0); // Move to first column
+
+	}
+
+	// ListOptions Rendering event
+	function ListOptions_Rendering() {
+
+		//$GLOBALS["xxx_grid"]->DetailAdd = (...condition...); // Set to TRUE or FALSE conditionally
+		//$GLOBALS["xxx_grid"]->DetailEdit = (...condition...); // Set to TRUE or FALSE conditionally
+		//$GLOBALS["xxx_grid"]->DetailView = (...condition...); // Set to TRUE or FALSE conditionally
+
+	}
+
+	// ListOptions Rendered event
+	function ListOptions_Rendered() {
+
+		// Example:
+		//$this->ListOptions->Items["new"]->Body = "xxx";
 
 	}
 }

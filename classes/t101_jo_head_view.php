@@ -615,7 +615,8 @@ class t101_jo_head_view extends t101_jo_head
 		// Is modal
 		$this->IsModal = (Param("modal") == "1");
 		$this->CurrentAction = Param("action"); // Set up current action
-		$this->id->setVisibility();
+		$this->id->Visible = FALSE;
+		$this->Export_Import->setVisibility();
 		$this->Nomor_JO->setVisibility();
 		$this->Shipper_id->setVisibility();
 		$this->Party->setVisibility();
@@ -926,6 +927,7 @@ class t101_jo_head_view extends t101_jo_head
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
+		$this->Export_Import->setDbValue($row['Export_Import']);
 		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
 		$this->Shipper_id->setDbValue($row['Shipper_id']);
 		$this->Party->setDbValue($row['Party']);
@@ -940,6 +942,7 @@ class t101_jo_head_view extends t101_jo_head
 	{
 		$row = [];
 		$row['id'] = NULL;
+		$row['Export_Import'] = NULL;
 		$row['Nomor_JO'] = NULL;
 		$row['Shipper_id'] = NULL;
 		$row['Party'] = NULL;
@@ -968,6 +971,7 @@ class t101_jo_head_view extends t101_jo_head
 
 		// Common render codes for all row types
 		// id
+		// Export_Import
 		// Nomor_JO
 		// Shipper_id
 		// Party
@@ -981,6 +985,14 @@ class t101_jo_head_view extends t101_jo_head
 			// id
 			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
+
+			// Export_Import
+			if (strval($this->Export_Import->CurrentValue) <> "") {
+				$this->Export_Import->ViewValue = $this->Export_Import->optionCaption($this->Export_Import->CurrentValue);
+			} else {
+				$this->Export_Import->ViewValue = NULL;
+			}
+			$this->Export_Import->ViewCustomAttributes = "";
 
 			// Nomor_JO
 			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
@@ -1070,10 +1082,10 @@ class t101_jo_head_view extends t101_jo_head
 			}
 			$this->Feeder_id->ViewCustomAttributes = "";
 
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
+			// Export_Import
+			$this->Export_Import->LinkCustomAttributes = "";
+			$this->Export_Import->HrefValue = "";
+			$this->Export_Import->TooltipValue = "";
 
 			// Nomor_JO
 			$this->Nomor_JO->LinkCustomAttributes = "";

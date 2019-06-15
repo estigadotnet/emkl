@@ -50,6 +50,8 @@ ft101_jo_headview.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS L
 ft101_jo_headview.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+ft101_jo_headview.lists["x_Export_Import"] = <?php echo $t101_jo_head_view->Export_Import->Lookup->toClientList() ?>;
+ft101_jo_headview.lists["x_Export_Import"].options = <?php echo JsonEncode($t101_jo_head_view->Export_Import->options(FALSE, TRUE)) ?>;
 ft101_jo_headview.lists["x_Shipper_id"] = <?php echo $t101_jo_head_view->Shipper_id->Lookup->toClientList() ?>;
 ft101_jo_headview.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_jo_head_view->Shipper_id->lookupOptions()) ?>;
 ft101_jo_headview.lists["x_Container"] = <?php echo $t101_jo_head_view->Container->Lookup->toClientList() ?>;
@@ -84,13 +86,13 @@ $t101_jo_head_view->showMessage();
 <input type="hidden" name="t" value="t101_jo_head">
 <input type="hidden" name="modal" value="<?php echo (int)$t101_jo_head_view->IsModal ?>">
 <table class="table table-striped table-sm ew-view-table">
-<?php if ($t101_jo_head->id->Visible) { // id ?>
-	<tr id="r_id">
-		<td class="<?php echo $t101_jo_head_view->TableLeftColumnClass ?>"><span id="elh_t101_jo_head_id"><?php echo $t101_jo_head->id->caption() ?></span></td>
-		<td data-name="id"<?php echo $t101_jo_head->id->cellAttributes() ?>>
-<span id="el_t101_jo_head_id">
-<span<?php echo $t101_jo_head->id->viewAttributes() ?>>
-<?php echo $t101_jo_head->id->getViewValue() ?></span>
+<?php if ($t101_jo_head->Export_Import->Visible) { // Export_Import ?>
+	<tr id="r_Export_Import">
+		<td class="<?php echo $t101_jo_head_view->TableLeftColumnClass ?>"><span id="elh_t101_jo_head_Export_Import"><?php echo $t101_jo_head->Export_Import->caption() ?></span></td>
+		<td data-name="Export_Import"<?php echo $t101_jo_head->Export_Import->cellAttributes() ?>>
+<span id="el_t101_jo_head_Export_Import">
+<span<?php echo $t101_jo_head->Export_Import->viewAttributes() ?>>
+<?php echo $t101_jo_head->Export_Import->getViewValue() ?></span>
 </span>
 </td>
 	</tr>

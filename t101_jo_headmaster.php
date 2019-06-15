@@ -5,13 +5,13 @@ namespace PHPMaker2019\emkl_prj;
 <div class="ew-master-div">
 <table id="tbl_t101_jo_headmaster" class="table ew-view-table ew-master-table ew-vertical">
 	<tbody>
-<?php if ($t101_jo_head->id->Visible) { // id ?>
-		<tr id="r_id">
-			<td class="<?php echo $t101_jo_head->TableLeftColumnClass ?>"><?php echo $t101_jo_head->id->caption() ?></td>
-			<td<?php echo $t101_jo_head->id->cellAttributes() ?>>
-<span id="el_t101_jo_head_id">
-<span<?php echo $t101_jo_head->id->viewAttributes() ?>>
-<?php echo $t101_jo_head->id->getViewValue() ?></span>
+<?php if ($t101_jo_head->Export_Import->Visible) { // Export_Import ?>
+		<tr id="r_Export_Import">
+			<td class="<?php echo $t101_jo_head->TableLeftColumnClass ?>"><?php echo $t101_jo_head->Export_Import->caption() ?></td>
+			<td<?php echo $t101_jo_head->Export_Import->cellAttributes() ?>>
+<span id="el_t101_jo_head_Export_Import">
+<span<?php echo $t101_jo_head->Export_Import->viewAttributes() ?>>
+<?php echo $t101_jo_head->Export_Import->getViewValue() ?></span>
 </span>
 </td>
 		</tr>

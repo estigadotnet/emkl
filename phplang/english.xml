@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2019/6/14" version="15.0.0.1" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2019/6/15" version="15.0.0.1" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -919,7 +919,7 @@
         <phrase id="fldcaption" value="id" />
       </field>
       <field id="johead_id">
-        <phrase id="fldcaption" value="Trucking Head id" />
+        <phrase id="fldcaption" value="JO" />
       </field>
       <field id="truckingvendor_id">
         <phrase id="fldcaption" value="Vendor" />
@@ -941,6 +941,13 @@
       <phrase id="tblcaption" value="Job Order" />
       <field id="id">
         <phrase id="fldcaption" value="id" />
+      </field>
+      <field id="export_import">
+        <phrase id="fldcaption" value="Export Import" />
+        <phrase id="fldtagvalue1" value="Export" />
+        <phrase id="fldtagcaption1" value="Export" />
+        <phrase id="fldtagvalue2" value="Import" />
+        <phrase id="fldtagcaption2" value="Import" />
       </field>
       <field id="nomor_jo">
         <phrase id="fldcaption" value="Nomor JO" />

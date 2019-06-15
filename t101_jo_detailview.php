@@ -80,28 +80,6 @@ $t101_jo_detail_view->showMessage();
 <input type="hidden" name="t" value="t101_jo_detail">
 <input type="hidden" name="modal" value="<?php echo (int)$t101_jo_detail_view->IsModal ?>">
 <table class="table table-striped table-sm ew-view-table">
-<?php if ($t101_jo_detail->id->Visible) { // id ?>
-	<tr id="r_id">
-		<td class="<?php echo $t101_jo_detail_view->TableLeftColumnClass ?>"><span id="elh_t101_jo_detail_id"><?php echo $t101_jo_detail->id->caption() ?></span></td>
-		<td data-name="id"<?php echo $t101_jo_detail->id->cellAttributes() ?>>
-<span id="el_t101_jo_detail_id">
-<span<?php echo $t101_jo_detail->id->viewAttributes() ?>>
-<?php echo $t101_jo_detail->id->getViewValue() ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
-<?php if ($t101_jo_detail->JOHead_id->Visible) { // JOHead_id ?>
-	<tr id="r_JOHead_id">
-		<td class="<?php echo $t101_jo_detail_view->TableLeftColumnClass ?>"><span id="elh_t101_jo_detail_JOHead_id"><?php echo $t101_jo_detail->JOHead_id->caption() ?></span></td>
-		<td data-name="JOHead_id"<?php echo $t101_jo_detail->JOHead_id->cellAttributes() ?>>
-<span id="el_t101_jo_detail_JOHead_id">
-<span<?php echo $t101_jo_detail->JOHead_id->viewAttributes() ?>>
-<?php echo $t101_jo_detail->JOHead_id->getViewValue() ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
 <?php if ($t101_jo_detail->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 	<tr id="r_TruckingVendor_id">
 		<td class="<?php echo $t101_jo_detail_view->TableLeftColumnClass ?>"><span id="elh_t101_jo_detail_TruckingVendor_id"><?php echo $t101_jo_detail->TruckingVendor_id->caption() ?></span></td>

@@ -26,6 +26,7 @@ class t101_jo_head extends DbTable
 
 	// Fields
 	public $id;
+	public $Export_Import;
 	public $Nomor_JO;
 	public $Shipper_id;
 	public $Party;
@@ -74,6 +75,14 @@ class t101_jo_head extends DbTable
 		$this->id->Sortable = TRUE; // Allow sort
 		$this->id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
 		$this->fields['id'] = &$this->id;
+
+		// Export_Import
+		$this->Export_Import = new DbField('t101_jo_head', 't101_jo_head', 'x_Export_Import', 'Export_Import', '`Export_Import`', '`Export_Import`', 202, -1, FALSE, '`Export_Import`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'RADIO');
+		$this->Export_Import->Nullable = FALSE; // NOT NULL field
+		$this->Export_Import->Sortable = TRUE; // Allow sort
+		$this->Export_Import->Lookup = new Lookup('Export_Import', 't101_jo_head', FALSE, '', ["","","",""], [], [], [], [], [], [], '', '');
+		$this->Export_Import->OptionCount = 2;
+		$this->fields['Export_Import'] = &$this->Export_Import;
 
 		// Nomor_JO
 		$this->Nomor_JO = new DbField('t101_jo_head', 't101_jo_head', 'x_Nomor_JO', 'Nomor_JO', '`Nomor_JO`', '`Nomor_JO`', 200, -1, FALSE, '`Nomor_JO`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
@@ -518,6 +527,7 @@ class t101_jo_head extends DbTable
 			return;
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
+		$this->Export_Import->DbValue = $row['Export_Import'];
 		$this->Nomor_JO->DbValue = $row['Nomor_JO'];
 		$this->Shipper_id->DbValue = $row['Shipper_id'];
 		$this->Party->DbValue = $row['Party'];
@@ -757,6 +767,7 @@ class t101_jo_head extends DbTable
 	public function loadListRowValues(&$rs)
 	{
 		$this->id->setDbValue($rs->fields('id'));
+		$this->Export_Import->setDbValue($rs->fields('Export_Import'));
 		$this->Nomor_JO->setDbValue($rs->fields('Nomor_JO'));
 		$this->Shipper_id->setDbValue($rs->fields('Shipper_id'));
 		$this->Party->setDbValue($rs->fields('Party'));
@@ -776,6 +787,7 @@ class t101_jo_head extends DbTable
 
 		// Common render codes
 		// id
+		// Export_Import
 		// Nomor_JO
 		// Shipper_id
 		// Party
@@ -787,6 +799,14 @@ class t101_jo_head extends DbTable
 
 		$this->id->ViewValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
+
+		// Export_Import
+		if (strval($this->Export_Import->CurrentValue) <> "") {
+			$this->Export_Import->ViewValue = $this->Export_Import->optionCaption($this->Export_Import->CurrentValue);
+		} else {
+			$this->Export_Import->ViewValue = NULL;
+		}
+		$this->Export_Import->ViewCustomAttributes = "";
 
 		// Nomor_JO
 		$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
@@ -881,6 +901,11 @@ class t101_jo_head extends DbTable
 		$this->id->HrefValue = "";
 		$this->id->TooltipValue = "";
 
+		// Export_Import
+		$this->Export_Import->LinkCustomAttributes = "";
+		$this->Export_Import->HrefValue = "";
+		$this->Export_Import->TooltipValue = "";
+
 		// Nomor_JO
 		$this->Nomor_JO->LinkCustomAttributes = "";
 		$this->Nomor_JO->HrefValue = "";
@@ -936,6 +961,10 @@ class t101_jo_head extends DbTable
 		$this->id->EditCustomAttributes = "";
 		$this->id->EditValue = $this->id->CurrentValue;
 		$this->id->ViewCustomAttributes = "";
+
+		// Export_Import
+		$this->Export_Import->EditCustomAttributes = "";
+		$this->Export_Import->EditValue = $this->Export_Import->options(FALSE);
 
 		// Nomor_JO
 		$this->Nomor_JO->EditAttrs["class"] = "form-control";
@@ -1002,7 +1031,7 @@ class t101_jo_head extends DbTable
 			if ($doc->Horizontal) { // Horizontal format, write header
 				$doc->beginExportRow();
 				if ($exportPageType == "view") {
-					$doc->exportCaption($this->id);
+					$doc->exportCaption($this->Export_Import);
 					$doc->exportCaption($this->Nomor_JO);
 					$doc->exportCaption($this->Shipper_id);
 					$doc->exportCaption($this->Party);
@@ -1012,6 +1041,7 @@ class t101_jo_head extends DbTable
 					$doc->exportCaption($this->Feeder_id);
 				} else {
 					$doc->exportCaption($this->id);
+					$doc->exportCaption($this->Export_Import);
 					$doc->exportCaption($this->Nomor_JO);
 					$doc->exportCaption($this->Shipper_id);
 					$doc->exportCaption($this->Party);
@@ -1050,7 +1080,7 @@ class t101_jo_head extends DbTable
 				if (!$doc->ExportCustom) {
 					$doc->beginExportRow($rowCnt); // Allow CSS styles if enabled
 					if ($exportPageType == "view") {
-						$doc->exportField($this->id);
+						$doc->exportField($this->Export_Import);
 						$doc->exportField($this->Nomor_JO);
 						$doc->exportField($this->Shipper_id);
 						$doc->exportField($this->Party);
@@ -1060,6 +1090,7 @@ class t101_jo_head extends DbTable
 						$doc->exportField($this->Feeder_id);
 					} else {
 						$doc->exportField($this->id);
+						$doc->exportField($this->Export_Import);
 						$doc->exportField($this->Nomor_JO);
 						$doc->exportField($this->Shipper_id);
 						$doc->exportField($this->Party);

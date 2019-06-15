@@ -1645,10 +1645,85 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 	protected function setupListOptionsExt()
 	{
 		global $Security, $Language;
+
+		// Hide detail items for dropdown if necessary
+		$this->ListOptions->hideDetailItemsForDropDown();
 	}
 	protected function renderListOptionsExt()
 	{
 		global $Security, $Language;
+		$links = "";
+		$btngrps = "";
+		$sqlwrk = "`TruckingVendor_id`=" . AdjustSql($this->id->CurrentValue, $this->Dbid) . "";
+
+		// Column "detail_t005_driver"
+		if ($this->DetailPages->Items["t005_driver"]->Visible) {
+			$link = "";
+			$option = &$this->ListOptions->Items["detail_t005_driver"];
+			$url = "t005_driverpreview.php?t=t006_trucking_vendor&f=" . Encrypt($sqlwrk);
+			$btngrp = "<div data-table=\"t005_driver\" data-url=\"" . $url . "\">";
+			if (TRUE) {
+				$label = $Language->TablePhrase("t005_driver", "TblCaption");
+				$link = "<li class=\"nav-item\"><a href=\"#\" class=\"nav-link\" data-toggle=\"tab\" data-table=\"t005_driver\" data-url=\"" . $url . "\">" . $label . "</a></li>";
+				$links .= $link;
+				$detaillnk = JsEncodeAttribute("t005_driverlist.php?" . TABLE_SHOW_MASTER . "=t006_trucking_vendor&fk_id=" . urlencode(strval($this->id->CurrentValue)) . "");
+				$btngrp .= "<a href=\"javascript:void(0);\" class=\"ew-link-separator\" title=\"" . $Language->TablePhrase("t005_driver", "TblCaption") . "\" onclick=\"window.location='" . $detaillnk . "'\">" . $Language->Phrase("MasterDetailListLink") . "</a>";
+			}
+			if (!isset($GLOBALS["t005_driver_grid"]))
+				$GLOBALS["t005_driver_grid"] = new t005_driver_grid();
+			if ($GLOBALS["t005_driver_grid"]->DetailView) {
+				$caption = $Language->Phrase("MasterDetailViewLink");
+				$url = $this->getViewUrl(TABLE_SHOW_DETAIL . "=t005_driver");
+				$btngrp .= "<a href=\"javascript:void(0);\" class=\"ew-link-separator\" title=\"" . HtmlTitle($caption) . "\" onclick=\"window.location='" . HtmlEncode($url) . "'\">" . $caption . "</a>";
+			}
+			if ($GLOBALS["t005_driver_grid"]->DetailEdit) {
+				$caption = $Language->Phrase("MasterDetailEditLink");
+				$url = $this->getEditUrl(TABLE_SHOW_DETAIL . "=t005_driver");
+				$btngrp .= "<a href=\"javascript:void(0);\" class=\"ew-link-separator\" title=\"" . HtmlTitle($caption) . "\" onclick=\"window.location='" . HtmlEncode($url) . "'\">" . $caption . "</a>";
+			}
+			if ($GLOBALS["t005_driver_grid"]->DetailAdd) {
+				$caption = $Language->Phrase("MasterDetailCopyLink");
+				$url = $this->getCopyUrl(TABLE_SHOW_DETAIL . "=t005_driver");
+				$btngrp .= "<a href=\"javascript:void(0);\" class=\"ew-link-separator\" title=\"" . HtmlTitle($caption) . "\" onclick=\"window.location='" . HtmlEncode($url) . "'\">" . $caption . "</a>";
+			}
+			$btngrp .= "</div>";
+			if ($link <> "") {
+				$btngrps .= $btngrp;
+				$option->Body .= "<div class=\"d-none ew-preview\">" . $link . $btngrp . "</div>";
+			}
+		}
+
+		// Hide detail items if necessary
+		$this->ListOptions->hideDetailItemsForDropDown();
+
+		// Column "preview"
+		$option = &$this->ListOptions->getItem("preview");
+		if (!$option) { // Add preview column
+			$option = &$this->ListOptions->add("preview");
+			$option->OnLeft = FALSE;
+			if ($option->OnLeft) {
+				$option->moveTo($this->ListOptions->itemPos("checkbox") + 1);
+			} else {
+				$option->moveTo($this->ListOptions->itemPos("checkbox"));
+			}
+			$option->Visible = !($this->isExport() || $this->isGridAdd() || $this->isGridEdit());
+			$option->ShowInDropDown = FALSE;
+			$option->ShowInButtonGroup = FALSE;
+		}
+		if ($option) {
+			$option->Body = "<i class=\"ew-preview-row-btn ew-icon icon-expand\"></i>";
+			$option->Body .= "<div class=\"d-none ew-preview\">" . $links . $btngrps . "</div>";
+			if ($option->Visible)
+				$option->Visible = $links <> "";
+		}
+
+		// Column "details" (Multiple details)
+		$option = &$this->ListOptions->getItem("details");
+		if ($option) {
+			$option->Body .= "<div class=\"d-none ew-preview\">" . $links . $btngrps . "</div>";
+			if ($option->Visible)
+				$option->Visible = $links <> "";
+		}
 	}
 
 	// Set up starting record parameters

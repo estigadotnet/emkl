@@ -51,6 +51,8 @@ ft101_jo_headlist.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS L
 ft101_jo_headlist.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+ft101_jo_headlist.lists["x_Export_Import"] = <?php echo $t101_jo_head_list->Export_Import->Lookup->toClientList() ?>;
+ft101_jo_headlist.lists["x_Export_Import"].options = <?php echo JsonEncode($t101_jo_head_list->Export_Import->options(FALSE, TRUE)) ?>;
 ft101_jo_headlist.lists["x_Shipper_id"] = <?php echo $t101_jo_head_list->Shipper_id->Lookup->toClientList() ?>;
 ft101_jo_headlist.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_jo_head_list->Shipper_id->lookupOptions()) ?>;
 ft101_jo_headlist.lists["x_Container"] = <?php echo $t101_jo_head_list->Container->Lookup->toClientList() ?>;
@@ -63,8 +65,57 @@ ft101_jo_headlist.lists["x_Feeder_id"].options = <?php echo JsonEncode($t101_jo_
 // Form object for search
 var ft101_jo_headlistsrch = currentSearchForm = new ew.Form("ft101_jo_headlistsrch");
 
+// Validate function for search
+ft101_jo_headlistsrch.validate = function(fobj) {
+	if (!this.validateRequired)
+		return true; // Ignore validation
+	fobj = fobj || this._form;
+	var infix = "";
+
+	// Fire Form_CustomValidate event
+	if (!this.Form_CustomValidate(fobj))
+		return false;
+	return true;
+}
+
+// Form_CustomValidate event
+ft101_jo_headlistsrch.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LINE!
+
+	// Your custom validation code here, return false if invalid.
+	return true;
+}
+
+// Use JavaScript validation or not
+ft101_jo_headlistsrch.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
+
+// Dynamic selection lists
+ft101_jo_headlistsrch.lists["x_Export_Import"] = <?php echo $t101_jo_head_list->Export_Import->Lookup->toClientList() ?>;
+ft101_jo_headlistsrch.lists["x_Export_Import"].options = <?php echo JsonEncode($t101_jo_head_list->Export_Import->options(FALSE, TRUE)) ?>;
+
 // Filters
 ft101_jo_headlistsrch.filterList = <?php echo $t101_jo_head_list->getFilterList() ?>;
+</script>
+<style type="text/css">
+.ew-table-preview-row { /* main table preview row color */
+	background-color: #FFFFFF; /* preview row color */
+}
+.ew-table-preview-row .ew-grid {
+	display: table;
+}
+</style>
+<div id="ew-preview" class="d-none"><!-- preview -->
+	<div class="ew-nav-tabs"><!-- .ew-nav-tabs -->
+		<ul class="nav nav-tabs"></ul>
+		<div class="tab-content"><!-- .tab-content -->
+			<div class="tab-pane fade active show"></div>
+		</div><!-- /.tab-content -->
+	</div><!-- /.ew-nav-tabs -->
+</div><!-- /preview -->
+<script src="phpjs/ewpreview.js"></script>
+<script>
+ew.PREVIEW_PLACEMENT = ew.CSS_FLIP ? "right" : "left";
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW_OVERLAY = false;
 </script>
 <script>
 
@@ -98,7 +149,32 @@ $t101_jo_head_list->renderOtherOptions();
 <input type="hidden" name="cmd" value="search">
 <input type="hidden" name="t" value="t101_jo_head">
 	<div class="ew-basic-search">
+<?php
+if ($SearchError == "")
+	$t101_jo_head_list->LoadAdvancedSearch(); // Load advanced search
+
+// Render for search
+$t101_jo_head->RowType = ROWTYPE_SEARCH;
+
+// Render row
+$t101_jo_head->resetAttributes();
+$t101_jo_head_list->renderRow();
+?>
 <div id="xsr_1" class="ew-row d-sm-flex">
+<?php if ($t101_jo_head->Export_Import->Visible) { // Export_Import ?>
+	<div id="xsc_Export_Import" class="ew-cell form-group">
+		<label class="ew-search-caption ew-label"><?php echo $t101_jo_head->Export_Import->caption() ?></label>
+		<span class="ew-search-operator"><?php echo $Language->phrase("=") ?><input type="hidden" name="z_Export_Import" id="z_Export_Import" value="="></span>
+		<span class="ew-search-field">
+<div id="tp_x_Export_Import" class="ew-template"><input type="radio" class="form-check-input" data-table="t101_jo_head" data-field="x_Export_Import" data-value-separator="<?php echo $t101_jo_head->Export_Import->displayValueSeparatorAttribute() ?>" name="x_Export_Import" id="x_Export_Import" value="{value}"<?php echo $t101_jo_head->Export_Import->editAttributes() ?>></div>
+<div id="dsl_x_Export_Import" data-repeatcolumn="5" class="ew-item-list d-none"><div>
+<?php echo $t101_jo_head->Export_Import->radioButtonListHtml(FALSE, "x_Export_Import") ?>
+</div></div>
+</span>
+	</div>
+<?php } ?>
+</div>
+<div id="xsr_2" class="ew-row d-sm-flex">
 	<div class="ew-quick-search input-group">
 		<input type="text" name="<?php echo TABLE_BASIC_SEARCH ?>" id="<?php echo TABLE_BASIC_SEARCH ?>" class="form-control" value="<?php echo HtmlEncode($t101_jo_head_list->BasicSearch->getKeyword()) ?>" placeholder="<?php echo HtmlEncode($Language->phrase("Search")) ?>">
 		<input type="hidden" name="<?php echo TABLE_BASIC_SEARCH_TYPE ?>" id="<?php echo TABLE_BASIC_SEARCH_TYPE ?>" value="<?php echo HtmlEncode($t101_jo_head_list->BasicSearch->getType()) ?>">
@@ -145,12 +221,12 @@ $t101_jo_head_list->renderListOptions();
 // Render list options (header, left)
 $t101_jo_head_list->ListOptions->render("header", "left");
 ?>
-<?php if ($t101_jo_head->id->Visible) { // id ?>
-	<?php if ($t101_jo_head->sortUrl($t101_jo_head->id) == "") { ?>
-		<th data-name="id" class="<?php echo $t101_jo_head->id->headerCellClass() ?>"><div id="elh_t101_jo_head_id" class="t101_jo_head_id"><div class="ew-table-header-caption"><?php echo $t101_jo_head->id->caption() ?></div></div></th>
+<?php if ($t101_jo_head->Export_Import->Visible) { // Export_Import ?>
+	<?php if ($t101_jo_head->sortUrl($t101_jo_head->Export_Import) == "") { ?>
+		<th data-name="Export_Import" class="<?php echo $t101_jo_head->Export_Import->headerCellClass() ?>"><div id="elh_t101_jo_head_Export_Import" class="t101_jo_head_Export_Import"><div class="ew-table-header-caption"><?php echo $t101_jo_head->Export_Import->caption() ?></div></div></th>
 	<?php } else { ?>
-		<th data-name="id" class="<?php echo $t101_jo_head->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_jo_head->SortUrl($t101_jo_head->id) ?>',2);"><div id="elh_t101_jo_head_id" class="t101_jo_head_id">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_jo_head->id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_jo_head->id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_jo_head->id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+		<th data-name="Export_Import" class="<?php echo $t101_jo_head->Export_Import->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_jo_head->SortUrl($t101_jo_head->Export_Import) ?>',2);"><div id="elh_t101_jo_head_Export_Import" class="t101_jo_head_Export_Import">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_jo_head->Export_Import->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_jo_head->Export_Import->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_jo_head->Export_Import->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -282,11 +358,11 @@ while ($t101_jo_head_list->RecCnt < $t101_jo_head_list->StopRec) {
 // Render list options (body, left)
 $t101_jo_head_list->ListOptions->render("body", "left", $t101_jo_head_list->RowCnt);
 ?>
-	<?php if ($t101_jo_head->id->Visible) { // id ?>
-		<td data-name="id"<?php echo $t101_jo_head->id->cellAttributes() ?>>
-<span id="el<?php echo $t101_jo_head_list->RowCnt ?>_t101_jo_head_id" class="t101_jo_head_id">
-<span<?php echo $t101_jo_head->id->viewAttributes() ?>>
-<?php echo $t101_jo_head->id->getViewValue() ?></span>
+	<?php if ($t101_jo_head->Export_Import->Visible) { // Export_Import ?>
+		<td data-name="Export_Import"<?php echo $t101_jo_head->Export_Import->cellAttributes() ?>>
+<span id="el<?php echo $t101_jo_head_list->RowCnt ?>_t101_jo_head_Export_Import" class="t101_jo_head_Export_Import">
+<span<?php echo $t101_jo_head->Export_Import->viewAttributes() ?>>
+<?php echo $t101_jo_head->Export_Import->getViewValue() ?></span>
 </span>
 </td>
 	<?php } ?>

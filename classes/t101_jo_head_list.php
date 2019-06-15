@@ -663,7 +663,8 @@ class t101_jo_head_list extends t101_jo_head
 
 		// Set up list options
 		$this->setupListOptions();
-		$this->id->setVisibility();
+		$this->id->Visible = FALSE;
+		$this->Export_Import->setVisibility();
 		$this->Nomor_JO->setVisibility();
 		$this->Shipper_id->setVisibility();
 		$this->Party->setVisibility();
@@ -752,13 +753,19 @@ class t101_jo_head_list extends t101_jo_head
 
 			// Get default search criteria
 			AddFilter($this->DefaultSearchWhere, $this->basicSearchWhere(TRUE));
+			AddFilter($this->DefaultSearchWhere, $this->advancedSearchWhere(TRUE));
 
 			// Get basic search values
 			$this->loadBasicSearchValues();
 
+			// Get and validate search values for advanced search
+			$this->loadSearchValues(); // Get search values
+
 			// Process filter list
 			if ($this->processFilterList())
 				$this->terminate();
+			if (!$this->validateSearch())
+				$this->setFailureMessage($SearchError);
 
 			// Restore search parms from Session if not searching / reset / export
 			if (($this->isExport() || $this->Command <> "search" && $this->Command <> "reset" && $this->Command <> "resetall") && $this->Command <> "json" && $this->checkSearchParms())
@@ -773,6 +780,10 @@ class t101_jo_head_list extends t101_jo_head
 			// Get basic search criteria
 			if ($SearchError == "")
 				$srchBasic = $this->basicSearchWhere();
+
+			// Get search criteria for advanced search
+			if ($SearchError == "")
+				$srchAdvanced = $this->advancedSearchWhere();
 		}
 
 		// Restore display records
@@ -793,6 +804,11 @@ class t101_jo_head_list extends t101_jo_head
 			$this->BasicSearch->loadDefault();
 			if ($this->BasicSearch->Keyword != "")
 				$srchBasic = $this->basicSearchWhere();
+
+			// Load advanced search from default
+			if ($this->loadAdvancedSearchDefault()) {
+				$srchAdvanced = $this->advancedSearchWhere();
+			}
 		}
 
 		// Build search criteria
@@ -917,6 +933,7 @@ class t101_jo_head_list extends t101_jo_head
 		$filterList = "";
 		$savedFilterList = "";
 		$filterList = Concat($filterList, $this->id->AdvancedSearch->toJson(), ","); // Field id
+		$filterList = Concat($filterList, $this->Export_Import->AdvancedSearch->toJson(), ","); // Field Export_Import
 		$filterList = Concat($filterList, $this->Nomor_JO->AdvancedSearch->toJson(), ","); // Field Nomor_JO
 		$filterList = Concat($filterList, $this->Shipper_id->AdvancedSearch->toJson(), ","); // Field Shipper_id
 		$filterList = Concat($filterList, $this->Party->AdvancedSearch->toJson(), ","); // Field Party
@@ -969,6 +986,14 @@ class t101_jo_head_list extends t101_jo_head
 		$this->id->AdvancedSearch->SearchValue2 = @$filter["y_id"];
 		$this->id->AdvancedSearch->SearchOperator2 = @$filter["w_id"];
 		$this->id->AdvancedSearch->save();
+
+		// Field Export_Import
+		$this->Export_Import->AdvancedSearch->SearchValue = @$filter["x_Export_Import"];
+		$this->Export_Import->AdvancedSearch->SearchOperator = @$filter["z_Export_Import"];
+		$this->Export_Import->AdvancedSearch->SearchCondition = @$filter["v_Export_Import"];
+		$this->Export_Import->AdvancedSearch->SearchValue2 = @$filter["y_Export_Import"];
+		$this->Export_Import->AdvancedSearch->SearchOperator2 = @$filter["w_Export_Import"];
+		$this->Export_Import->AdvancedSearch->save();
 
 		// Field Nomor_JO
 		$this->Nomor_JO->AdvancedSearch->SearchValue = @$filter["x_Nomor_JO"];
@@ -1027,6 +1052,91 @@ class t101_jo_head_list extends t101_jo_head
 		$this->Feeder_id->AdvancedSearch->save();
 		$this->BasicSearch->setKeyword(@$filter[TABLE_BASIC_SEARCH]);
 		$this->BasicSearch->setType(@$filter[TABLE_BASIC_SEARCH_TYPE]);
+	}
+
+	// Advanced search WHERE clause based on QueryString
+	protected function advancedSearchWhere($default = FALSE)
+	{
+		global $Security;
+		$where = "";
+		$this->buildSearchSql($where, $this->id, $default, FALSE); // id
+		$this->buildSearchSql($where, $this->Export_Import, $default, FALSE); // Export_Import
+		$this->buildSearchSql($where, $this->Nomor_JO, $default, FALSE); // Nomor_JO
+		$this->buildSearchSql($where, $this->Shipper_id, $default, FALSE); // Shipper_id
+		$this->buildSearchSql($where, $this->Party, $default, FALSE); // Party
+		$this->buildSearchSql($where, $this->Container, $default, FALSE); // Container
+		$this->buildSearchSql($where, $this->Tanggal_Stuffing, $default, FALSE); // Tanggal_Stuffing
+		$this->buildSearchSql($where, $this->Destination_id, $default, FALSE); // Destination_id
+		$this->buildSearchSql($where, $this->Feeder_id, $default, FALSE); // Feeder_id
+
+		// Set up search parm
+		if (!$default && $where <> "" && in_array($this->Command, array("", "reset", "resetall"))) {
+			$this->Command = "search";
+		}
+		if (!$default && $this->Command == "search") {
+			$this->id->AdvancedSearch->save(); // id
+			$this->Export_Import->AdvancedSearch->save(); // Export_Import
+			$this->Nomor_JO->AdvancedSearch->save(); // Nomor_JO
+			$this->Shipper_id->AdvancedSearch->save(); // Shipper_id
+			$this->Party->AdvancedSearch->save(); // Party
+			$this->Container->AdvancedSearch->save(); // Container
+			$this->Tanggal_Stuffing->AdvancedSearch->save(); // Tanggal_Stuffing
+			$this->Destination_id->AdvancedSearch->save(); // Destination_id
+			$this->Feeder_id->AdvancedSearch->save(); // Feeder_id
+		}
+		return $where;
+	}
+
+	// Build search SQL
+	protected function buildSearchSql(&$where, &$fld, $default, $multiValue)
+	{
+		$fldParm = $fld->Param;
+		$fldVal = ($default) ? $fld->AdvancedSearch->SearchValueDefault : $fld->AdvancedSearch->SearchValue;
+		$fldOpr = ($default) ? $fld->AdvancedSearch->SearchOperatorDefault : $fld->AdvancedSearch->SearchOperator;
+		$fldCond = ($default) ? $fld->AdvancedSearch->SearchConditionDefault : $fld->AdvancedSearch->SearchCondition;
+		$fldVal2 = ($default) ? $fld->AdvancedSearch->SearchValue2Default : $fld->AdvancedSearch->SearchValue2;
+		$fldOpr2 = ($default) ? $fld->AdvancedSearch->SearchOperator2Default : $fld->AdvancedSearch->SearchOperator2;
+		$wrk = "";
+		if (is_array($fldVal))
+			$fldVal = implode(",", $fldVal);
+		if (is_array($fldVal2))
+			$fldVal2 = implode(",", $fldVal2);
+		$fldOpr = strtoupper(trim($fldOpr));
+		if ($fldOpr == "")
+			$fldOpr = "=";
+		$fldOpr2 = strtoupper(trim($fldOpr2));
+		if ($fldOpr2 == "")
+			$fldOpr2 = "=";
+		if (SEARCH_MULTI_VALUE_OPTION == 1)
+			$multiValue = FALSE;
+		if ($multiValue) {
+			$wrk1 = ($fldVal <> "") ? GetMultiSearchSql($fld, $fldOpr, $fldVal, $this->Dbid) : ""; // Field value 1
+			$wrk2 = ($fldVal2 <> "") ? GetMultiSearchSql($fld, $fldOpr2, $fldVal2, $this->Dbid) : ""; // Field value 2
+			$wrk = $wrk1; // Build final SQL
+			if ($wrk2 <> "")
+				$wrk = ($wrk <> "") ? "($wrk) $fldCond ($wrk2)" : $wrk2;
+		} else {
+			$fldVal = $this->convertSearchValue($fld, $fldVal);
+			$fldVal2 = $this->convertSearchValue($fld, $fldVal2);
+			$wrk = GetSearchSql($fld, $fldVal, $fldOpr, $fldCond, $fldVal2, $fldOpr2, $this->Dbid);
+		}
+		AddFilter($where, $wrk);
+	}
+
+	// Convert search value
+	protected function convertSearchValue(&$fld, $fldVal)
+	{
+		if ($fldVal == NULL_VALUE || $fldVal == NOT_NULL_VALUE)
+			return $fldVal;
+		$value = $fldVal;
+		if ($fld->DataType == DATATYPE_BOOLEAN) {
+			if ($fldVal <> "")
+				$value = (SameText($fldVal, "1") || SameText($fldVal, "y") || SameText($fldVal, "t")) ? $fld->TrueValue : $fld->FalseValue;
+		} elseif ($fld->DataType == DATATYPE_DATE || $fld->DataType == DATATYPE_TIME) {
+			if ($fldVal <> "")
+				$value = UnFormatDateTime($fldVal, $fld->DateTimeFormat);
+		}
+		return $value;
 	}
 
 	// Return basic search SQL
@@ -1147,6 +1257,24 @@ class t101_jo_head_list extends t101_jo_head
 		// Check basic search
 		if ($this->BasicSearch->issetSession())
 			return TRUE;
+		if ($this->id->AdvancedSearch->issetSession())
+			return TRUE;
+		if ($this->Export_Import->AdvancedSearch->issetSession())
+			return TRUE;
+		if ($this->Nomor_JO->AdvancedSearch->issetSession())
+			return TRUE;
+		if ($this->Shipper_id->AdvancedSearch->issetSession())
+			return TRUE;
+		if ($this->Party->AdvancedSearch->issetSession())
+			return TRUE;
+		if ($this->Container->AdvancedSearch->issetSession())
+			return TRUE;
+		if ($this->Tanggal_Stuffing->AdvancedSearch->issetSession())
+			return TRUE;
+		if ($this->Destination_id->AdvancedSearch->issetSession())
+			return TRUE;
+		if ($this->Feeder_id->AdvancedSearch->issetSession())
+			return TRUE;
 		return FALSE;
 	}
 
@@ -1160,6 +1288,9 @@ class t101_jo_head_list extends t101_jo_head
 
 		// Clear basic search parameters
 		$this->resetBasicSearchParms();
+
+		// Clear advanced search parameters
+		$this->resetAdvancedSearchParms();
 	}
 
 	// Load advanced search default values
@@ -1174,6 +1305,20 @@ class t101_jo_head_list extends t101_jo_head
 		$this->BasicSearch->unsetSession();
 	}
 
+	// Clear all advanced search parameters
+	protected function resetAdvancedSearchParms()
+	{
+		$this->id->AdvancedSearch->unsetSession();
+		$this->Export_Import->AdvancedSearch->unsetSession();
+		$this->Nomor_JO->AdvancedSearch->unsetSession();
+		$this->Shipper_id->AdvancedSearch->unsetSession();
+		$this->Party->AdvancedSearch->unsetSession();
+		$this->Container->AdvancedSearch->unsetSession();
+		$this->Tanggal_Stuffing->AdvancedSearch->unsetSession();
+		$this->Destination_id->AdvancedSearch->unsetSession();
+		$this->Feeder_id->AdvancedSearch->unsetSession();
+	}
+
 	// Restore all search parameters
 	protected function restoreSearchParms()
 	{
@@ -1181,6 +1326,17 @@ class t101_jo_head_list extends t101_jo_head
 
 		// Restore basic search values
 		$this->BasicSearch->load();
+
+		// Restore advanced search values
+		$this->id->AdvancedSearch->load();
+		$this->Export_Import->AdvancedSearch->load();
+		$this->Nomor_JO->AdvancedSearch->load();
+		$this->Shipper_id->AdvancedSearch->load();
+		$this->Party->AdvancedSearch->load();
+		$this->Container->AdvancedSearch->load();
+		$this->Tanggal_Stuffing->AdvancedSearch->load();
+		$this->Destination_id->AdvancedSearch->load();
+		$this->Feeder_id->AdvancedSearch->load();
 	}
 
 	// Set up sort parameters
@@ -1194,7 +1350,7 @@ class t101_jo_head_list extends t101_jo_head
 		if (Get("order") !== NULL) {
 			$this->CurrentOrder = Get("order");
 			$this->CurrentOrderType = Get("ordertype", "");
-			$this->updateSort($this->id, $ctrl); // id
+			$this->updateSort($this->Export_Import, $ctrl); // Export_Import
 			$this->updateSort($this->Nomor_JO, $ctrl); // Nomor_JO
 			$this->updateSort($this->Shipper_id, $ctrl); // Shipper_id
 			$this->updateSort($this->Party, $ctrl); // Party
@@ -1237,7 +1393,7 @@ class t101_jo_head_list extends t101_jo_head
 			if ($this->Command == "resetsort") {
 				$orderBy = "";
 				$this->setSessionOrderBy($orderBy);
-				$this->id->setSort("");
+				$this->Export_Import->setSort("");
 				$this->Nomor_JO->setSort("");
 				$this->Shipper_id->setSort("");
 				$this->Party->setSort("");
@@ -1720,10 +1876,85 @@ class t101_jo_head_list extends t101_jo_head
 	protected function setupListOptionsExt()
 	{
 		global $Security, $Language;
+
+		// Hide detail items for dropdown if necessary
+		$this->ListOptions->hideDetailItemsForDropDown();
 	}
 	protected function renderListOptionsExt()
 	{
 		global $Security, $Language;
+		$links = "";
+		$btngrps = "";
+		$sqlwrk = "`JOHead_id`=" . AdjustSql($this->id->CurrentValue, $this->Dbid) . "";
+
+		// Column "detail_t101_jo_detail"
+		if ($this->DetailPages->Items["t101_jo_detail"]->Visible) {
+			$link = "";
+			$option = &$this->ListOptions->Items["detail_t101_jo_detail"];
+			$url = "t101_jo_detailpreview.php?t=t101_jo_head&f=" . Encrypt($sqlwrk);
+			$btngrp = "<div data-table=\"t101_jo_detail\" data-url=\"" . $url . "\">";
+			if (TRUE) {
+				$label = $Language->TablePhrase("t101_jo_detail", "TblCaption");
+				$link = "<li class=\"nav-item\"><a href=\"#\" class=\"nav-link\" data-toggle=\"tab\" data-table=\"t101_jo_detail\" data-url=\"" . $url . "\">" . $label . "</a></li>";
+				$links .= $link;
+				$detaillnk = JsEncodeAttribute("t101_jo_detaillist.php?" . TABLE_SHOW_MASTER . "=t101_jo_head&fk_id=" . urlencode(strval($this->id->CurrentValue)) . "");
+				$btngrp .= "<a href=\"javascript:void(0);\" class=\"ew-link-separator\" title=\"" . $Language->TablePhrase("t101_jo_detail", "TblCaption") . "\" onclick=\"window.location='" . $detaillnk . "'\">" . $Language->Phrase("MasterDetailListLink") . "</a>";
+			}
+			if (!isset($GLOBALS["t101_jo_detail_grid"]))
+				$GLOBALS["t101_jo_detail_grid"] = new t101_jo_detail_grid();
+			if ($GLOBALS["t101_jo_detail_grid"]->DetailView) {
+				$caption = $Language->Phrase("MasterDetailViewLink");
+				$url = $this->getViewUrl(TABLE_SHOW_DETAIL . "=t101_jo_detail");
+				$btngrp .= "<a href=\"javascript:void(0);\" class=\"ew-link-separator\" title=\"" . HtmlTitle($caption) . "\" onclick=\"window.location='" . HtmlEncode($url) . "'\">" . $caption . "</a>";
+			}
+			if ($GLOBALS["t101_jo_detail_grid"]->DetailEdit) {
+				$caption = $Language->Phrase("MasterDetailEditLink");
+				$url = $this->getEditUrl(TABLE_SHOW_DETAIL . "=t101_jo_detail");
+				$btngrp .= "<a href=\"javascript:void(0);\" class=\"ew-link-separator\" title=\"" . HtmlTitle($caption) . "\" onclick=\"window.location='" . HtmlEncode($url) . "'\">" . $caption . "</a>";
+			}
+			if ($GLOBALS["t101_jo_detail_grid"]->DetailAdd) {
+				$caption = $Language->Phrase("MasterDetailCopyLink");
+				$url = $this->getCopyUrl(TABLE_SHOW_DETAIL . "=t101_jo_detail");
+				$btngrp .= "<a href=\"javascript:void(0);\" class=\"ew-link-separator\" title=\"" . HtmlTitle($caption) . "\" onclick=\"window.location='" . HtmlEncode($url) . "'\">" . $caption . "</a>";
+			}
+			$btngrp .= "</div>";
+			if ($link <> "") {
+				$btngrps .= $btngrp;
+				$option->Body .= "<div class=\"d-none ew-preview\">" . $link . $btngrp . "</div>";
+			}
+		}
+
+		// Hide detail items if necessary
+		$this->ListOptions->hideDetailItemsForDropDown();
+
+		// Column "preview"
+		$option = &$this->ListOptions->getItem("preview");
+		if (!$option) { // Add preview column
+			$option = &$this->ListOptions->add("preview");
+			$option->OnLeft = FALSE;
+			if ($option->OnLeft) {
+				$option->moveTo($this->ListOptions->itemPos("checkbox") + 1);
+			} else {
+				$option->moveTo($this->ListOptions->itemPos("checkbox"));
+			}
+			$option->Visible = !($this->isExport() || $this->isGridAdd() || $this->isGridEdit());
+			$option->ShowInDropDown = FALSE;
+			$option->ShowInButtonGroup = FALSE;
+		}
+		if ($option) {
+			$option->Body = "<i class=\"ew-preview-row-btn ew-icon icon-expand\"></i>";
+			$option->Body .= "<div class=\"d-none ew-preview\">" . $links . $btngrps . "</div>";
+			if ($option->Visible)
+				$option->Visible = $links <> "";
+		}
+
+		// Column "details" (Multiple details)
+		$option = &$this->ListOptions->getItem("details");
+		if ($option) {
+			$option->Body .= "<div class=\"d-none ew-preview\">" . $links . $btngrps . "</div>";
+			if ($option->Visible)
+				$option->Visible = $links <> "";
+		}
 	}
 
 	// Set up starting record parameters
@@ -1770,6 +2001,77 @@ class t101_jo_head_list extends t101_jo_head
 		if ($this->BasicSearch->Keyword <> "" && $this->Command == "")
 			$this->Command = "search";
 		$this->BasicSearch->setType(Get(TABLE_BASIC_SEARCH_TYPE, ""), FALSE);
+	}
+
+	// Load search values for validation
+	protected function loadSearchValues()
+	{
+		global $CurrentForm;
+
+		// Load search values
+		// id
+
+		if (!$this->isAddOrEdit())
+			$this->id->AdvancedSearch->setSearchValue(Get("x_id", Get("id", "")));
+		if ($this->id->AdvancedSearch->SearchValue <> "" && $this->Command == "")
+			$this->Command = "search";
+		$this->id->AdvancedSearch->setSearchOperator(Get("z_id", ""));
+
+		// Export_Import
+		if (!$this->isAddOrEdit())
+			$this->Export_Import->AdvancedSearch->setSearchValue(Get("x_Export_Import", Get("Export_Import", "")));
+		if ($this->Export_Import->AdvancedSearch->SearchValue <> "" && $this->Command == "")
+			$this->Command = "search";
+		$this->Export_Import->AdvancedSearch->setSearchOperator(Get("z_Export_Import", ""));
+
+		// Nomor_JO
+		if (!$this->isAddOrEdit())
+			$this->Nomor_JO->AdvancedSearch->setSearchValue(Get("x_Nomor_JO", Get("Nomor_JO", "")));
+		if ($this->Nomor_JO->AdvancedSearch->SearchValue <> "" && $this->Command == "")
+			$this->Command = "search";
+		$this->Nomor_JO->AdvancedSearch->setSearchOperator(Get("z_Nomor_JO", ""));
+
+		// Shipper_id
+		if (!$this->isAddOrEdit())
+			$this->Shipper_id->AdvancedSearch->setSearchValue(Get("x_Shipper_id", Get("Shipper_id", "")));
+		if ($this->Shipper_id->AdvancedSearch->SearchValue <> "" && $this->Command == "")
+			$this->Command = "search";
+		$this->Shipper_id->AdvancedSearch->setSearchOperator(Get("z_Shipper_id", ""));
+
+		// Party
+		if (!$this->isAddOrEdit())
+			$this->Party->AdvancedSearch->setSearchValue(Get("x_Party", Get("Party", "")));
+		if ($this->Party->AdvancedSearch->SearchValue <> "" && $this->Command == "")
+			$this->Command = "search";
+		$this->Party->AdvancedSearch->setSearchOperator(Get("z_Party", ""));
+
+		// Container
+		if (!$this->isAddOrEdit())
+			$this->Container->AdvancedSearch->setSearchValue(Get("x_Container", Get("Container", "")));
+		if ($this->Container->AdvancedSearch->SearchValue <> "" && $this->Command == "")
+			$this->Command = "search";
+		$this->Container->AdvancedSearch->setSearchOperator(Get("z_Container", ""));
+
+		// Tanggal_Stuffing
+		if (!$this->isAddOrEdit())
+			$this->Tanggal_Stuffing->AdvancedSearch->setSearchValue(Get("x_Tanggal_Stuffing", Get("Tanggal_Stuffing", "")));
+		if ($this->Tanggal_Stuffing->AdvancedSearch->SearchValue <> "" && $this->Command == "")
+			$this->Command = "search";
+		$this->Tanggal_Stuffing->AdvancedSearch->setSearchOperator(Get("z_Tanggal_Stuffing", ""));
+
+		// Destination_id
+		if (!$this->isAddOrEdit())
+			$this->Destination_id->AdvancedSearch->setSearchValue(Get("x_Destination_id", Get("Destination_id", "")));
+		if ($this->Destination_id->AdvancedSearch->SearchValue <> "" && $this->Command == "")
+			$this->Command = "search";
+		$this->Destination_id->AdvancedSearch->setSearchOperator(Get("z_Destination_id", ""));
+
+		// Feeder_id
+		if (!$this->isAddOrEdit())
+			$this->Feeder_id->AdvancedSearch->setSearchValue(Get("x_Feeder_id", Get("Feeder_id", "")));
+		if ($this->Feeder_id->AdvancedSearch->SearchValue <> "" && $this->Command == "")
+			$this->Command = "search";
+		$this->Feeder_id->AdvancedSearch->setSearchOperator(Get("z_Feeder_id", ""));
 	}
 
 	// Load recordset
@@ -1835,6 +2137,7 @@ class t101_jo_head_list extends t101_jo_head
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
+		$this->Export_Import->setDbValue($row['Export_Import']);
 		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
 		$this->Shipper_id->setDbValue($row['Shipper_id']);
 		$this->Party->setDbValue($row['Party']);
@@ -1849,6 +2152,7 @@ class t101_jo_head_list extends t101_jo_head
 	{
 		$row = [];
 		$row['id'] = NULL;
+		$row['Export_Import'] = NULL;
 		$row['Nomor_JO'] = NULL;
 		$row['Shipper_id'] = NULL;
 		$row['Party'] = NULL;
@@ -1900,6 +2204,7 @@ class t101_jo_head_list extends t101_jo_head
 
 		// Common render codes for all row types
 		// id
+		// Export_Import
 		// Nomor_JO
 		// Shipper_id
 		// Party
@@ -1913,6 +2218,14 @@ class t101_jo_head_list extends t101_jo_head
 			// id
 			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
+
+			// Export_Import
+			if (strval($this->Export_Import->CurrentValue) <> "") {
+				$this->Export_Import->ViewValue = $this->Export_Import->optionCaption($this->Export_Import->CurrentValue);
+			} else {
+				$this->Export_Import->ViewValue = NULL;
+			}
+			$this->Export_Import->ViewCustomAttributes = "";
 
 			// Nomor_JO
 			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
@@ -2002,10 +2315,10 @@ class t101_jo_head_list extends t101_jo_head
 			}
 			$this->Feeder_id->ViewCustomAttributes = "";
 
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
+			// Export_Import
+			$this->Export_Import->LinkCustomAttributes = "";
+			$this->Export_Import->HrefValue = "";
+			$this->Export_Import->TooltipValue = "";
 
 			// Nomor_JO
 			$this->Nomor_JO->LinkCustomAttributes = "";
@@ -2041,11 +2354,92 @@ class t101_jo_head_list extends t101_jo_head
 			$this->Feeder_id->LinkCustomAttributes = "";
 			$this->Feeder_id->HrefValue = "";
 			$this->Feeder_id->TooltipValue = "";
+		} elseif ($this->RowType == ROWTYPE_SEARCH) { // Search row
+
+			// Export_Import
+			$this->Export_Import->EditCustomAttributes = "";
+			$this->Export_Import->EditValue = $this->Export_Import->options(FALSE);
+
+			// Nomor_JO
+			$this->Nomor_JO->EditAttrs["class"] = "form-control";
+			$this->Nomor_JO->EditCustomAttributes = "";
+			if (REMOVE_XSS)
+				$this->Nomor_JO->AdvancedSearch->SearchValue = HtmlDecode($this->Nomor_JO->AdvancedSearch->SearchValue);
+			$this->Nomor_JO->EditValue = HtmlEncode($this->Nomor_JO->AdvancedSearch->SearchValue);
+			$this->Nomor_JO->PlaceHolder = RemoveHtml($this->Nomor_JO->caption());
+
+			// Shipper_id
+			$this->Shipper_id->EditAttrs["class"] = "form-control";
+			$this->Shipper_id->EditCustomAttributes = "";
+
+			// Party
+			$this->Party->EditAttrs["class"] = "form-control";
+			$this->Party->EditCustomAttributes = "";
+			$this->Party->EditValue = HtmlEncode($this->Party->AdvancedSearch->SearchValue);
+			$this->Party->PlaceHolder = RemoveHtml($this->Party->caption());
+
+			// Container
+			$this->Container->EditCustomAttributes = "";
+			$this->Container->EditValue = $this->Container->options(FALSE);
+
+			// Tanggal_Stuffing
+			$this->Tanggal_Stuffing->EditAttrs["class"] = "form-control";
+			$this->Tanggal_Stuffing->EditCustomAttributes = "";
+			$this->Tanggal_Stuffing->EditValue = HtmlEncode(FormatDateTime(UnFormatDateTime($this->Tanggal_Stuffing->AdvancedSearch->SearchValue, 11), 11));
+			$this->Tanggal_Stuffing->PlaceHolder = RemoveHtml($this->Tanggal_Stuffing->caption());
+
+			// Destination_id
+			$this->Destination_id->EditAttrs["class"] = "form-control";
+			$this->Destination_id->EditCustomAttributes = "";
+
+			// Feeder_id
+			$this->Feeder_id->EditAttrs["class"] = "form-control";
+			$this->Feeder_id->EditCustomAttributes = "";
 		}
+		if ($this->RowType == ROWTYPE_ADD || $this->RowType == ROWTYPE_EDIT || $this->RowType == ROWTYPE_SEARCH) // Add/Edit/Search row
+			$this->setupFieldTitles();
 
 		// Call Row Rendered event
 		if ($this->RowType <> ROWTYPE_AGGREGATEINIT)
 			$this->Row_Rendered();
+	}
+
+	// Validate search
+	protected function validateSearch()
+	{
+		global $SearchError;
+
+		// Initialize
+		$SearchError = "";
+
+		// Check if validation required
+		if (!SERVER_VALIDATE)
+			return TRUE;
+
+		// Return validate result
+		$validateSearch = ($SearchError == "");
+
+		// Call Form_CustomValidate event
+		$formCustomError = "";
+		$validateSearch = $validateSearch && $this->Form_CustomValidate($formCustomError);
+		if ($formCustomError <> "") {
+			AddMessage($SearchError, $formCustomError);
+		}
+		return $validateSearch;
+	}
+
+	// Load advanced search
+	public function loadAdvancedSearch()
+	{
+		$this->id->AdvancedSearch->load();
+		$this->Export_Import->AdvancedSearch->load();
+		$this->Nomor_JO->AdvancedSearch->load();
+		$this->Shipper_id->AdvancedSearch->load();
+		$this->Party->AdvancedSearch->load();
+		$this->Container->AdvancedSearch->load();
+		$this->Tanggal_Stuffing->AdvancedSearch->load();
+		$this->Destination_id->AdvancedSearch->load();
+		$this->Feeder_id->AdvancedSearch->load();
 	}
 
 	// Set up Breadcrumb

@@ -62,6 +62,28 @@ var ft101_jo_detaillistsrch = currentSearchForm = new ew.Form("ft101_jo_detailli
 // Filters
 ft101_jo_detaillistsrch.filterList = <?php echo $t101_jo_detail_list->getFilterList() ?>;
 </script>
+<style type="text/css">
+.ew-table-preview-row { /* main table preview row color */
+	background-color: #FFFFFF; /* preview row color */
+}
+.ew-table-preview-row .ew-grid {
+	display: table;
+}
+</style>
+<div id="ew-preview" class="d-none"><!-- preview -->
+	<div class="ew-nav-tabs"><!-- .ew-nav-tabs -->
+		<ul class="nav nav-tabs"></ul>
+		<div class="tab-content"><!-- .tab-content -->
+			<div class="tab-pane fade active show"></div>
+		</div><!-- /.tab-content -->
+	</div><!-- /.ew-nav-tabs -->
+</div><!-- /preview -->
+<script src="phpjs/ewpreview.js"></script>
+<script>
+ew.PREVIEW_PLACEMENT = ew.CSS_FLIP ? "right" : "left";
+ew.PREVIEW_SINGLE_ROW = false;
+ew.PREVIEW_OVERLAY = false;
+</script>
 <script>
 
 // Write your client script here, no need to add script tags.
@@ -154,24 +176,6 @@ $t101_jo_detail_list->renderListOptions();
 // Render list options (header, left)
 $t101_jo_detail_list->ListOptions->render("header", "left");
 ?>
-<?php if ($t101_jo_detail->id->Visible) { // id ?>
-	<?php if ($t101_jo_detail->sortUrl($t101_jo_detail->id) == "") { ?>
-		<th data-name="id" class="<?php echo $t101_jo_detail->id->headerCellClass() ?>"><div id="elh_t101_jo_detail_id" class="t101_jo_detail_id"><div class="ew-table-header-caption"><?php echo $t101_jo_detail->id->caption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="id" class="<?php echo $t101_jo_detail->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_jo_detail->SortUrl($t101_jo_detail->id) ?>',2);"><div id="elh_t101_jo_detail_id" class="t101_jo_detail_id">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_jo_detail->id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_jo_detail->id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_jo_detail->id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
-<?php if ($t101_jo_detail->JOHead_id->Visible) { // JOHead_id ?>
-	<?php if ($t101_jo_detail->sortUrl($t101_jo_detail->JOHead_id) == "") { ?>
-		<th data-name="JOHead_id" class="<?php echo $t101_jo_detail->JOHead_id->headerCellClass() ?>"><div id="elh_t101_jo_detail_JOHead_id" class="t101_jo_detail_JOHead_id"><div class="ew-table-header-caption"><?php echo $t101_jo_detail->JOHead_id->caption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="JOHead_id" class="<?php echo $t101_jo_detail->JOHead_id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t101_jo_detail->SortUrl($t101_jo_detail->JOHead_id) ?>',2);"><div id="elh_t101_jo_detail_JOHead_id" class="t101_jo_detail_JOHead_id">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_jo_detail->JOHead_id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_jo_detail->JOHead_id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_jo_detail->JOHead_id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
 <?php if ($t101_jo_detail->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 	<?php if ($t101_jo_detail->sortUrl($t101_jo_detail->TruckingVendor_id) == "") { ?>
 		<th data-name="TruckingVendor_id" class="<?php echo $t101_jo_detail->TruckingVendor_id->headerCellClass() ?>"><div id="elh_t101_jo_detail_TruckingVendor_id" class="t101_jo_detail_TruckingVendor_id"><div class="ew-table-header-caption"><?php echo $t101_jo_detail->TruckingVendor_id->caption() ?></div></div></th>
@@ -300,22 +304,6 @@ while ($t101_jo_detail_list->RecCnt < $t101_jo_detail_list->StopRec) {
 // Render list options (body, left)
 $t101_jo_detail_list->ListOptions->render("body", "left", $t101_jo_detail_list->RowCnt);
 ?>
-	<?php if ($t101_jo_detail->id->Visible) { // id ?>
-		<td data-name="id"<?php echo $t101_jo_detail->id->cellAttributes() ?>>
-<span id="el<?php echo $t101_jo_detail_list->RowCnt ?>_t101_jo_detail_id" class="t101_jo_detail_id">
-<span<?php echo $t101_jo_detail->id->viewAttributes() ?>>
-<?php echo $t101_jo_detail->id->getViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
-	<?php if ($t101_jo_detail->JOHead_id->Visible) { // JOHead_id ?>
-		<td data-name="JOHead_id"<?php echo $t101_jo_detail->JOHead_id->cellAttributes() ?>>
-<span id="el<?php echo $t101_jo_detail_list->RowCnt ?>_t101_jo_detail_JOHead_id" class="t101_jo_detail_JOHead_id">
-<span<?php echo $t101_jo_detail->JOHead_id->viewAttributes() ?>>
-<?php echo $t101_jo_detail->JOHead_id->getViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
 	<?php if ($t101_jo_detail->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 		<td data-name="TruckingVendor_id"<?php echo $t101_jo_detail->TruckingVendor_id->cellAttributes() ?>>
 <span id="el<?php echo $t101_jo_detail_list->RowCnt ?>_t101_jo_detail_TruckingVendor_id" class="t101_jo_detail_TruckingVendor_id">

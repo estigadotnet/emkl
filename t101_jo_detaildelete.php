@@ -79,12 +79,6 @@ $t101_jo_detail_delete->showMessage();
 <table class="table ew-table">
 	<thead>
 	<tr class="ew-table-header">
-<?php if ($t101_jo_detail->id->Visible) { // id ?>
-		<th class="<?php echo $t101_jo_detail->id->headerCellClass() ?>"><span id="elh_t101_jo_detail_id" class="t101_jo_detail_id"><?php echo $t101_jo_detail->id->caption() ?></span></th>
-<?php } ?>
-<?php if ($t101_jo_detail->JOHead_id->Visible) { // JOHead_id ?>
-		<th class="<?php echo $t101_jo_detail->JOHead_id->headerCellClass() ?>"><span id="elh_t101_jo_detail_JOHead_id" class="t101_jo_detail_JOHead_id"><?php echo $t101_jo_detail->JOHead_id->caption() ?></span></th>
-<?php } ?>
 <?php if ($t101_jo_detail->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 		<th class="<?php echo $t101_jo_detail->TruckingVendor_id->headerCellClass() ?>"><span id="elh_t101_jo_detail_TruckingVendor_id" class="t101_jo_detail_TruckingVendor_id"><?php echo $t101_jo_detail->TruckingVendor_id->caption() ?></span></th>
 <?php } ?>
@@ -127,22 +121,6 @@ while (!$t101_jo_detail_delete->Recordset->EOF) {
 	$t101_jo_detail_delete->renderRow();
 ?>
 	<tr<?php echo $t101_jo_detail->rowAttributes() ?>>
-<?php if ($t101_jo_detail->id->Visible) { // id ?>
-		<td<?php echo $t101_jo_detail->id->cellAttributes() ?>>
-<span id="el<?php echo $t101_jo_detail_delete->RowCnt ?>_t101_jo_detail_id" class="t101_jo_detail_id">
-<span<?php echo $t101_jo_detail->id->viewAttributes() ?>>
-<?php echo $t101_jo_detail->id->getViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($t101_jo_detail->JOHead_id->Visible) { // JOHead_id ?>
-		<td<?php echo $t101_jo_detail->JOHead_id->cellAttributes() ?>>
-<span id="el<?php echo $t101_jo_detail_delete->RowCnt ?>_t101_jo_detail_JOHead_id" class="t101_jo_detail_JOHead_id">
-<span<?php echo $t101_jo_detail->JOHead_id->viewAttributes() ?>>
-<?php echo $t101_jo_detail->JOHead_id->getViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
 <?php if ($t101_jo_detail->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 		<td<?php echo $t101_jo_detail->TruckingVendor_id->cellAttributes() ?>>
 <span id="el<?php echo $t101_jo_detail_delete->RowCnt ?>_t101_jo_detail_TruckingVendor_id" class="t101_jo_detail_TruckingVendor_id">

@@ -53,6 +53,11 @@ ft101_jo_headadd.validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
+		<?php if ($t101_jo_head_add->Export_Import->Required) { ?>
+			elm = this.getElements("x" + infix + "_Export_Import");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_head->Export_Import->caption(), $t101_jo_head->Export_Import->RequiredErrorMessage)) ?>");
+		<?php } ?>
 		<?php if ($t101_jo_head_add->Nomor_JO->Required) { ?>
 			elm = this.getElements("x" + infix + "_Nomor_JO");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -122,6 +127,8 @@ ft101_jo_headadd.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LI
 ft101_jo_headadd.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+ft101_jo_headadd.lists["x_Export_Import"] = <?php echo $t101_jo_head_add->Export_Import->Lookup->toClientList() ?>;
+ft101_jo_headadd.lists["x_Export_Import"].options = <?php echo JsonEncode($t101_jo_head_add->Export_Import->options(FALSE, TRUE)) ?>;
 ft101_jo_headadd.lists["x_Shipper_id"] = <?php echo $t101_jo_head_add->Shipper_id->Lookup->toClientList() ?>;
 ft101_jo_headadd.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_jo_head_add->Shipper_id->lookupOptions()) ?>;
 ft101_jo_headadd.lists["x_Container"] = <?php echo $t101_jo_head_add->Container->Lookup->toClientList() ?>;
@@ -149,6 +156,19 @@ $t101_jo_head_add->showMessage();
 <input type="hidden" name="action" id="action" value="insert">
 <input type="hidden" name="modal" value="<?php echo (int)$t101_jo_head_add->IsModal ?>">
 <div class="ew-add-div"><!-- page* -->
+<?php if ($t101_jo_head->Export_Import->Visible) { // Export_Import ?>
+	<div id="r_Export_Import" class="form-group row">
+		<label id="elh_t101_jo_head_Export_Import" class="<?php echo $t101_jo_head_add->LeftColumnClass ?>"><?php echo $t101_jo_head->Export_Import->caption() ?><?php echo ($t101_jo_head->Export_Import->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
+		<div class="<?php echo $t101_jo_head_add->RightColumnClass ?>"><div<?php echo $t101_jo_head->Export_Import->cellAttributes() ?>>
+<span id="el_t101_jo_head_Export_Import">
+<div id="tp_x_Export_Import" class="ew-template"><input type="radio" class="form-check-input" data-table="t101_jo_head" data-field="x_Export_Import" data-value-separator="<?php echo $t101_jo_head->Export_Import->displayValueSeparatorAttribute() ?>" name="x_Export_Import" id="x_Export_Import" value="{value}"<?php echo $t101_jo_head->Export_Import->editAttributes() ?>></div>
+<div id="dsl_x_Export_Import" data-repeatcolumn="5" class="ew-item-list d-none"><div>
+<?php echo $t101_jo_head->Export_Import->radioButtonListHtml(FALSE, "x_Export_Import") ?>
+</div></div>
+</span>
+<?php echo $t101_jo_head->Export_Import->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
 <?php if ($t101_jo_head->Nomor_JO->Visible) { // Nomor_JO ?>
 	<div id="r_Nomor_JO" class="form-group row">
 		<label id="elh_t101_jo_head_Nomor_JO" for="x_Nomor_JO" class="<?php echo $t101_jo_head_add->LeftColumnClass ?>"><?php echo $t101_jo_head->Nomor_JO->caption() ?><?php echo ($t101_jo_head->Nomor_JO->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
@@ -272,8 +292,10 @@ if (DEBUG_ENABLED)
 
 // Write your table-specific startup script here
 // document.write("page loaded");
+	// tampilkan TANGGAL HARI INI
 
-$().ready(
+	$("#x_Tanggal_Stuffing").val("<?php echo date('d-m-Y');?>");
+$(document).ready(
 	function() {
 		$("#x_Tanggal_Stuffing").change(
 			function() {
@@ -285,7 +307,8 @@ $().ready(
 		);
 	}
 );
-alert($("#x_Tanggal_Stuffing"));
+
+//alert($("#x_Tanggal_Stuffing").val());
 </script>
 <?php include_once "footer.php" ?>
 <?php

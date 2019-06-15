@@ -551,7 +551,8 @@ class t101_jo_head_edit extends t101_jo_head
 		// Create form object
 		$CurrentForm = new HttpForm();
 		$this->CurrentAction = Param("action"); // Set up current action
-		$this->id->setVisibility();
+		$this->id->Visible = FALSE;
+		$this->Export_Import->setVisibility();
 		$this->Nomor_JO->setVisibility();
 		$this->Shipper_id->setVisibility();
 		$this->Party->setVisibility();
@@ -746,10 +747,14 @@ class t101_jo_head_edit extends t101_jo_head
 		// Load from form
 		global $CurrentForm;
 
-		// Check field name 'id' first before field var 'x_id'
-		$val = $CurrentForm->hasValue("id") ? $CurrentForm->getValue("id") : $CurrentForm->getValue("x_id");
-		if (!$this->id->IsDetailKey)
-			$this->id->setFormValue($val);
+		// Check field name 'Export_Import' first before field var 'x_Export_Import'
+		$val = $CurrentForm->hasValue("Export_Import") ? $CurrentForm->getValue("Export_Import") : $CurrentForm->getValue("x_Export_Import");
+		if (!$this->Export_Import->IsDetailKey) {
+			if (IsApi() && $val == NULL)
+				$this->Export_Import->Visible = FALSE; // Disable update for API request
+			else
+				$this->Export_Import->setFormValue($val);
+		}
 
 		// Check field name 'Nomor_JO' first before field var 'x_Nomor_JO'
 		$val = $CurrentForm->hasValue("Nomor_JO") ? $CurrentForm->getValue("Nomor_JO") : $CurrentForm->getValue("x_Nomor_JO");
@@ -814,6 +819,11 @@ class t101_jo_head_edit extends t101_jo_head
 			else
 				$this->Feeder_id->setFormValue($val);
 		}
+
+		// Check field name 'id' first before field var 'x_id'
+		$val = $CurrentForm->hasValue("id") ? $CurrentForm->getValue("id") : $CurrentForm->getValue("x_id");
+		if (!$this->id->IsDetailKey)
+			$this->id->setFormValue($val);
 	}
 
 	// Restore form values
@@ -821,6 +831,7 @@ class t101_jo_head_edit extends t101_jo_head
 	{
 		global $CurrentForm;
 		$this->id->CurrentValue = $this->id->FormValue;
+		$this->Export_Import->CurrentValue = $this->Export_Import->FormValue;
 		$this->Nomor_JO->CurrentValue = $this->Nomor_JO->FormValue;
 		$this->Shipper_id->CurrentValue = $this->Shipper_id->FormValue;
 		$this->Party->CurrentValue = $this->Party->FormValue;
@@ -867,6 +878,7 @@ class t101_jo_head_edit extends t101_jo_head
 		if (!$rs || $rs->EOF)
 			return;
 		$this->id->setDbValue($row['id']);
+		$this->Export_Import->setDbValue($row['Export_Import']);
 		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
 		$this->Shipper_id->setDbValue($row['Shipper_id']);
 		$this->Party->setDbValue($row['Party']);
@@ -881,6 +893,7 @@ class t101_jo_head_edit extends t101_jo_head
 	{
 		$row = [];
 		$row['id'] = NULL;
+		$row['Export_Import'] = NULL;
 		$row['Nomor_JO'] = NULL;
 		$row['Shipper_id'] = NULL;
 		$row['Party'] = NULL;
@@ -926,6 +939,7 @@ class t101_jo_head_edit extends t101_jo_head
 
 		// Common render codes for all row types
 		// id
+		// Export_Import
 		// Nomor_JO
 		// Shipper_id
 		// Party
@@ -939,6 +953,14 @@ class t101_jo_head_edit extends t101_jo_head
 			// id
 			$this->id->ViewValue = $this->id->CurrentValue;
 			$this->id->ViewCustomAttributes = "";
+
+			// Export_Import
+			if (strval($this->Export_Import->CurrentValue) <> "") {
+				$this->Export_Import->ViewValue = $this->Export_Import->optionCaption($this->Export_Import->CurrentValue);
+			} else {
+				$this->Export_Import->ViewValue = NULL;
+			}
+			$this->Export_Import->ViewCustomAttributes = "";
 
 			// Nomor_JO
 			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
@@ -1028,10 +1050,10 @@ class t101_jo_head_edit extends t101_jo_head
 			}
 			$this->Feeder_id->ViewCustomAttributes = "";
 
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
+			// Export_Import
+			$this->Export_Import->LinkCustomAttributes = "";
+			$this->Export_Import->HrefValue = "";
+			$this->Export_Import->TooltipValue = "";
 
 			// Nomor_JO
 			$this->Nomor_JO->LinkCustomAttributes = "";
@@ -1069,11 +1091,9 @@ class t101_jo_head_edit extends t101_jo_head
 			$this->Feeder_id->TooltipValue = "";
 		} elseif ($this->RowType == ROWTYPE_EDIT) { // Edit row
 
-			// id
-			$this->id->EditAttrs["class"] = "form-control";
-			$this->id->EditCustomAttributes = "";
-			$this->id->EditValue = $this->id->CurrentValue;
-			$this->id->ViewCustomAttributes = "";
+			// Export_Import
+			$this->Export_Import->EditCustomAttributes = "";
+			$this->Export_Import->EditValue = $this->Export_Import->options(FALSE);
 
 			// Nomor_JO
 			$this->Nomor_JO->EditAttrs["class"] = "form-control";
@@ -1169,10 +1189,10 @@ class t101_jo_head_edit extends t101_jo_head
 			}
 
 			// Edit refer script
-			// id
+			// Export_Import
 
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
+			$this->Export_Import->LinkCustomAttributes = "";
+			$this->Export_Import->HrefValue = "";
 
 			// Nomor_JO
 			$this->Nomor_JO->LinkCustomAttributes = "";
@@ -1224,6 +1244,11 @@ class t101_jo_head_edit extends t101_jo_head
 		if ($this->id->Required) {
 			if (!$this->id->IsDetailKey && $this->id->FormValue != NULL && $this->id->FormValue == "") {
 				AddMessage($FormError, str_replace("%s", $this->id->caption(), $this->id->RequiredErrorMessage));
+			}
+		}
+		if ($this->Export_Import->Required) {
+			if ($this->Export_Import->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->Export_Import->caption(), $this->Export_Import->RequiredErrorMessage));
 			}
 		}
 		if ($this->Nomor_JO->Required) {
@@ -1315,6 +1340,9 @@ class t101_jo_head_edit extends t101_jo_head
 			$rsold = &$rs->fields;
 			$this->loadDbValues($rsold);
 			$rsnew = [];
+
+			// Export_Import
+			$this->Export_Import->setDbValueDef($rsnew, $this->Export_Import->CurrentValue, "", $this->Export_Import->ReadOnly);
 
 			// Nomor_JO
 			$this->Nomor_JO->setDbValueDef($rsnew, $this->Nomor_JO->CurrentValue, "", $this->Nomor_JO->ReadOnly);

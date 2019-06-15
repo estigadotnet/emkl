@@ -667,8 +667,8 @@ class t101_jo_detail_list extends t101_jo_detail
 
 		// Set up list options
 		$this->setupListOptions();
-		$this->id->setVisibility();
-		$this->JOHead_id->setVisibility();
+		$this->id->Visible = FALSE;
+		$this->JOHead_id->Visible = FALSE;
 		$this->TruckingVendor_id->setVisibility();
 		$this->Driver_id->setVisibility();
 		$this->Nomor_Polisi_1->setVisibility();
@@ -1234,8 +1234,6 @@ class t101_jo_detail_list extends t101_jo_detail
 		if (Get("order") !== NULL) {
 			$this->CurrentOrder = Get("order");
 			$this->CurrentOrderType = Get("ordertype", "");
-			$this->updateSort($this->id, $ctrl); // id
-			$this->updateSort($this->JOHead_id, $ctrl); // JOHead_id
 			$this->updateSort($this->TruckingVendor_id, $ctrl); // TruckingVendor_id
 			$this->updateSort($this->Driver_id, $ctrl); // Driver_id
 			$this->updateSort($this->Nomor_Polisi_1, $ctrl); // Nomor_Polisi_1
@@ -1286,8 +1284,6 @@ class t101_jo_detail_list extends t101_jo_detail
 			if ($this->Command == "resetsort") {
 				$orderBy = "";
 				$this->setSessionOrderBy($orderBy);
-				$this->id->setSort("");
-				$this->JOHead_id->setSort("");
 				$this->TruckingVendor_id->setSort("");
 				$this->Driver_id->setSort("");
 				$this->Nomor_Polisi_1->setSort("");
@@ -1653,6 +1649,9 @@ class t101_jo_detail_list extends t101_jo_detail
 	protected function setupListOptionsExt()
 	{
 		global $Security, $Language;
+
+		// Hide detail items for dropdown if necessary
+		$this->ListOptions->hideDetailItemsForDropDown();
 	}
 	protected function renderListOptionsExt()
 	{
@@ -1918,16 +1917,6 @@ class t101_jo_detail_list extends t101_jo_detail
 			// Nomor_Container_2
 			$this->Nomor_Container_2->ViewValue = $this->Nomor_Container_2->CurrentValue;
 			$this->Nomor_Container_2->ViewCustomAttributes = "";
-
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
-
-			// JOHead_id
-			$this->JOHead_id->LinkCustomAttributes = "";
-			$this->JOHead_id->HrefValue = "";
-			$this->JOHead_id->TooltipValue = "";
 
 			// TruckingVendor_id
 			$this->TruckingVendor_id->LinkCustomAttributes = "";

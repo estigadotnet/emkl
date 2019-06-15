@@ -535,8 +535,8 @@ class t101_jo_detail_delete extends t101_jo_detail
 				session_start();
 		}
 		$this->CurrentAction = Param("action"); // Set up current action
-		$this->id->setVisibility();
-		$this->JOHead_id->setVisibility();
+		$this->id->Visible = FALSE;
+		$this->JOHead_id->Visible = FALSE;
 		$this->TruckingVendor_id->setVisibility();
 		$this->Driver_id->setVisibility();
 		$this->Nomor_Polisi_1->setVisibility();
@@ -809,16 +809,6 @@ class t101_jo_detail_delete extends t101_jo_detail
 			// Nomor_Container_2
 			$this->Nomor_Container_2->ViewValue = $this->Nomor_Container_2->CurrentValue;
 			$this->Nomor_Container_2->ViewCustomAttributes = "";
-
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
-
-			// JOHead_id
-			$this->JOHead_id->LinkCustomAttributes = "";
-			$this->JOHead_id->HrefValue = "";
-			$this->JOHead_id->TooltipValue = "";
 
 			// TruckingVendor_id
 			$this->TruckingVendor_id->LinkCustomAttributes = "";

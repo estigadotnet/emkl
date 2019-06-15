@@ -2510,6 +2510,9 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 	protected function setupListOptionsExt()
 	{
 		global $Security, $Language;
+
+		// Hide detail items for dropdown if necessary
+		$this->ListOptions->hideDetailItemsForDropDown();
 	}
 	protected function renderListOptionsExt()
 	{

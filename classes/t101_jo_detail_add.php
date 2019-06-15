@@ -560,7 +560,7 @@ class t101_jo_detail_add extends t101_jo_detail
 		$CurrentForm = new HttpForm();
 		$this->CurrentAction = Param("action"); // Set up current action
 		$this->id->Visible = FALSE;
-		$this->JOHead_id->setVisibility();
+		$this->JOHead_id->Visible = FALSE;
 		$this->TruckingVendor_id->setVisibility();
 		$this->Driver_id->setVisibility();
 		$this->Nomor_Polisi_1->setVisibility();
@@ -710,10 +710,8 @@ class t101_jo_detail_add extends t101_jo_detail
 		$this->id->OldValue = $this->id->CurrentValue;
 		$this->JOHead_id->CurrentValue = NULL;
 		$this->JOHead_id->OldValue = $this->JOHead_id->CurrentValue;
-		$this->TruckingVendor_id->CurrentValue = NULL;
-		$this->TruckingVendor_id->OldValue = $this->TruckingVendor_id->CurrentValue;
-		$this->Driver_id->CurrentValue = NULL;
-		$this->Driver_id->OldValue = $this->Driver_id->CurrentValue;
+		$this->TruckingVendor_id->CurrentValue = 0;
+		$this->Driver_id->CurrentValue = 0;
 		$this->Nomor_Polisi_1->CurrentValue = 'L';
 		$this->Nomor_Polisi_2->CurrentValue = '9999';
 		$this->Nomor_Polisi_3->CurrentValue = 'XX';
@@ -727,15 +725,6 @@ class t101_jo_detail_add extends t101_jo_detail
 
 		// Load from form
 		global $CurrentForm;
-
-		// Check field name 'JOHead_id' first before field var 'x_JOHead_id'
-		$val = $CurrentForm->hasValue("JOHead_id") ? $CurrentForm->getValue("JOHead_id") : $CurrentForm->getValue("x_JOHead_id");
-		if (!$this->JOHead_id->IsDetailKey) {
-			if (IsApi() && $val == NULL)
-				$this->JOHead_id->Visible = FALSE; // Disable update for API request
-			else
-				$this->JOHead_id->setFormValue($val);
-		}
 
 		// Check field name 'TruckingVendor_id' first before field var 'x_TruckingVendor_id'
 		$val = $CurrentForm->hasValue("TruckingVendor_id") ? $CurrentForm->getValue("TruckingVendor_id") : $CurrentForm->getValue("x_TruckingVendor_id");
@@ -808,7 +797,6 @@ class t101_jo_detail_add extends t101_jo_detail
 	public function restoreFormValues()
 	{
 		global $CurrentForm;
-		$this->JOHead_id->CurrentValue = $this->JOHead_id->FormValue;
 		$this->TruckingVendor_id->CurrentValue = $this->TruckingVendor_id->FormValue;
 		$this->Driver_id->CurrentValue = $this->Driver_id->FormValue;
 		$this->Nomor_Polisi_1->CurrentValue = $this->Nomor_Polisi_1->FormValue;
@@ -1000,11 +988,6 @@ class t101_jo_detail_add extends t101_jo_detail
 			$this->Nomor_Container_2->ViewValue = $this->Nomor_Container_2->CurrentValue;
 			$this->Nomor_Container_2->ViewCustomAttributes = "";
 
-			// JOHead_id
-			$this->JOHead_id->LinkCustomAttributes = "";
-			$this->JOHead_id->HrefValue = "";
-			$this->JOHead_id->TooltipValue = "";
-
 			// TruckingVendor_id
 			$this->TruckingVendor_id->LinkCustomAttributes = "";
 			$this->TruckingVendor_id->HrefValue = "";
@@ -1040,19 +1023,6 @@ class t101_jo_detail_add extends t101_jo_detail
 			$this->Nomor_Container_2->HrefValue = "";
 			$this->Nomor_Container_2->TooltipValue = "";
 		} elseif ($this->RowType == ROWTYPE_ADD) { // Add row
-
-			// JOHead_id
-			$this->JOHead_id->EditAttrs["class"] = "form-control";
-			$this->JOHead_id->EditCustomAttributes = "";
-			if ($this->JOHead_id->getSessionValue() <> "") {
-				$this->JOHead_id->CurrentValue = $this->JOHead_id->getSessionValue();
-			$this->JOHead_id->ViewValue = $this->JOHead_id->CurrentValue;
-			$this->JOHead_id->ViewValue = FormatNumber($this->JOHead_id->ViewValue, 0, -2, -2, -2);
-			$this->JOHead_id->ViewCustomAttributes = "";
-			} else {
-			$this->JOHead_id->EditValue = HtmlEncode($this->JOHead_id->CurrentValue);
-			$this->JOHead_id->PlaceHolder = RemoveHtml($this->JOHead_id->caption());
-			}
 
 			// TruckingVendor_id
 			$this->TruckingVendor_id->EditAttrs["class"] = "form-control";
@@ -1141,12 +1111,8 @@ class t101_jo_detail_add extends t101_jo_detail
 			$this->Nomor_Container_2->PlaceHolder = RemoveHtml($this->Nomor_Container_2->caption());
 
 			// Add refer script
-			// JOHead_id
-
-			$this->JOHead_id->LinkCustomAttributes = "";
-			$this->JOHead_id->HrefValue = "";
-
 			// TruckingVendor_id
+
 			$this->TruckingVendor_id->LinkCustomAttributes = "";
 			$this->TruckingVendor_id->HrefValue = "";
 
@@ -1202,9 +1168,6 @@ class t101_jo_detail_add extends t101_jo_detail
 			if (!$this->JOHead_id->IsDetailKey && $this->JOHead_id->FormValue != NULL && $this->JOHead_id->FormValue == "") {
 				AddMessage($FormError, str_replace("%s", $this->JOHead_id->caption(), $this->JOHead_id->RequiredErrorMessage));
 			}
-		}
-		if (!CheckInteger($this->JOHead_id->FormValue)) {
-			AddMessage($FormError, $this->JOHead_id->errorMessage());
 		}
 		if ($this->TruckingVendor_id->Required) {
 			if (!$this->TruckingVendor_id->IsDetailKey && $this->TruckingVendor_id->FormValue != NULL && $this->TruckingVendor_id->FormValue == "") {
@@ -1266,9 +1229,6 @@ class t101_jo_detail_add extends t101_jo_detail
 		}
 		$rsnew = [];
 
-		// JOHead_id
-		$this->JOHead_id->setDbValueDef($rsnew, $this->JOHead_id->CurrentValue, 0, FALSE);
-
 		// TruckingVendor_id
 		$this->TruckingVendor_id->setDbValueDef($rsnew, $this->TruckingVendor_id->CurrentValue, 0, FALSE);
 
@@ -1289,6 +1249,11 @@ class t101_jo_detail_add extends t101_jo_detail
 
 		// Nomor_Container_2
 		$this->Nomor_Container_2->setDbValueDef($rsnew, $this->Nomor_Container_2->CurrentValue, "", FALSE);
+
+		// JOHead_id
+		if ($this->JOHead_id->getSessionValue() <> "") {
+			$rsnew['JOHead_id'] = $this->JOHead_id->getSessionValue();
+		}
 
 		// Call Row Inserting event
 		$rs = ($rsold) ? $rsold->fields : NULL;

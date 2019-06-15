@@ -49,6 +49,8 @@ ft101_jo_headdelete.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS
 ft101_jo_headdelete.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+ft101_jo_headdelete.lists["x_Export_Import"] = <?php echo $t101_jo_head_delete->Export_Import->Lookup->toClientList() ?>;
+ft101_jo_headdelete.lists["x_Export_Import"].options = <?php echo JsonEncode($t101_jo_head_delete->Export_Import->options(FALSE, TRUE)) ?>;
 ft101_jo_headdelete.lists["x_Shipper_id"] = <?php echo $t101_jo_head_delete->Shipper_id->Lookup->toClientList() ?>;
 ft101_jo_headdelete.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_jo_head_delete->Shipper_id->lookupOptions()) ?>;
 ft101_jo_headdelete.lists["x_Container"] = <?php echo $t101_jo_head_delete->Container->Lookup->toClientList() ?>;
@@ -83,8 +85,8 @@ $t101_jo_head_delete->showMessage();
 <table class="table ew-table">
 	<thead>
 	<tr class="ew-table-header">
-<?php if ($t101_jo_head->id->Visible) { // id ?>
-		<th class="<?php echo $t101_jo_head->id->headerCellClass() ?>"><span id="elh_t101_jo_head_id" class="t101_jo_head_id"><?php echo $t101_jo_head->id->caption() ?></span></th>
+<?php if ($t101_jo_head->Export_Import->Visible) { // Export_Import ?>
+		<th class="<?php echo $t101_jo_head->Export_Import->headerCellClass() ?>"><span id="elh_t101_jo_head_Export_Import" class="t101_jo_head_Export_Import"><?php echo $t101_jo_head->Export_Import->caption() ?></span></th>
 <?php } ?>
 <?php if ($t101_jo_head->Nomor_JO->Visible) { // Nomor_JO ?>
 		<th class="<?php echo $t101_jo_head->Nomor_JO->headerCellClass() ?>"><span id="elh_t101_jo_head_Nomor_JO" class="t101_jo_head_Nomor_JO"><?php echo $t101_jo_head->Nomor_JO->caption() ?></span></th>
@@ -128,11 +130,11 @@ while (!$t101_jo_head_delete->Recordset->EOF) {
 	$t101_jo_head_delete->renderRow();
 ?>
 	<tr<?php echo $t101_jo_head->rowAttributes() ?>>
-<?php if ($t101_jo_head->id->Visible) { // id ?>
-		<td<?php echo $t101_jo_head->id->cellAttributes() ?>>
-<span id="el<?php echo $t101_jo_head_delete->RowCnt ?>_t101_jo_head_id" class="t101_jo_head_id">
-<span<?php echo $t101_jo_head->id->viewAttributes() ?>>
-<?php echo $t101_jo_head->id->getViewValue() ?></span>
+<?php if ($t101_jo_head->Export_Import->Visible) { // Export_Import ?>
+		<td<?php echo $t101_jo_head->Export_Import->cellAttributes() ?>>
+<span id="el<?php echo $t101_jo_head_delete->RowCnt ?>_t101_jo_head_Export_Import" class="t101_jo_head_Export_Import">
+<span<?php echo $t101_jo_head->Export_Import->viewAttributes() ?>>
+<?php echo $t101_jo_head->Export_Import->getViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

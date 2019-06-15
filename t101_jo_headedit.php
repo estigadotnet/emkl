@@ -53,10 +53,10 @@ ft101_jo_headedit.validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
-		<?php if ($t101_jo_head_edit->id->Required) { ?>
-			elm = this.getElements("x" + infix + "_id");
+		<?php if ($t101_jo_head_edit->Export_Import->Required) { ?>
+			elm = this.getElements("x" + infix + "_Export_Import");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
-				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_head->id->caption(), $t101_jo_head->id->RequiredErrorMessage)) ?>");
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_head->Export_Import->caption(), $t101_jo_head->Export_Import->RequiredErrorMessage)) ?>");
 		<?php } ?>
 		<?php if ($t101_jo_head_edit->Nomor_JO->Required) { ?>
 			elm = this.getElements("x" + infix + "_Nomor_JO");
@@ -127,6 +127,8 @@ ft101_jo_headedit.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS L
 ft101_jo_headedit.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
+ft101_jo_headedit.lists["x_Export_Import"] = <?php echo $t101_jo_head_edit->Export_Import->Lookup->toClientList() ?>;
+ft101_jo_headedit.lists["x_Export_Import"].options = <?php echo JsonEncode($t101_jo_head_edit->Export_Import->options(FALSE, TRUE)) ?>;
 ft101_jo_headedit.lists["x_Shipper_id"] = <?php echo $t101_jo_head_edit->Shipper_id->Lookup->toClientList() ?>;
 ft101_jo_headedit.lists["x_Shipper_id"].options = <?php echo JsonEncode($t101_jo_head_edit->Shipper_id->lookupOptions()) ?>;
 ft101_jo_headedit.lists["x_Container"] = <?php echo $t101_jo_head_edit->Container->Lookup->toClientList() ?>;
@@ -154,16 +156,17 @@ $t101_jo_head_edit->showMessage();
 <input type="hidden" name="action" id="action" value="update">
 <input type="hidden" name="modal" value="<?php echo (int)$t101_jo_head_edit->IsModal ?>">
 <div class="ew-edit-div"><!-- page* -->
-<?php if ($t101_jo_head->id->Visible) { // id ?>
-	<div id="r_id" class="form-group row">
-		<label id="elh_t101_jo_head_id" class="<?php echo $t101_jo_head_edit->LeftColumnClass ?>"><?php echo $t101_jo_head->id->caption() ?><?php echo ($t101_jo_head->id->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
-		<div class="<?php echo $t101_jo_head_edit->RightColumnClass ?>"><div<?php echo $t101_jo_head->id->cellAttributes() ?>>
-<span id="el_t101_jo_head_id">
-<span<?php echo $t101_jo_head->id->viewAttributes() ?>>
-<input type="text" readonly class="form-control-plaintext" value="<?php echo RemoveHtml($t101_jo_head->id->EditValue) ?>"></span>
+<?php if ($t101_jo_head->Export_Import->Visible) { // Export_Import ?>
+	<div id="r_Export_Import" class="form-group row">
+		<label id="elh_t101_jo_head_Export_Import" class="<?php echo $t101_jo_head_edit->LeftColumnClass ?>"><?php echo $t101_jo_head->Export_Import->caption() ?><?php echo ($t101_jo_head->Export_Import->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
+		<div class="<?php echo $t101_jo_head_edit->RightColumnClass ?>"><div<?php echo $t101_jo_head->Export_Import->cellAttributes() ?>>
+<span id="el_t101_jo_head_Export_Import">
+<div id="tp_x_Export_Import" class="ew-template"><input type="radio" class="form-check-input" data-table="t101_jo_head" data-field="x_Export_Import" data-value-separator="<?php echo $t101_jo_head->Export_Import->displayValueSeparatorAttribute() ?>" name="x_Export_Import" id="x_Export_Import" value="{value}"<?php echo $t101_jo_head->Export_Import->editAttributes() ?>></div>
+<div id="dsl_x_Export_Import" data-repeatcolumn="5" class="ew-item-list d-none"><div>
+<?php echo $t101_jo_head->Export_Import->radioButtonListHtml(FALSE, "x_Export_Import") ?>
+</div></div>
 </span>
-<input type="hidden" data-table="t101_jo_head" data-field="x_id" name="x_id" id="x_id" value="<?php echo HtmlEncode($t101_jo_head->id->CurrentValue) ?>">
-<?php echo $t101_jo_head->id->CustomMsg ?></div></div>
+<?php echo $t101_jo_head->Export_Import->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($t101_jo_head->Nomor_JO->Visible) { // Nomor_JO ?>
@@ -263,6 +266,7 @@ ew.createDateTimePicker("ft101_jo_headedit", "x_Tanggal_Stuffing", {"ignoreReado
 	</div>
 <?php } ?>
 </div><!-- /page* -->
+	<input type="hidden" data-table="t101_jo_head" data-field="x_id" name="x_id" id="x_id" value="<?php echo HtmlEncode($t101_jo_head->id->CurrentValue) ?>">
 <?php
 	if (in_array("t101_jo_detail", explode(",", $t101_jo_head->getCurrentDetailTable())) && $t101_jo_detail->DetailEdit) {
 ?>
@@ -290,19 +294,20 @@ if (DEBUG_ENABLED)
 // Write your table-specific startup script here
 // document.write("page loaded");
 
-$().ready(
+$(document).ready(
 	function() {
 		$("#x_Tanggal_Stuffing").change(
 			function() {
 				var str = this.value;
 				var res = str.slice(0, -8);
 				res = res + "00:00:00";
-				$("#x_Tanggal_Stuffing").val(res); alert(res);
+				$("#x_Tanggal_Stuffing").val(res); //alert(res);
 			}
 		);
 	}
 );
-alert($("#x_Tanggal_Stuffing"));
+
+//alert($("#x_Tanggal_Stuffing"));
 </script>
 <?php include_once "footer.php" ?>
 <?php

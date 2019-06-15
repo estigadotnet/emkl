@@ -91,7 +91,7 @@ class t101_jo_detail extends DbTable
 		$this->TruckingVendor_id->Sortable = TRUE; // Allow sort
 		$this->TruckingVendor_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->TruckingVendor_id->PleaseSelectText = $Language->phrase("PleaseSelect"); // PleaseSelect text
-		$this->TruckingVendor_id->Lookup = new Lookup('TruckingVendor_id', 't006_trucking_vendor', FALSE, 'id', ["Nama","","",""], [], ["t101_jo_detail x_Driver_id"], [], [], [], [], '', '');
+		$this->TruckingVendor_id->Lookup = new Lookup('TruckingVendor_id', 't006_trucking_vendor', FALSE, 'id', ["Nama","","",""], [], [], [], [], [], [], '', '');
 		$this->TruckingVendor_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
 		$this->fields['TruckingVendor_id'] = &$this->TruckingVendor_id;
 
@@ -102,7 +102,7 @@ class t101_jo_detail extends DbTable
 		$this->Driver_id->Sortable = TRUE; // Allow sort
 		$this->Driver_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->Driver_id->PleaseSelectText = $Language->phrase("PleaseSelect"); // PleaseSelect text
-		$this->Driver_id->Lookup = new Lookup('Driver_id', 't005_driver', FALSE, 'id', ["Nama","","",""], ["t101_jo_detail x_TruckingVendor_id"], [], ["TruckingVendor_id"], ["x_TruckingVendor_id"], [], [], '', '');
+		$this->Driver_id->Lookup = new Lookup('Driver_id', 't005_driver', FALSE, 'id', ["Nama","","",""], [], [], [], [], [], [], '', '');
 		$this->Driver_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
 		$this->fields['Driver_id'] = &$this->Driver_id;
 
@@ -1044,8 +1044,6 @@ class t101_jo_detail extends DbTable
 			if ($doc->Horizontal) { // Horizontal format, write header
 				$doc->beginExportRow();
 				if ($exportPageType == "view") {
-					$doc->exportCaption($this->id);
-					$doc->exportCaption($this->JOHead_id);
 					$doc->exportCaption($this->TruckingVendor_id);
 					$doc->exportCaption($this->Driver_id);
 					$doc->exportCaption($this->Nomor_Polisi_1);
@@ -1094,8 +1092,6 @@ class t101_jo_detail extends DbTable
 				if (!$doc->ExportCustom) {
 					$doc->beginExportRow($rowCnt); // Allow CSS styles if enabled
 					if ($exportPageType == "view") {
-						$doc->exportField($this->id);
-						$doc->exportField($this->JOHead_id);
 						$doc->exportField($this->TruckingVendor_id);
 						$doc->exportField($this->Driver_id);
 						$doc->exportField($this->Nomor_Polisi_1);

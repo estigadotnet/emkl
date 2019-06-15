@@ -53,19 +53,6 @@ ft101_jo_detailedit.validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
-		<?php if ($t101_jo_detail_edit->id->Required) { ?>
-			elm = this.getElements("x" + infix + "_id");
-			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
-				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->id->caption(), $t101_jo_detail->id->RequiredErrorMessage)) ?>");
-		<?php } ?>
-		<?php if ($t101_jo_detail_edit->JOHead_id->Required) { ?>
-			elm = this.getElements("x" + infix + "_JOHead_id");
-			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
-				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->JOHead_id->caption(), $t101_jo_detail->JOHead_id->RequiredErrorMessage)) ?>");
-		<?php } ?>
-			elm = this.getElements("x" + infix + "_JOHead_id");
-			if (elm && !ew.checkInteger(elm.value))
-				return this.onError(elm, "<?php echo JsEncode($t101_jo_detail->JOHead_id->errorMessage()) ?>");
 		<?php if ($t101_jo_detail_edit->TruckingVendor_id->Required) { ?>
 			elm = this.getElements("x" + infix + "_TruckingVendor_id");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -156,42 +143,11 @@ $t101_jo_detail_edit->showMessage();
 <input type="hidden" name="fk_id" value="<?php echo $t101_jo_detail->JOHead_id->getSessionValue() ?>">
 <?php } ?>
 <div class="ew-edit-div"><!-- page* -->
-<?php if ($t101_jo_detail->id->Visible) { // id ?>
-	<div id="r_id" class="form-group row">
-		<label id="elh_t101_jo_detail_id" class="<?php echo $t101_jo_detail_edit->LeftColumnClass ?>"><?php echo $t101_jo_detail->id->caption() ?><?php echo ($t101_jo_detail->id->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
-		<div class="<?php echo $t101_jo_detail_edit->RightColumnClass ?>"><div<?php echo $t101_jo_detail->id->cellAttributes() ?>>
-<span id="el_t101_jo_detail_id">
-<span<?php echo $t101_jo_detail->id->viewAttributes() ?>>
-<input type="text" readonly class="form-control-plaintext" value="<?php echo RemoveHtml($t101_jo_detail->id->EditValue) ?>"></span>
-</span>
-<input type="hidden" data-table="t101_jo_detail" data-field="x_id" name="x_id" id="x_id" value="<?php echo HtmlEncode($t101_jo_detail->id->CurrentValue) ?>">
-<?php echo $t101_jo_detail->id->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
-<?php if ($t101_jo_detail->JOHead_id->Visible) { // JOHead_id ?>
-	<div id="r_JOHead_id" class="form-group row">
-		<label id="elh_t101_jo_detail_JOHead_id" for="x_JOHead_id" class="<?php echo $t101_jo_detail_edit->LeftColumnClass ?>"><?php echo $t101_jo_detail->JOHead_id->caption() ?><?php echo ($t101_jo_detail->JOHead_id->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
-		<div class="<?php echo $t101_jo_detail_edit->RightColumnClass ?>"><div<?php echo $t101_jo_detail->JOHead_id->cellAttributes() ?>>
-<?php if ($t101_jo_detail->JOHead_id->getSessionValue() <> "") { ?>
-<span id="el_t101_jo_detail_JOHead_id">
-<span<?php echo $t101_jo_detail->JOHead_id->viewAttributes() ?>>
-<input type="text" readonly class="form-control-plaintext" value="<?php echo RemoveHtml($t101_jo_detail->JOHead_id->ViewValue) ?>"></span>
-</span>
-<input type="hidden" id="x_JOHead_id" name="x_JOHead_id" value="<?php echo HtmlEncode($t101_jo_detail->JOHead_id->CurrentValue) ?>">
-<?php } else { ?>
-<span id="el_t101_jo_detail_JOHead_id">
-<input type="text" data-table="t101_jo_detail" data-field="x_JOHead_id" name="x_JOHead_id" id="x_JOHead_id" size="30" placeholder="<?php echo HtmlEncode($t101_jo_detail->JOHead_id->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->JOHead_id->EditValue ?>"<?php echo $t101_jo_detail->JOHead_id->editAttributes() ?>>
-</span>
-<?php } ?>
-<?php echo $t101_jo_detail->JOHead_id->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
 <?php if ($t101_jo_detail->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 	<div id="r_TruckingVendor_id" class="form-group row">
 		<label id="elh_t101_jo_detail_TruckingVendor_id" for="x_TruckingVendor_id" class="<?php echo $t101_jo_detail_edit->LeftColumnClass ?>"><?php echo $t101_jo_detail->TruckingVendor_id->caption() ?><?php echo ($t101_jo_detail->TruckingVendor_id->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
 		<div class="<?php echo $t101_jo_detail_edit->RightColumnClass ?>"><div<?php echo $t101_jo_detail->TruckingVendor_id->cellAttributes() ?>>
 <span id="el_t101_jo_detail_TruckingVendor_id">
-<?php $t101_jo_detail->TruckingVendor_id->EditAttrs["onchange"] = "ew.updateOptions.call(this);" . @$t101_jo_detail->TruckingVendor_id->EditAttrs["onchange"]; ?>
 <div class="input-group">
 	<select class="custom-select ew-custom-select" data-table="t101_jo_detail" data-field="x_TruckingVendor_id" data-value-separator="<?php echo $t101_jo_detail->TruckingVendor_id->displayValueSeparatorAttribute() ?>" id="x_TruckingVendor_id" name="x_TruckingVendor_id"<?php echo $t101_jo_detail->TruckingVendor_id->editAttributes() ?>>
 		<?php echo $t101_jo_detail->TruckingVendor_id->selectOptionListHtml("x_TruckingVendor_id") ?>
@@ -262,12 +218,13 @@ $t101_jo_detail_edit->showMessage();
 		<label id="elh_t101_jo_detail_Nomor_Container_2" for="x_Nomor_Container_2" class="<?php echo $t101_jo_detail_edit->LeftColumnClass ?>"><?php echo $t101_jo_detail->Nomor_Container_2->caption() ?><?php echo ($t101_jo_detail->Nomor_Container_2->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
 		<div class="<?php echo $t101_jo_detail_edit->RightColumnClass ?>"><div<?php echo $t101_jo_detail->Nomor_Container_2->cellAttributes() ?>>
 <span id="el_t101_jo_detail_Nomor_Container_2">
-<input type="text" data-table="t101_jo_detail" data-field="x_Nomor_Container_2" name="x_Nomor_Container_2" id="x_Nomor_Container_2" size="10" maxlength="5" placeholder="<?php echo HtmlEncode($t101_jo_detail->Nomor_Container_2->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->Nomor_Container_2->EditValue ?>"<?php echo $t101_jo_detail->Nomor_Container_2->editAttributes() ?>>
+<input type="text" data-table="t101_jo_detail" data-field="x_Nomor_Container_2" name="x_Nomor_Container_2" id="x_Nomor_Container_2" size="10" maxlength="10" placeholder="<?php echo HtmlEncode($t101_jo_detail->Nomor_Container_2->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->Nomor_Container_2->EditValue ?>"<?php echo $t101_jo_detail->Nomor_Container_2->editAttributes() ?>>
 </span>
 <?php echo $t101_jo_detail->Nomor_Container_2->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 </div><!-- /page* -->
+	<input type="hidden" data-table="t101_jo_detail" data-field="x_id" name="x_id" id="x_id" value="<?php echo HtmlEncode($t101_jo_detail->id->CurrentValue) ?>">
 <?php if (!$t101_jo_detail_edit->IsModal) { ?>
 <div class="form-group row"><!-- buttons .form-group -->
 	<div class="<?php echo $t101_jo_detail_edit->OffsetColumnClass ?>"><!-- buttons offset -->
