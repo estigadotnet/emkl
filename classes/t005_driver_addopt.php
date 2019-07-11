@@ -19,6 +19,14 @@ class t005_driver_addopt extends t005_driver
 	// Page object name
 	public $PageObjName = "t005_driver_addopt";
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -557,6 +565,7 @@ class t005_driver_addopt extends t005_driver
 		$this->createToken();
 
 		// Set up lookup cache
+		$this->setupLookupOptions($this->TruckingVendor_id);
 		set_error_handler(PROJECT_NAMESPACE . "ErrorHandler");
 
 		// Set up Breadcrumb
@@ -713,8 +722,25 @@ class t005_driver_addopt extends t005_driver
 			$this->id->ViewCustomAttributes = "";
 
 			// TruckingVendor_id
-			$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
-			$this->TruckingVendor_id->ViewValue = FormatNumber($this->TruckingVendor_id->ViewValue, 0, -2, -2, -2);
+			$curVal = strval($this->TruckingVendor_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->lookupCacheOption($curVal);
+				if ($this->TruckingVendor_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->TruckingVendor_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->TruckingVendor_id->ViewValue = NULL;
+			}
 			$this->TruckingVendor_id->ViewCustomAttributes = "";
 
 			// Nama
@@ -753,8 +779,25 @@ class t005_driver_addopt extends t005_driver
 			// TruckingVendor_id
 			$this->TruckingVendor_id->EditAttrs["class"] = "form-control";
 			$this->TruckingVendor_id->EditCustomAttributes = "";
-			$this->TruckingVendor_id->EditValue = HtmlEncode($this->TruckingVendor_id->CurrentValue);
-			$this->TruckingVendor_id->PlaceHolder = RemoveHtml($this->TruckingVendor_id->caption());
+			$curVal = trim(strval($this->TruckingVendor_id->CurrentValue));
+			if ($curVal <> "")
+				$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->lookupCacheOption($curVal);
+			else
+				$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->Lookup !== NULL && is_array($this->TruckingVendor_id->Lookup->Options) ? $curVal : NULL;
+			if ($this->TruckingVendor_id->ViewValue !== NULL) { // Load from cache
+				$this->TruckingVendor_id->EditValue = array_values($this->TruckingVendor_id->Lookup->Options);
+			} else { // Lookup from database
+				if ($curVal == "") {
+					$filterWrk = "0=1";
+				} else {
+					$filterWrk = "`id`" . SearchString("=", $this->TruckingVendor_id->CurrentValue, DATATYPE_NUMBER, "");
+				}
+				$sqlWrk = $this->TruckingVendor_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+				if ($rswrk) $rswrk->Close();
+				$this->TruckingVendor_id->EditValue = $arwrk;
+			}
 
 			// Nama
 			$this->Nama->EditAttrs["class"] = "form-control";
@@ -826,9 +869,6 @@ class t005_driver_addopt extends t005_driver
 			if (!$this->TruckingVendor_id->IsDetailKey && $this->TruckingVendor_id->FormValue != NULL && $this->TruckingVendor_id->FormValue == "") {
 				AddMessage($FormError, str_replace("%s", $this->TruckingVendor_id->caption(), $this->TruckingVendor_id->RequiredErrorMessage));
 			}
-		}
-		if (!CheckInteger($this->TruckingVendor_id->FormValue)) {
-			AddMessage($FormError, $this->TruckingVendor_id->errorMessage());
 		}
 		if ($this->Nama->Required) {
 			if (!$this->Nama->IsDetailKey && $this->Nama->FormValue != NULL && $this->Nama->FormValue == "") {
@@ -960,6 +1000,8 @@ class t005_driver_addopt extends t005_driver
 
 					// Format the field values
 					switch ($fld->FieldVar) {
+						case "x_TruckingVendor_id":
+							break;
 					}
 					$ar[strval($row[0])] = $row;
 					$rs->moveNext();

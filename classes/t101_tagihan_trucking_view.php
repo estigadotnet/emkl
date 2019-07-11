@@ -52,6 +52,14 @@ class t101_tagihan_trucking_view extends t101_tagihan_trucking
 	public $MultiDeleteUrl;
 	public $MultiUpdateUrl;
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -846,6 +854,8 @@ class t101_tagihan_trucking_view extends t101_tagihan_trucking
 		$this->Row_Selected($row);
 		if (!$rs || $rs->EOF)
 			return;
+		if ($this->AuditTrailOnView)
+			$this->writeAuditTrailOnView($row);
 		$this->id->setDbValue($row['id']);
 		$this->JO_id->setDbValue($row['JO_id']);
 		$this->Nomor_Polisi_1->setDbValue($row['Nomor_Polisi_1']);

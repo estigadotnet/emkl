@@ -21,6 +21,14 @@ class t101_jo_detail extends DbTable
 	public $OffsetColumnClass = "col-sm-10 offset-sm-2";
 	public $TableLeftColumnClass = "w-col-2";
 
+	// Audit trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Export
 	public $ExportDoc;
 
@@ -29,11 +37,15 @@ class t101_jo_detail extends DbTable
 	public $JOHead_id;
 	public $TruckingVendor_id;
 	public $Driver_id;
+	public $Tanggal_Stuffing;
 	public $Nomor_Polisi_1;
 	public $Nomor_Polisi_2;
 	public $Nomor_Polisi_3;
 	public $Nomor_Container_1;
 	public $Nomor_Container_2;
+	public $Ref_JOHead_id;
+	public $No_Tagihan;
+	public $Jumlah_Tagihan;
 
 	// Constructor
 	public function __construct()
@@ -62,7 +74,7 @@ class t101_jo_detail extends DbTable
 		$this->DetailEdit = TRUE; // Allow detail edit
 		$this->DetailView = TRUE; // Allow detail view
 		$this->ShowMultipleDetails = FALSE; // Show multiple details
-		$this->GridAddRowCount = 5;
+		$this->GridAddRowCount = 1;
 		$this->AllowAddDeleteRow = TRUE; // Allow add/delete row
 		$this->UserIDAllowSecurity = 0; // User ID Allow
 		$this->BasicSearch = new BasicSearch($this->TableVar);
@@ -91,7 +103,7 @@ class t101_jo_detail extends DbTable
 		$this->TruckingVendor_id->Sortable = TRUE; // Allow sort
 		$this->TruckingVendor_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->TruckingVendor_id->PleaseSelectText = $Language->phrase("PleaseSelect"); // PleaseSelect text
-		$this->TruckingVendor_id->Lookup = new Lookup('TruckingVendor_id', 't006_trucking_vendor', FALSE, 'id', ["Nama","","",""], [], [], [], [], [], [], '', '');
+		$this->TruckingVendor_id->Lookup = new Lookup('TruckingVendor_id', 't006_trucking_vendor', FALSE, 'id', ["Nama","","",""], [], ["x_Driver_id"], [], [], [], [], '`Nama` ASC', '');
 		$this->TruckingVendor_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
 		$this->fields['TruckingVendor_id'] = &$this->TruckingVendor_id;
 
@@ -102,9 +114,15 @@ class t101_jo_detail extends DbTable
 		$this->Driver_id->Sortable = TRUE; // Allow sort
 		$this->Driver_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->Driver_id->PleaseSelectText = $Language->phrase("PleaseSelect"); // PleaseSelect text
-		$this->Driver_id->Lookup = new Lookup('Driver_id', 't005_driver', FALSE, 'id', ["Nama","","",""], [], [], [], [], [], [], '', '');
+		$this->Driver_id->Lookup = new Lookup('Driver_id', 't005_driver', FALSE, 'id', ["Nama","","",""], ["x_TruckingVendor_id"], [], ["TruckingVendor_id"], ["x_TruckingVendor_id"], [], [], '`Nama` ASC', '');
 		$this->Driver_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
 		$this->fields['Driver_id'] = &$this->Driver_id;
+
+		// Tanggal_Stuffing
+		$this->Tanggal_Stuffing = new DbField('t101_jo_detail', 't101_jo_detail', 'x_Tanggal_Stuffing', 'Tanggal_Stuffing', '`Tanggal_Stuffing`', CastDateFieldForLike('`Tanggal_Stuffing`', 11, "DB"), 133, 11, FALSE, '`Tanggal_Stuffing`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->Tanggal_Stuffing->Sortable = TRUE; // Allow sort
+		$this->Tanggal_Stuffing->DefaultErrorMessage = str_replace("%s", $GLOBALS["DATE_SEPARATOR"], $Language->phrase("IncorrectDateDMY"));
+		$this->fields['Tanggal_Stuffing'] = &$this->Tanggal_Stuffing;
 
 		// Nomor_Polisi_1
 		$this->Nomor_Polisi_1 = new DbField('t101_jo_detail', 't101_jo_detail', 'x_Nomor_Polisi_1', 'Nomor_Polisi_1', '`Nomor_Polisi_1`', '`Nomor_Polisi_1`', 200, -1, FALSE, '`Nomor_Polisi_1`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
@@ -140,6 +158,29 @@ class t101_jo_detail extends DbTable
 		$this->Nomor_Container_2->Required = TRUE; // Required field
 		$this->Nomor_Container_2->Sortable = TRUE; // Allow sort
 		$this->fields['Nomor_Container_2'] = &$this->Nomor_Container_2;
+
+		// Ref_JOHead_id
+		$this->Ref_JOHead_id = new DbField('t101_jo_detail', 't101_jo_detail', 'x_Ref_JOHead_id', 'Ref_JOHead_id', '`Ref_JOHead_id`', '`Ref_JOHead_id`', 3, -1, FALSE, '`Ref_JOHead_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
+		$this->Ref_JOHead_id->Sortable = TRUE; // Allow sort
+		$this->Ref_JOHead_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->Ref_JOHead_id->PleaseSelectText = $Language->phrase("PleaseSelect"); // PleaseSelect text
+		$this->Ref_JOHead_id->Lookup = new Lookup('Ref_JOHead_id', 't101_jo_head', FALSE, 'id', ["Nomor_JO","","",""], [], [], [], [], [], [], '', '');
+		$this->Ref_JOHead_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
+		$this->fields['Ref_JOHead_id'] = &$this->Ref_JOHead_id;
+
+		// No_Tagihan
+		$this->No_Tagihan = new DbField('t101_jo_detail', 't101_jo_detail', 'x_No_Tagihan', 'No_Tagihan', '`No_Tagihan`', '`No_Tagihan`', 16, -1, FALSE, '`No_Tagihan`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->No_Tagihan->Nullable = FALSE; // NOT NULL field
+		$this->No_Tagihan->Sortable = TRUE; // Allow sort
+		$this->No_Tagihan->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
+		$this->fields['No_Tagihan'] = &$this->No_Tagihan;
+
+		// Jumlah_Tagihan
+		$this->Jumlah_Tagihan = new DbField('t101_jo_detail', 't101_jo_detail', 'x_Jumlah_Tagihan', 'Jumlah_Tagihan', '`Jumlah_Tagihan`', '`Jumlah_Tagihan`', 4, -1, FALSE, '`Jumlah_Tagihan`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->Jumlah_Tagihan->Nullable = FALSE; // NOT NULL field
+		$this->Jumlah_Tagihan->Sortable = TRUE; // Allow sort
+		$this->Jumlah_Tagihan->DefaultErrorMessage = $Language->phrase("IncorrectFloat");
+		$this->fields['Jumlah_Tagihan'] = &$this->Jumlah_Tagihan;
 	}
 
 	// Field Visibility
@@ -480,6 +521,8 @@ class t101_jo_detail extends DbTable
 			// Get insert id if necessary
 			$this->id->setDbValue($conn->insert_ID());
 			$rs['id'] = $this->id->DbValue;
+			if ($this->AuditTrailOnAdd)
+				$this->writeAuditTrailOnAdd($rs);
 		}
 		return $success;
 	}
@@ -509,6 +552,13 @@ class t101_jo_detail extends DbTable
 	{
 		$conn = &$this->getConnection();
 		$success = $conn->execute($this->updateSql($rs, $where, $curfilter));
+		if ($success && $this->AuditTrailOnEdit && $rsold) {
+			$rsaudit = $rs;
+			$fldname = 'id';
+			if (!array_key_exists($fldname, $rsaudit))
+				$rsaudit[$fldname] = $rsold[$fldname];
+			$this->writeAuditTrailOnEdit($rsold, $rsaudit);
+		}
 		return $success;
 	}
 
@@ -538,6 +588,8 @@ class t101_jo_detail extends DbTable
 		$conn = &$this->getConnection();
 		if ($success)
 			$success = $conn->execute($this->deleteSql($rs, $where, $curfilter));
+		if ($success && $this->AuditTrailOnDelete)
+			$this->writeAuditTrailOnDelete($rs);
 		return $success;
 	}
 
@@ -551,11 +603,15 @@ class t101_jo_detail extends DbTable
 		$this->JOHead_id->DbValue = $row['JOHead_id'];
 		$this->TruckingVendor_id->DbValue = $row['TruckingVendor_id'];
 		$this->Driver_id->DbValue = $row['Driver_id'];
+		$this->Tanggal_Stuffing->DbValue = $row['Tanggal_Stuffing'];
 		$this->Nomor_Polisi_1->DbValue = $row['Nomor_Polisi_1'];
 		$this->Nomor_Polisi_2->DbValue = $row['Nomor_Polisi_2'];
 		$this->Nomor_Polisi_3->DbValue = $row['Nomor_Polisi_3'];
 		$this->Nomor_Container_1->DbValue = $row['Nomor_Container_1'];
 		$this->Nomor_Container_2->DbValue = $row['Nomor_Container_2'];
+		$this->Ref_JOHead_id->DbValue = $row['Ref_JOHead_id'];
+		$this->No_Tagihan->DbValue = $row['No_Tagihan'];
+		$this->Jumlah_Tagihan->DbValue = $row['Jumlah_Tagihan'];
 	}
 
 	// Delete uploaded files
@@ -789,11 +845,15 @@ class t101_jo_detail extends DbTable
 		$this->JOHead_id->setDbValue($rs->fields('JOHead_id'));
 		$this->TruckingVendor_id->setDbValue($rs->fields('TruckingVendor_id'));
 		$this->Driver_id->setDbValue($rs->fields('Driver_id'));
+		$this->Tanggal_Stuffing->setDbValue($rs->fields('Tanggal_Stuffing'));
 		$this->Nomor_Polisi_1->setDbValue($rs->fields('Nomor_Polisi_1'));
 		$this->Nomor_Polisi_2->setDbValue($rs->fields('Nomor_Polisi_2'));
 		$this->Nomor_Polisi_3->setDbValue($rs->fields('Nomor_Polisi_3'));
 		$this->Nomor_Container_1->setDbValue($rs->fields('Nomor_Container_1'));
 		$this->Nomor_Container_2->setDbValue($rs->fields('Nomor_Container_2'));
+		$this->Ref_JOHead_id->setDbValue($rs->fields('Ref_JOHead_id'));
+		$this->No_Tagihan->setDbValue($rs->fields('No_Tagihan'));
+		$this->Jumlah_Tagihan->setDbValue($rs->fields('Jumlah_Tagihan'));
 	}
 
 	// Render list row values
@@ -809,11 +869,15 @@ class t101_jo_detail extends DbTable
 		// JOHead_id
 		// TruckingVendor_id
 		// Driver_id
+		// Tanggal_Stuffing
 		// Nomor_Polisi_1
 		// Nomor_Polisi_2
 		// Nomor_Polisi_3
 		// Nomor_Container_1
 		// Nomor_Container_2
+		// Ref_JOHead_id
+		// No_Tagihan
+		// Jumlah_Tagihan
 		// id
 
 		$this->id->ViewValue = $this->id->CurrentValue;
@@ -868,6 +932,11 @@ class t101_jo_detail extends DbTable
 		}
 		$this->Driver_id->ViewCustomAttributes = "";
 
+		// Tanggal_Stuffing
+		$this->Tanggal_Stuffing->ViewValue = $this->Tanggal_Stuffing->CurrentValue;
+		$this->Tanggal_Stuffing->ViewValue = FormatDateTime($this->Tanggal_Stuffing->ViewValue, 11);
+		$this->Tanggal_Stuffing->ViewCustomAttributes = "";
+
 		// Nomor_Polisi_1
 		$this->Nomor_Polisi_1->ViewValue = $this->Nomor_Polisi_1->CurrentValue;
 		$this->Nomor_Polisi_1->ViewCustomAttributes = "";
@@ -888,6 +957,38 @@ class t101_jo_detail extends DbTable
 		$this->Nomor_Container_2->ViewValue = $this->Nomor_Container_2->CurrentValue;
 		$this->Nomor_Container_2->ViewCustomAttributes = "";
 
+		// Ref_JOHead_id
+		$curVal = strval($this->Ref_JOHead_id->CurrentValue);
+		if ($curVal <> "") {
+			$this->Ref_JOHead_id->ViewValue = $this->Ref_JOHead_id->lookupCacheOption($curVal);
+			if ($this->Ref_JOHead_id->ViewValue === NULL) { // Lookup from database
+				$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+				$sqlWrk = $this->Ref_JOHead_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = $rswrk->fields('df');
+					$this->Ref_JOHead_id->ViewValue = $this->Ref_JOHead_id->displayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->Ref_JOHead_id->ViewValue = $this->Ref_JOHead_id->CurrentValue;
+				}
+			}
+		} else {
+			$this->Ref_JOHead_id->ViewValue = NULL;
+		}
+		$this->Ref_JOHead_id->ViewCustomAttributes = "";
+
+		// No_Tagihan
+		$this->No_Tagihan->ViewValue = $this->No_Tagihan->CurrentValue;
+		$this->No_Tagihan->ViewValue = FormatNumber($this->No_Tagihan->ViewValue, 0, -2, -2, -2);
+		$this->No_Tagihan->ViewCustomAttributes = "";
+
+		// Jumlah_Tagihan
+		$this->Jumlah_Tagihan->ViewValue = $this->Jumlah_Tagihan->CurrentValue;
+		$this->Jumlah_Tagihan->ViewValue = FormatNumber($this->Jumlah_Tagihan->ViewValue, 2, -2, -2, -2);
+		$this->Jumlah_Tagihan->ViewCustomAttributes = "";
+
 		// id
 		$this->id->LinkCustomAttributes = "";
 		$this->id->HrefValue = "";
@@ -907,6 +1008,11 @@ class t101_jo_detail extends DbTable
 		$this->Driver_id->LinkCustomAttributes = "";
 		$this->Driver_id->HrefValue = "";
 		$this->Driver_id->TooltipValue = "";
+
+		// Tanggal_Stuffing
+		$this->Tanggal_Stuffing->LinkCustomAttributes = "";
+		$this->Tanggal_Stuffing->HrefValue = "";
+		$this->Tanggal_Stuffing->TooltipValue = "";
 
 		// Nomor_Polisi_1
 		$this->Nomor_Polisi_1->LinkCustomAttributes = "";
@@ -932,6 +1038,21 @@ class t101_jo_detail extends DbTable
 		$this->Nomor_Container_2->LinkCustomAttributes = "";
 		$this->Nomor_Container_2->HrefValue = "";
 		$this->Nomor_Container_2->TooltipValue = "";
+
+		// Ref_JOHead_id
+		$this->Ref_JOHead_id->LinkCustomAttributes = "";
+		$this->Ref_JOHead_id->HrefValue = "";
+		$this->Ref_JOHead_id->TooltipValue = "";
+
+		// No_Tagihan
+		$this->No_Tagihan->LinkCustomAttributes = "";
+		$this->No_Tagihan->HrefValue = "";
+		$this->No_Tagihan->TooltipValue = "";
+
+		// Jumlah_Tagihan
+		$this->Jumlah_Tagihan->LinkCustomAttributes = "";
+		$this->Jumlah_Tagihan->HrefValue = "";
+		$this->Jumlah_Tagihan->TooltipValue = "";
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -975,6 +1096,12 @@ class t101_jo_detail extends DbTable
 		$this->Driver_id->EditAttrs["class"] = "form-control";
 		$this->Driver_id->EditCustomAttributes = "";
 
+		// Tanggal_Stuffing
+		$this->Tanggal_Stuffing->EditAttrs["class"] = "form-control";
+		$this->Tanggal_Stuffing->EditCustomAttributes = "style='width: 152px;'";
+		$this->Tanggal_Stuffing->EditValue = FormatDateTime($this->Tanggal_Stuffing->CurrentValue, 11);
+		$this->Tanggal_Stuffing->PlaceHolder = RemoveHtml($this->Tanggal_Stuffing->caption());
+
 		// Nomor_Polisi_1
 		$this->Nomor_Polisi_1->EditAttrs["class"] = "form-control";
 		$this->Nomor_Polisi_1->EditCustomAttributes = "";
@@ -1015,6 +1142,24 @@ class t101_jo_detail extends DbTable
 		$this->Nomor_Container_2->EditValue = $this->Nomor_Container_2->CurrentValue;
 		$this->Nomor_Container_2->PlaceHolder = RemoveHtml($this->Nomor_Container_2->caption());
 
+		// Ref_JOHead_id
+		$this->Ref_JOHead_id->EditAttrs["class"] = "form-control";
+		$this->Ref_JOHead_id->EditCustomAttributes = "";
+
+		// No_Tagihan
+		$this->No_Tagihan->EditAttrs["class"] = "form-control";
+		$this->No_Tagihan->EditCustomAttributes = "";
+		$this->No_Tagihan->EditValue = $this->No_Tagihan->CurrentValue;
+		$this->No_Tagihan->PlaceHolder = RemoveHtml($this->No_Tagihan->caption());
+
+		// Jumlah_Tagihan
+		$this->Jumlah_Tagihan->EditAttrs["class"] = "form-control";
+		$this->Jumlah_Tagihan->EditCustomAttributes = "";
+		$this->Jumlah_Tagihan->EditValue = $this->Jumlah_Tagihan->CurrentValue;
+		$this->Jumlah_Tagihan->PlaceHolder = RemoveHtml($this->Jumlah_Tagihan->caption());
+		if (strval($this->Jumlah_Tagihan->EditValue) <> "" && is_numeric($this->Jumlah_Tagihan->EditValue))
+			$this->Jumlah_Tagihan->EditValue = FormatNumber($this->Jumlah_Tagihan->EditValue, -2, -2, -2, -2);
+
 		// Call Row Rendered event
 		$this->Row_Rendered();
 	}
@@ -1046,21 +1191,29 @@ class t101_jo_detail extends DbTable
 				if ($exportPageType == "view") {
 					$doc->exportCaption($this->TruckingVendor_id);
 					$doc->exportCaption($this->Driver_id);
+					$doc->exportCaption($this->Tanggal_Stuffing);
 					$doc->exportCaption($this->Nomor_Polisi_1);
 					$doc->exportCaption($this->Nomor_Polisi_2);
 					$doc->exportCaption($this->Nomor_Polisi_3);
 					$doc->exportCaption($this->Nomor_Container_1);
 					$doc->exportCaption($this->Nomor_Container_2);
+					$doc->exportCaption($this->Ref_JOHead_id);
+					$doc->exportCaption($this->No_Tagihan);
+					$doc->exportCaption($this->Jumlah_Tagihan);
 				} else {
 					$doc->exportCaption($this->id);
 					$doc->exportCaption($this->JOHead_id);
 					$doc->exportCaption($this->TruckingVendor_id);
 					$doc->exportCaption($this->Driver_id);
+					$doc->exportCaption($this->Tanggal_Stuffing);
 					$doc->exportCaption($this->Nomor_Polisi_1);
 					$doc->exportCaption($this->Nomor_Polisi_2);
 					$doc->exportCaption($this->Nomor_Polisi_3);
 					$doc->exportCaption($this->Nomor_Container_1);
 					$doc->exportCaption($this->Nomor_Container_2);
+					$doc->exportCaption($this->Ref_JOHead_id);
+					$doc->exportCaption($this->No_Tagihan);
+					$doc->exportCaption($this->Jumlah_Tagihan);
 				}
 				$doc->endExportRow();
 			}
@@ -1094,21 +1247,29 @@ class t101_jo_detail extends DbTable
 					if ($exportPageType == "view") {
 						$doc->exportField($this->TruckingVendor_id);
 						$doc->exportField($this->Driver_id);
+						$doc->exportField($this->Tanggal_Stuffing);
 						$doc->exportField($this->Nomor_Polisi_1);
 						$doc->exportField($this->Nomor_Polisi_2);
 						$doc->exportField($this->Nomor_Polisi_3);
 						$doc->exportField($this->Nomor_Container_1);
 						$doc->exportField($this->Nomor_Container_2);
+						$doc->exportField($this->Ref_JOHead_id);
+						$doc->exportField($this->No_Tagihan);
+						$doc->exportField($this->Jumlah_Tagihan);
 					} else {
 						$doc->exportField($this->id);
 						$doc->exportField($this->JOHead_id);
 						$doc->exportField($this->TruckingVendor_id);
 						$doc->exportField($this->Driver_id);
+						$doc->exportField($this->Tanggal_Stuffing);
 						$doc->exportField($this->Nomor_Polisi_1);
 						$doc->exportField($this->Nomor_Polisi_2);
 						$doc->exportField($this->Nomor_Polisi_3);
 						$doc->exportField($this->Nomor_Container_1);
 						$doc->exportField($this->Nomor_Container_2);
+						$doc->exportField($this->Ref_JOHead_id);
+						$doc->exportField($this->No_Tagihan);
+						$doc->exportField($this->Jumlah_Tagihan);
 					}
 					$doc->endExportRow($rowCnt);
 				}
@@ -1223,6 +1384,138 @@ class t101_jo_detail extends DbTable
 
 		// No binary fields
 		return FALSE;
+	}
+
+	// Write Audit Trail start/end for grid update
+	public function writeAuditTrailDummy($typ)
+	{
+		$table = 't101_jo_detail';
+		$usr = CurrentUserName();
+		WriteAuditTrail("log", DbCurrentDateTime(), ScriptName(), $usr, $typ, $table, "", "", "", "");
+	}
+
+	// Write Audit Trail (add page)
+	public function writeAuditTrailOnAdd(&$rs)
+	{
+		global $Language;
+		if (!$this->AuditTrailOnAdd)
+			return;
+		$table = 't101_jo_detail';
+
+		// Get key value
+		$key = "";
+		if ($key <> "")
+			$key .= $GLOBALS["COMPOSITE_KEY_SEPARATOR"];
+		$key .= $rs['id'];
+
+		// Write Audit Trail
+		$dt = DbCurrentDateTime();
+		$id = ScriptName();
+		$usr = CurrentUserName();
+		foreach (array_keys($rs) as $fldname) {
+			if (array_key_exists($fldname, $this->fields) && $this->fields[$fldname]->DataType <> DATATYPE_BLOB) { // Ignore BLOB fields
+				if ($this->fields[$fldname]->HtmlTag == "PASSWORD") {
+					$newvalue = $Language->phrase("PasswordMask"); // Password Field
+				} elseif ($this->fields[$fldname]->DataType == DATATYPE_MEMO) {
+					if (AUDIT_TRAIL_TO_DATABASE)
+						$newvalue = $rs[$fldname];
+					else
+						$newvalue = "[MEMO]"; // Memo Field
+				} elseif ($this->fields[$fldname]->DataType == DATATYPE_XML) {
+					$newvalue = "[XML]"; // XML Field
+				} else {
+					$newvalue = $rs[$fldname];
+				}
+				WriteAuditTrail("log", $dt, $id, $usr, "A", $table, $fldname, $key, "", $newvalue);
+			}
+		}
+	}
+
+	// Write Audit Trail (edit page)
+	public function writeAuditTrailOnEdit(&$rsold, &$rsnew)
+	{
+		global $Language;
+		if (!$this->AuditTrailOnEdit)
+			return;
+		$table = 't101_jo_detail';
+
+		// Get key value
+		$key = "";
+		if ($key <> "")
+			$key .= $GLOBALS["COMPOSITE_KEY_SEPARATOR"];
+		$key .= $rsold['id'];
+
+		// Write Audit Trail
+		$dt = DbCurrentDateTime();
+		$id = ScriptName();
+		$usr = CurrentUserName();
+		foreach (array_keys($rsnew) as $fldname) {
+			if (array_key_exists($fldname, $this->fields) && array_key_exists($fldname, $rsold) && $this->fields[$fldname]->DataType <> DATATYPE_BLOB) { // Ignore BLOB fields
+				if ($this->fields[$fldname]->DataType == DATATYPE_DATE) { // DateTime field
+					$modified = (FormatDateTime($rsold[$fldname], 0) <> FormatDateTime($rsnew[$fldname], 0));
+				} else {
+					$modified = !CompareValue($rsold[$fldname], $rsnew[$fldname]);
+				}
+				if ($modified) {
+					if ($this->fields[$fldname]->HtmlTag == "PASSWORD") { // Password Field
+						$oldvalue = $Language->phrase("PasswordMask");
+						$newvalue = $Language->phrase("PasswordMask");
+					} elseif ($this->fields[$fldname]->DataType == DATATYPE_MEMO) { // Memo field
+						if (AUDIT_TRAIL_TO_DATABASE) {
+							$oldvalue = $rsold[$fldname];
+							$newvalue = $rsnew[$fldname];
+						} else {
+							$oldvalue = "[MEMO]";
+							$newvalue = "[MEMO]";
+						}
+					} elseif ($this->fields[$fldname]->DataType == DATATYPE_XML) { // XML field
+						$oldvalue = "[XML]";
+						$newvalue = "[XML]";
+					} else {
+						$oldvalue = $rsold[$fldname];
+						$newvalue = $rsnew[$fldname];
+					}
+					WriteAuditTrail("log", $dt, $id, $usr, "U", $table, $fldname, $key, $oldvalue, $newvalue);
+				}
+			}
+		}
+	}
+
+	// Write Audit Trail (delete page)
+	public function writeAuditTrailOnDelete(&$rs)
+	{
+		global $Language;
+		if (!$this->AuditTrailOnDelete)
+			return;
+		$table = 't101_jo_detail';
+
+		// Get key value
+		$key = "";
+		if ($key <> "")
+			$key .= $GLOBALS["COMPOSITE_KEY_SEPARATOR"];
+		$key .= $rs['id'];
+
+		// Write Audit Trail
+		$dt = DbCurrentDateTime();
+		$id = ScriptName();
+		$curUser = CurrentUserName();
+		foreach (array_keys($rs) as $fldname) {
+			if (array_key_exists($fldname, $this->fields) && $this->fields[$fldname]->DataType <> DATATYPE_BLOB) { // Ignore BLOB fields
+				if ($this->fields[$fldname]->HtmlTag == "PASSWORD") {
+					$oldvalue = $Language->phrase("PasswordMask"); // Password Field
+				} elseif ($this->fields[$fldname]->DataType == DATATYPE_MEMO) {
+					if (AUDIT_TRAIL_TO_DATABASE)
+						$oldvalue = $rs[$fldname];
+					else
+						$oldvalue = "[MEMO]"; // Memo field
+				} elseif ($this->fields[$fldname]->DataType == DATATYPE_XML) {
+					$oldvalue = "[XML]"; // XML field
+				} else {
+					$oldvalue = $rs[$fldname];
+				}
+				WriteAuditTrail("log", $dt, $id, $curUser, "D", $table, $fldname, $key, $oldvalue, "");
+			}
+		}
 	}
 
 	// Table level events

@@ -19,6 +19,14 @@ class t101_jo_detail_delete extends t101_jo_detail
 	// Page object name
 	public $PageObjName = "t101_jo_detail_delete";
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -539,11 +547,15 @@ class t101_jo_detail_delete extends t101_jo_detail
 		$this->JOHead_id->Visible = FALSE;
 		$this->TruckingVendor_id->setVisibility();
 		$this->Driver_id->setVisibility();
+		$this->Tanggal_Stuffing->setVisibility();
 		$this->Nomor_Polisi_1->setVisibility();
 		$this->Nomor_Polisi_2->setVisibility();
 		$this->Nomor_Polisi_3->setVisibility();
 		$this->Nomor_Container_1->setVisibility();
 		$this->Nomor_Container_2->setVisibility();
+		$this->Ref_JOHead_id->setVisibility();
+		$this->No_Tagihan->setVisibility();
+		$this->Jumlah_Tagihan->setVisibility();
 		$this->hideFieldsForAddEdit();
 
 		// Do not use lookup cache
@@ -567,6 +579,7 @@ class t101_jo_detail_delete extends t101_jo_detail
 		// Set up lookup cache
 		$this->setupLookupOptions($this->TruckingVendor_id);
 		$this->setupLookupOptions($this->Driver_id);
+		$this->setupLookupOptions($this->Ref_JOHead_id);
 
 		// Set up master/detail parameters
 		$this->setupMasterParms();
@@ -691,11 +704,15 @@ class t101_jo_detail_delete extends t101_jo_detail
 		$this->JOHead_id->setDbValue($row['JOHead_id']);
 		$this->TruckingVendor_id->setDbValue($row['TruckingVendor_id']);
 		$this->Driver_id->setDbValue($row['Driver_id']);
+		$this->Tanggal_Stuffing->setDbValue($row['Tanggal_Stuffing']);
 		$this->Nomor_Polisi_1->setDbValue($row['Nomor_Polisi_1']);
 		$this->Nomor_Polisi_2->setDbValue($row['Nomor_Polisi_2']);
 		$this->Nomor_Polisi_3->setDbValue($row['Nomor_Polisi_3']);
 		$this->Nomor_Container_1->setDbValue($row['Nomor_Container_1']);
 		$this->Nomor_Container_2->setDbValue($row['Nomor_Container_2']);
+		$this->Ref_JOHead_id->setDbValue($row['Ref_JOHead_id']);
+		$this->No_Tagihan->setDbValue($row['No_Tagihan']);
+		$this->Jumlah_Tagihan->setDbValue($row['Jumlah_Tagihan']);
 	}
 
 	// Return a row with default values
@@ -706,11 +723,15 @@ class t101_jo_detail_delete extends t101_jo_detail
 		$row['JOHead_id'] = NULL;
 		$row['TruckingVendor_id'] = NULL;
 		$row['Driver_id'] = NULL;
+		$row['Tanggal_Stuffing'] = NULL;
 		$row['Nomor_Polisi_1'] = NULL;
 		$row['Nomor_Polisi_2'] = NULL;
 		$row['Nomor_Polisi_3'] = NULL;
 		$row['Nomor_Container_1'] = NULL;
 		$row['Nomor_Container_2'] = NULL;
+		$row['Ref_JOHead_id'] = NULL;
+		$row['No_Tagihan'] = NULL;
+		$row['Jumlah_Tagihan'] = NULL;
 		return $row;
 	}
 
@@ -720,8 +741,12 @@ class t101_jo_detail_delete extends t101_jo_detail
 		global $Security, $Language, $CurrentLanguage;
 
 		// Initialize URLs
-		// Call Row_Rendering event
+		// Convert decimal values if posted back
 
+		if ($this->Jumlah_Tagihan->FormValue == $this->Jumlah_Tagihan->CurrentValue && is_numeric(ConvertToFloatString($this->Jumlah_Tagihan->CurrentValue)))
+			$this->Jumlah_Tagihan->CurrentValue = ConvertToFloatString($this->Jumlah_Tagihan->CurrentValue);
+
+		// Call Row_Rendering event
 		$this->Row_Rendering();
 
 		// Common render codes for all row types
@@ -729,11 +754,15 @@ class t101_jo_detail_delete extends t101_jo_detail
 		// JOHead_id
 		// TruckingVendor_id
 		// Driver_id
+		// Tanggal_Stuffing
 		// Nomor_Polisi_1
 		// Nomor_Polisi_2
 		// Nomor_Polisi_3
 		// Nomor_Container_1
 		// Nomor_Container_2
+		// Ref_JOHead_id
+		// No_Tagihan
+		// Jumlah_Tagihan
 
 		if ($this->RowType == ROWTYPE_VIEW) { // View row
 
@@ -790,6 +819,11 @@ class t101_jo_detail_delete extends t101_jo_detail
 			}
 			$this->Driver_id->ViewCustomAttributes = "";
 
+			// Tanggal_Stuffing
+			$this->Tanggal_Stuffing->ViewValue = $this->Tanggal_Stuffing->CurrentValue;
+			$this->Tanggal_Stuffing->ViewValue = FormatDateTime($this->Tanggal_Stuffing->ViewValue, 11);
+			$this->Tanggal_Stuffing->ViewCustomAttributes = "";
+
 			// Nomor_Polisi_1
 			$this->Nomor_Polisi_1->ViewValue = $this->Nomor_Polisi_1->CurrentValue;
 			$this->Nomor_Polisi_1->ViewCustomAttributes = "";
@@ -810,6 +844,38 @@ class t101_jo_detail_delete extends t101_jo_detail
 			$this->Nomor_Container_2->ViewValue = $this->Nomor_Container_2->CurrentValue;
 			$this->Nomor_Container_2->ViewCustomAttributes = "";
 
+			// Ref_JOHead_id
+			$curVal = strval($this->Ref_JOHead_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->Ref_JOHead_id->ViewValue = $this->Ref_JOHead_id->lookupCacheOption($curVal);
+				if ($this->Ref_JOHead_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->Ref_JOHead_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->Ref_JOHead_id->ViewValue = $this->Ref_JOHead_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->Ref_JOHead_id->ViewValue = $this->Ref_JOHead_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->Ref_JOHead_id->ViewValue = NULL;
+			}
+			$this->Ref_JOHead_id->ViewCustomAttributes = "";
+
+			// No_Tagihan
+			$this->No_Tagihan->ViewValue = $this->No_Tagihan->CurrentValue;
+			$this->No_Tagihan->ViewValue = FormatNumber($this->No_Tagihan->ViewValue, 0, -2, -2, -2);
+			$this->No_Tagihan->ViewCustomAttributes = "";
+
+			// Jumlah_Tagihan
+			$this->Jumlah_Tagihan->ViewValue = $this->Jumlah_Tagihan->CurrentValue;
+			$this->Jumlah_Tagihan->ViewValue = FormatNumber($this->Jumlah_Tagihan->ViewValue, 2, -2, -2, -2);
+			$this->Jumlah_Tagihan->ViewCustomAttributes = "";
+
 			// TruckingVendor_id
 			$this->TruckingVendor_id->LinkCustomAttributes = "";
 			$this->TruckingVendor_id->HrefValue = "";
@@ -819,6 +885,11 @@ class t101_jo_detail_delete extends t101_jo_detail
 			$this->Driver_id->LinkCustomAttributes = "";
 			$this->Driver_id->HrefValue = "";
 			$this->Driver_id->TooltipValue = "";
+
+			// Tanggal_Stuffing
+			$this->Tanggal_Stuffing->LinkCustomAttributes = "";
+			$this->Tanggal_Stuffing->HrefValue = "";
+			$this->Tanggal_Stuffing->TooltipValue = "";
 
 			// Nomor_Polisi_1
 			$this->Nomor_Polisi_1->LinkCustomAttributes = "";
@@ -844,6 +915,21 @@ class t101_jo_detail_delete extends t101_jo_detail
 			$this->Nomor_Container_2->LinkCustomAttributes = "";
 			$this->Nomor_Container_2->HrefValue = "";
 			$this->Nomor_Container_2->TooltipValue = "";
+
+			// Ref_JOHead_id
+			$this->Ref_JOHead_id->LinkCustomAttributes = "";
+			$this->Ref_JOHead_id->HrefValue = "";
+			$this->Ref_JOHead_id->TooltipValue = "";
+
+			// No_Tagihan
+			$this->No_Tagihan->LinkCustomAttributes = "";
+			$this->No_Tagihan->HrefValue = "";
+			$this->No_Tagihan->TooltipValue = "";
+
+			// Jumlah_Tagihan
+			$this->Jumlah_Tagihan->LinkCustomAttributes = "";
+			$this->Jumlah_Tagihan->HrefValue = "";
+			$this->Jumlah_Tagihan->TooltipValue = "";
 		}
 
 		// Call Row Rendered event
@@ -870,6 +956,8 @@ class t101_jo_detail_delete extends t101_jo_detail
 		}
 		$rows = ($rs) ? $rs->getRows() : [];
 		$conn->beginTrans();
+		if ($this->AuditTrailOnDelete)
+			$this->writeAuditTrailDummy($Language->phrase("BatchDeleteBegin")); // Batch delete begin
 
 		// Clone old rows
 		$rsold = $rows;
@@ -918,8 +1006,12 @@ class t101_jo_detail_delete extends t101_jo_detail
 		}
 		if ($deleteRows) {
 			$conn->commitTrans(); // Commit the changes
+			if ($this->AuditTrailOnDelete)
+				$this->writeAuditTrailDummy($Language->phrase("BatchDeleteSuccess")); // Batch delete success
 		} else {
 			$conn->rollbackTrans(); // Rollback changes
+			if ($this->AuditTrailOnDelete)
+				$this->writeAuditTrailDummy($Language->phrase("BatchDeleteRollback")); // Batch delete rollback
 		}
 
 		// Call Row Deleted event
@@ -1046,6 +1138,8 @@ class t101_jo_detail_delete extends t101_jo_detail
 						case "x_TruckingVendor_id":
 							break;
 						case "x_Driver_id":
+							break;
+						case "x_Ref_JOHead_id":
 							break;
 					}
 					$ar[strval($row[0])] = $row;

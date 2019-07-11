@@ -60,6 +60,14 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 	public $MultiDeleteUrl;
 	public $MultiUpdateUrl;
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -609,7 +617,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 	public $ListActions; // List actions
 	public $SelectedCount = 0;
 	public $SelectedIndex = 0;
-	public $DisplayRecs = 20;
+	public $DisplayRecs = 50;
 	public $StartRec;
 	public $StopRec;
 	public $TotalRecs = 0;
@@ -727,6 +735,9 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			// Process list action first
 			if ($this->processListAction()) // Ajax request
 				$this->terminate();
+
+			// Set up records per page
+			$this->setupDisplayRecs();
 
 			// Handle reset command
 			$this->resetCmd();
@@ -877,7 +888,7 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		if ($this->Command <> "json" && $this->getRecordsPerPage() <> "") {
 			$this->DisplayRecs = $this->getRecordsPerPage(); // Restore from Session
 		} else {
-			$this->DisplayRecs = 20; // Load default
+			$this->DisplayRecs = 50; // Load default
 		}
 
 		// Load Sorting Order
@@ -956,6 +967,13 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 				else
 					$this->setWarningMessage($Language->phrase("NoRecord"));
 			}
+
+			// Audit trail on search
+			if ($this->AuditTrailOnSearch && $this->Command == "search" && !$this->RestoreSearch) {
+				$searchParm = ServerVar("QUERY_STRING");
+				$searchSql = $this->getSessionWhere();
+				$this->writeAuditTrailOnSearch($searchParm, $searchSql);
+			}
 		}
 
 		// Search options
@@ -967,6 +985,28 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			$this->Recordset->close();
 			WriteJson(["success" => TRUE, $this->TableVar => $rows, "totalRecordCount" => $this->TotalRecs]);
 			$this->terminate(TRUE);
+		}
+	}
+
+	// Set up number of records displayed per page
+	protected function setupDisplayRecs()
+	{
+		$wrk = Get(TABLE_REC_PER_PAGE, "");
+		if ($wrk <> "") {
+			if (is_numeric($wrk)) {
+				$this->DisplayRecs = (int)$wrk;
+			} else {
+				if (SameText($wrk, "all")) { // Display all records
+					$this->DisplayRecs = -1;
+				} else {
+					$this->DisplayRecs = 50; // Non-numeric, load default
+				}
+			}
+			$this->setRecordsPerPage($this->DisplayRecs); // Save to Session
+
+			// Reset start position
+			$this->StartRec = 1;
+			$this->setStartRecordNumber($this->StartRec);
 		}
 	}
 
@@ -1128,6 +1168,8 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 
 		// Begin transaction
 		$conn->beginTrans();
+		if ($this->AuditTrailOnEdit)
+			$this->writeAuditTrailDummy($Language->phrase("BatchUpdateBegin")); // Batch update begin
 		$key = "";
 
 		// Update row index and get row key
@@ -1195,11 +1237,15 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 
 			// Call Grid_Updated event
 			$this->Grid_Updated($rsold, $rsnew);
+			if ($this->AuditTrailOnEdit)
+				$this->writeAuditTrailDummy($Language->phrase("BatchUpdateSuccess")); // Batch update success
 			if ($this->getSuccessMessage() == "")
 				$this->setSuccessMessage($Language->phrase("UpdateSuccess")); // Set up update success message
 			$this->clearInlineMode(); // Clear inline edit mode
 		} else {
 			$conn->rollbackTrans(); // Rollback transaction
+			if ($this->AuditTrailOnEdit)
+				$this->writeAuditTrailDummy($Language->phrase("BatchUpdateRollback")); // Batch update rollback
 			if ($this->getFailureMessage() == "")
 				$this->setFailureMessage($Language->phrase("UpdateFailed")); // Set update failed message
 		}
@@ -1268,6 +1314,8 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 		// Init key filter
 		$wrkfilter = "";
 		$addcnt = 0;
+		if ($this->AuditTrailOnAdd)
+			$this->writeAuditTrailDummy($Language->phrase("BatchInsertBegin")); // Batch insert begin
 		$key = "";
 
 		// Get row count
@@ -1328,11 +1376,15 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 
 			// Call Grid_Inserted event
 			$this->Grid_Inserted($rsnew);
+			if ($this->AuditTrailOnAdd)
+				$this->writeAuditTrailDummy($Language->phrase("BatchInsertSuccess")); // Batch insert success
 			if ($this->getSuccessMessage() == "")
 				$this->setSuccessMessage($Language->phrase("InsertSuccess")); // Set up insert success message
 			$this->clearInlineMode(); // Clear grid add mode
 		} else {
 			$conn->rollbackTrans(); // Rollback transaction
+			if ($this->AuditTrailOnAdd)
+				$this->writeAuditTrailDummy($Language->phrase("BatchInsertRollback")); // Batch insert rollback
 			if ($this->getFailureMessage() == "")
 				$this->setFailureMessage($Language->phrase("InsertFailed")); // Set insert failed message
 		}
@@ -3792,6 +3844,8 @@ class t101_tagihan_trucking_list extends t101_tagihan_trucking
 			return FALSE;
 		}
 		$rows = ($rs) ? $rs->getRows() : [];
+		if ($this->AuditTrailOnDelete)
+			$this->writeAuditTrailDummy($Language->phrase("BatchDeleteBegin")); // Batch delete begin
 
 		// Clone old rows
 		$rsold = $rows;

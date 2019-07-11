@@ -60,6 +60,14 @@ class t101_jo_head_list extends t101_jo_head
 	public $MultiDeleteUrl;
 	public $MultiUpdateUrl;
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -609,7 +617,7 @@ class t101_jo_head_list extends t101_jo_head
 	public $ListActions; // List actions
 	public $SelectedCount = 0;
 	public $SelectedIndex = 0;
-	public $DisplayRecs = 20;
+	public $DisplayRecs = 50;
 	public $StartRec;
 	public $StopRec;
 	public $TotalRecs = 0;
@@ -654,6 +662,9 @@ class t101_jo_head_list extends t101_jo_head
 			if (is_callable($func) && Param(TOKEN_NAME) !== NULL && $func(Param(TOKEN_NAME), SessionTimeoutTime()))
 				session_start();
 		}
+
+		// Create form object
+		$CurrentForm = new HttpForm();
 		$this->CurrentAction = Param("action"); // Set up current action
 
 		// Get grid add count
@@ -665,11 +676,11 @@ class t101_jo_head_list extends t101_jo_head
 		$this->setupListOptions();
 		$this->id->Visible = FALSE;
 		$this->Export_Import->setVisibility();
+		$this->No_BL->setVisibility();
 		$this->Nomor_JO->setVisibility();
 		$this->Shipper_id->setVisibility();
 		$this->Party->setVisibility();
 		$this->Container->setVisibility();
-		$this->Tanggal_Stuffing->setVisibility();
 		$this->Destination_id->setVisibility();
 		$this->Feeder_id->setVisibility();
 		$this->hideFieldsForAddEdit();
@@ -722,12 +733,60 @@ class t101_jo_head_list extends t101_jo_head
 			if ($this->processListAction()) // Ajax request
 				$this->terminate();
 
+			// Set up records per page
+			$this->setupDisplayRecs();
+
 			// Handle reset command
 			$this->resetCmd();
 
 			// Set up Breadcrumb
 			if (!$this->isExport())
 				$this->setupBreadcrumb();
+
+			// Check QueryString parameters
+			if (Get("action") !== NULL) {
+				$this->CurrentAction = Get("action");
+
+				// Clear inline mode
+				if ($this->isCancel())
+					$this->clearInlineMode();
+
+				// Switch to grid edit mode
+				if ($this->isGridEdit())
+					$this->gridEditMode();
+
+				// Switch to inline edit mode
+				if ($this->isEdit())
+					$this->inlineEditMode();
+			} else {
+				if (Post("action") !== NULL) {
+					$this->CurrentAction = Post("action"); // Get action
+
+					// Grid Update
+					if (($this->isGridUpdate() || $this->isGridOverwrite()) && @$_SESSION[SESSION_INLINE_MODE] == "gridedit") {
+						if ($this->validateGridForm()) {
+							$gridUpdate = $this->gridUpdate();
+						} else {
+							$gridUpdate = FALSE;
+							$this->setFailureMessage($FormError);
+						}
+						if ($gridUpdate) {
+						} else {
+							$this->EventCancelled = TRUE;
+							$this->gridEditMode(); // Stay in Grid edit mode
+						}
+					}
+
+					// Inline Update
+					if (($this->isUpdate() || $this->isOverwrite()) && @$_SESSION[SESSION_INLINE_MODE] == "edit")
+						$this->inlineUpdate();
+				} elseif (@$_SESSION[SESSION_INLINE_MODE] == "gridedit") { // Previously in grid edit mode
+					if (Get(TABLE_START_REC) !== NULL || Get(TABLE_PAGE_NO) !== NULL) // Stay in grid edit mode if paging
+						$this->gridEditMode();
+					else // Reset grid edit
+						$this->clearInlineMode();
+				}
+			}
 
 			// Hide list options
 			if ($this->isExport()) {
@@ -750,6 +809,15 @@ class t101_jo_head_list extends t101_jo_head
 			// Hide other options
 			if ($this->isExport())
 				$this->OtherOptions->hideAllOptions();
+
+			// Show grid delete link for grid add / grid edit
+			if ($this->AllowAddDeleteRow) {
+				if ($this->isGridAdd() || $this->isGridEdit()) {
+					$item = &$this->ListOptions->getItem("griddelete");
+					if ($item)
+						$item->Visible = TRUE;
+				}
+			}
 
 			// Get default search criteria
 			AddFilter($this->DefaultSearchWhere, $this->basicSearchWhere(TRUE));
@@ -790,7 +858,7 @@ class t101_jo_head_list extends t101_jo_head
 		if ($this->Command <> "json" && $this->getRecordsPerPage() <> "") {
 			$this->DisplayRecs = $this->getRecordsPerPage(); // Restore from Session
 		} else {
-			$this->DisplayRecs = 20; // Load default
+			$this->DisplayRecs = 50; // Load default
 		}
 
 		// Load Sorting Order
@@ -869,6 +937,13 @@ class t101_jo_head_list extends t101_jo_head
 				else
 					$this->setWarningMessage($Language->phrase("NoRecord"));
 			}
+
+			// Audit trail on search
+			if ($this->AuditTrailOnSearch && $this->Command == "search" && !$this->RestoreSearch) {
+				$searchParm = ServerVar("QUERY_STRING");
+				$searchSql = $this->getSessionWhere();
+				$this->writeAuditTrailOnSearch($searchParm, $searchSql);
+			}
 		}
 
 		// Search options
@@ -881,6 +956,218 @@ class t101_jo_head_list extends t101_jo_head
 			WriteJson(["success" => TRUE, $this->TableVar => $rows, "totalRecordCount" => $this->TotalRecs]);
 			$this->terminate(TRUE);
 		}
+	}
+
+	// Set up number of records displayed per page
+	protected function setupDisplayRecs()
+	{
+		$wrk = Get(TABLE_REC_PER_PAGE, "");
+		if ($wrk <> "") {
+			if (is_numeric($wrk)) {
+				$this->DisplayRecs = (int)$wrk;
+			} else {
+				if (SameText($wrk, "all")) { // Display all records
+					$this->DisplayRecs = -1;
+				} else {
+					$this->DisplayRecs = 50; // Non-numeric, load default
+				}
+			}
+			$this->setRecordsPerPage($this->DisplayRecs); // Save to Session
+
+			// Reset start position
+			$this->StartRec = 1;
+			$this->setStartRecordNumber($this->StartRec);
+		}
+	}
+
+	// Exit inline mode
+	protected function clearInlineMode()
+	{
+		$this->setKey("id", ""); // Clear inline edit key
+		$this->LastAction = $this->CurrentAction; // Save last action
+		$this->CurrentAction = ""; // Clear action
+		$_SESSION[SESSION_INLINE_MODE] = ""; // Clear inline mode
+	}
+
+	// Switch to Grid Edit mode
+	protected function gridEditMode()
+	{
+		$this->CurrentAction = "gridedit";
+		$_SESSION[SESSION_INLINE_MODE] = "gridedit";
+		$this->hideFieldsForAddEdit();
+	}
+
+	// Switch to Inline Edit mode
+	protected function inlineEditMode()
+	{
+		global $Security, $Language;
+		$inlineEdit = TRUE;
+		if (Get("id") !== NULL) {
+			$this->id->setQueryStringValue(Get("id"));
+		} else {
+			$inlineEdit = FALSE;
+		}
+		if ($inlineEdit) {
+			if ($this->loadRow()) {
+				$this->setKey("id", $this->id->CurrentValue); // Set up inline edit key
+				$_SESSION[SESSION_INLINE_MODE] = "edit"; // Enable inline edit
+			}
+		}
+		return TRUE;
+	}
+
+	// Perform update to Inline Edit record
+	protected function inlineUpdate()
+	{
+		global $Language, $CurrentForm, $FormError;
+		$CurrentForm->Index = 1;
+		$this->loadFormValues(); // Get form values
+
+		// Validate form
+		$inlineUpdate = TRUE;
+		if (!$this->validateForm()) {
+			$inlineUpdate = FALSE; // Form error, reset action
+			$this->setFailureMessage($FormError);
+		} else {
+			$inlineUpdate = FALSE;
+			$rowkey = strval($CurrentForm->getValue($this->FormKeyName));
+			if ($this->setupKeyValues($rowkey)) { // Set up key values
+				if ($this->checkInlineEditKey()) { // Check key
+					$this->SendEmail = TRUE; // Send email on update success
+					$inlineUpdate = $this->editRow(); // Update record
+				} else {
+					$inlineUpdate = FALSE;
+				}
+			}
+		}
+		if ($inlineUpdate) { // Update success
+			if ($this->getSuccessMessage() == "")
+				$this->setSuccessMessage($Language->phrase("UpdateSuccess")); // Set up success message
+			$this->clearInlineMode(); // Clear inline edit mode
+		} else {
+			if ($this->getFailureMessage() == "")
+				$this->setFailureMessage($Language->phrase("UpdateFailed")); // Set update failed message
+			$this->EventCancelled = TRUE; // Cancel event
+			$this->CurrentAction = "edit"; // Stay in edit mode
+		}
+	}
+
+	// Check Inline Edit key
+	public function checkInlineEditKey()
+	{
+		if (strval($this->getKey("id")) <> strval($this->id->CurrentValue))
+			return FALSE;
+		return TRUE;
+	}
+
+	// Perform update to grid
+	public function gridUpdate()
+	{
+		global $Language, $CurrentForm, $FormError;
+		$gridUpdate = TRUE;
+
+		// Get old recordset
+		$this->CurrentFilter = $this->buildKeyFilter();
+		if ($this->CurrentFilter == "")
+			$this->CurrentFilter = "0=1";
+		$sql = $this->getCurrentSql();
+		$conn = &$this->getConnection();
+		if ($rs = $conn->execute($sql)) {
+			$rsold = $rs->getRows();
+			$rs->close();
+		}
+
+		// Call Grid Updating event
+		if (!$this->Grid_Updating($rsold)) {
+			if ($this->getFailureMessage() == "")
+				$this->setFailureMessage($Language->phrase("GridEditCancelled")); // Set grid edit cancelled message
+			return FALSE;
+		}
+
+		// Begin transaction
+		$conn->beginTrans();
+		if ($this->AuditTrailOnEdit)
+			$this->writeAuditTrailDummy($Language->phrase("BatchUpdateBegin")); // Batch update begin
+		$key = "";
+
+		// Update row index and get row key
+		$CurrentForm->Index = -1;
+		$rowcnt = strval($CurrentForm->getValue($this->FormKeyCountName));
+		if ($rowcnt == "" || !is_numeric($rowcnt))
+			$rowcnt = 0;
+
+		// Update all rows based on key
+		for ($rowindex = 1; $rowindex <= $rowcnt; $rowindex++) {
+			$CurrentForm->Index = $rowindex;
+			$rowkey = strval($CurrentForm->getValue($this->FormKeyName));
+			$rowaction = strval($CurrentForm->getValue($this->FormActionName));
+
+			// Load all values and keys
+			if ($rowaction <> "insertdelete") { // Skip insert then deleted rows
+				$this->loadFormValues(); // Get form values
+				if ($rowaction == "" || $rowaction == "edit" || $rowaction == "delete") {
+					$gridUpdate = $this->setupKeyValues($rowkey); // Set up key values
+				} else {
+					$gridUpdate = TRUE;
+				}
+
+				// Skip empty row
+				if ($rowaction == "insert" && $this->emptyRow()) {
+
+					// No action required
+				// Validate form and insert/update/delete record
+
+				} elseif ($gridUpdate) {
+					if ($rowaction == "delete") {
+						$this->CurrentFilter = $this->getRecordFilter();
+						$gridUpdate = $this->deleteRows(); // Delete this row
+					} else if (!$this->validateForm()) {
+						$gridUpdate = FALSE; // Form error, reset action
+						$this->setFailureMessage($FormError);
+					} else {
+						if ($rowaction == "insert") {
+							$gridUpdate = $this->addRow(); // Insert this row
+						} else {
+							if ($rowkey <> "") {
+								$this->SendEmail = FALSE; // Do not send email on update success
+								$gridUpdate = $this->editRow(); // Update this row
+							}
+						} // End update
+					}
+				}
+				if ($gridUpdate) {
+					if ($key <> "")
+						$key .= ", ";
+					$key .= $rowkey;
+				} else {
+					break;
+				}
+			}
+		}
+		if ($gridUpdate) {
+			$conn->commitTrans(); // Commit transaction
+
+			// Get new recordset
+			if ($rs = $conn->execute($sql)) {
+				$rsnew = $rs->getRows();
+				$rs->close();
+			}
+
+			// Call Grid_Updated event
+			$this->Grid_Updated($rsold, $rsnew);
+			if ($this->AuditTrailOnEdit)
+				$this->writeAuditTrailDummy($Language->phrase("BatchUpdateSuccess")); // Batch update success
+			if ($this->getSuccessMessage() == "")
+				$this->setSuccessMessage($Language->phrase("UpdateSuccess")); // Set up update success message
+			$this->clearInlineMode(); // Clear inline edit mode
+		} else {
+			$conn->rollbackTrans(); // Rollback transaction
+			if ($this->AuditTrailOnEdit)
+				$this->writeAuditTrailDummy($Language->phrase("BatchUpdateRollback")); // Batch update rollback
+			if ($this->getFailureMessage() == "")
+				$this->setFailureMessage($Language->phrase("UpdateFailed")); // Set update failed message
+		}
+		return $gridUpdate;
 	}
 
 	// Build filter for all keys
@@ -924,6 +1211,100 @@ class t101_jo_head_list extends t101_jo_head
 		return TRUE;
 	}
 
+	// Check if empty row
+	public function emptyRow()
+	{
+		global $CurrentForm;
+		if ($CurrentForm->hasValue("x_Export_Import") && $CurrentForm->hasValue("o_Export_Import") && $this->Export_Import->CurrentValue <> $this->Export_Import->OldValue)
+			return FALSE;
+		if ($CurrentForm->hasValue("x_No_BL") && $CurrentForm->hasValue("o_No_BL") && $this->No_BL->CurrentValue <> $this->No_BL->OldValue)
+			return FALSE;
+		if ($CurrentForm->hasValue("x_Nomor_JO") && $CurrentForm->hasValue("o_Nomor_JO") && $this->Nomor_JO->CurrentValue <> $this->Nomor_JO->OldValue)
+			return FALSE;
+		if ($CurrentForm->hasValue("x_Shipper_id") && $CurrentForm->hasValue("o_Shipper_id") && $this->Shipper_id->CurrentValue <> $this->Shipper_id->OldValue)
+			return FALSE;
+		if ($CurrentForm->hasValue("x_Party") && $CurrentForm->hasValue("o_Party") && $this->Party->CurrentValue <> $this->Party->OldValue)
+			return FALSE;
+		if ($CurrentForm->hasValue("x_Container") && $CurrentForm->hasValue("o_Container") && $this->Container->CurrentValue <> $this->Container->OldValue)
+			return FALSE;
+		if ($CurrentForm->hasValue("x_Destination_id") && $CurrentForm->hasValue("o_Destination_id") && $this->Destination_id->CurrentValue <> $this->Destination_id->OldValue)
+			return FALSE;
+		if ($CurrentForm->hasValue("x_Feeder_id") && $CurrentForm->hasValue("o_Feeder_id") && $this->Feeder_id->CurrentValue <> $this->Feeder_id->OldValue)
+			return FALSE;
+		return TRUE;
+	}
+
+	// Validate grid form
+	public function validateGridForm()
+	{
+		global $CurrentForm;
+
+		// Get row count
+		$CurrentForm->Index = -1;
+		$rowcnt = strval($CurrentForm->getValue($this->FormKeyCountName));
+		if ($rowcnt == "" || !is_numeric($rowcnt))
+			$rowcnt = 0;
+
+		// Validate all records
+		for ($rowindex = 1; $rowindex <= $rowcnt; $rowindex++) {
+
+			// Load current row values
+			$CurrentForm->Index = $rowindex;
+			$rowaction = strval($CurrentForm->getValue($this->FormActionName));
+			if ($rowaction <> "delete" && $rowaction <> "insertdelete") {
+				$this->loadFormValues(); // Get form values
+				if ($rowaction == "insert" && $this->emptyRow()) {
+
+					// Ignore
+				} else if (!$this->validateForm()) {
+					return FALSE;
+				}
+			}
+		}
+		return TRUE;
+	}
+
+	// Get all form values of the grid
+	public function getGridFormValues()
+	{
+		global $CurrentForm;
+
+		// Get row count
+		$CurrentForm->Index = -1;
+		$rowcnt = strval($CurrentForm->getValue($this->FormKeyCountName));
+		if ($rowcnt == "" || !is_numeric($rowcnt))
+			$rowcnt = 0;
+		$rows = array();
+
+		// Loop through all records
+		for ($rowindex = 1; $rowindex <= $rowcnt; $rowindex++) {
+
+			// Load current row values
+			$CurrentForm->Index = $rowindex;
+			$rowaction = strval($CurrentForm->getValue($this->FormActionName));
+			if ($rowaction <> "delete" && $rowaction <> "insertdelete") {
+				$this->loadFormValues(); // Get form values
+				if ($rowaction == "insert" && $this->emptyRow()) {
+
+					// Ignore
+				} else {
+					$rows[] = $this->getFieldValues("FormValue"); // Return row as array
+				}
+			}
+		}
+		return $rows; // Return as array of array
+	}
+
+	// Restore form values for current row
+	public function restoreCurrentRowFormValues($idx)
+	{
+		global $CurrentForm;
+
+		// Get row based on current index
+		$CurrentForm->Index = $idx;
+		$this->loadFormValues(); // Load form values
+	}
+
 	// Get list of filters
 	public function getFilterList()
 	{
@@ -934,11 +1315,11 @@ class t101_jo_head_list extends t101_jo_head
 		$savedFilterList = "";
 		$filterList = Concat($filterList, $this->id->AdvancedSearch->toJson(), ","); // Field id
 		$filterList = Concat($filterList, $this->Export_Import->AdvancedSearch->toJson(), ","); // Field Export_Import
+		$filterList = Concat($filterList, $this->No_BL->AdvancedSearch->toJson(), ","); // Field No_BL
 		$filterList = Concat($filterList, $this->Nomor_JO->AdvancedSearch->toJson(), ","); // Field Nomor_JO
 		$filterList = Concat($filterList, $this->Shipper_id->AdvancedSearch->toJson(), ","); // Field Shipper_id
 		$filterList = Concat($filterList, $this->Party->AdvancedSearch->toJson(), ","); // Field Party
 		$filterList = Concat($filterList, $this->Container->AdvancedSearch->toJson(), ","); // Field Container
-		$filterList = Concat($filterList, $this->Tanggal_Stuffing->AdvancedSearch->toJson(), ","); // Field Tanggal_Stuffing
 		$filterList = Concat($filterList, $this->Destination_id->AdvancedSearch->toJson(), ","); // Field Destination_id
 		$filterList = Concat($filterList, $this->Feeder_id->AdvancedSearch->toJson(), ","); // Field Feeder_id
 		if ($this->BasicSearch->Keyword <> "") {
@@ -995,6 +1376,14 @@ class t101_jo_head_list extends t101_jo_head
 		$this->Export_Import->AdvancedSearch->SearchOperator2 = @$filter["w_Export_Import"];
 		$this->Export_Import->AdvancedSearch->save();
 
+		// Field No_BL
+		$this->No_BL->AdvancedSearch->SearchValue = @$filter["x_No_BL"];
+		$this->No_BL->AdvancedSearch->SearchOperator = @$filter["z_No_BL"];
+		$this->No_BL->AdvancedSearch->SearchCondition = @$filter["v_No_BL"];
+		$this->No_BL->AdvancedSearch->SearchValue2 = @$filter["y_No_BL"];
+		$this->No_BL->AdvancedSearch->SearchOperator2 = @$filter["w_No_BL"];
+		$this->No_BL->AdvancedSearch->save();
+
 		// Field Nomor_JO
 		$this->Nomor_JO->AdvancedSearch->SearchValue = @$filter["x_Nomor_JO"];
 		$this->Nomor_JO->AdvancedSearch->SearchOperator = @$filter["z_Nomor_JO"];
@@ -1027,14 +1416,6 @@ class t101_jo_head_list extends t101_jo_head
 		$this->Container->AdvancedSearch->SearchOperator2 = @$filter["w_Container"];
 		$this->Container->AdvancedSearch->save();
 
-		// Field Tanggal_Stuffing
-		$this->Tanggal_Stuffing->AdvancedSearch->SearchValue = @$filter["x_Tanggal_Stuffing"];
-		$this->Tanggal_Stuffing->AdvancedSearch->SearchOperator = @$filter["z_Tanggal_Stuffing"];
-		$this->Tanggal_Stuffing->AdvancedSearch->SearchCondition = @$filter["v_Tanggal_Stuffing"];
-		$this->Tanggal_Stuffing->AdvancedSearch->SearchValue2 = @$filter["y_Tanggal_Stuffing"];
-		$this->Tanggal_Stuffing->AdvancedSearch->SearchOperator2 = @$filter["w_Tanggal_Stuffing"];
-		$this->Tanggal_Stuffing->AdvancedSearch->save();
-
 		// Field Destination_id
 		$this->Destination_id->AdvancedSearch->SearchValue = @$filter["x_Destination_id"];
 		$this->Destination_id->AdvancedSearch->SearchOperator = @$filter["z_Destination_id"];
@@ -1061,11 +1442,11 @@ class t101_jo_head_list extends t101_jo_head
 		$where = "";
 		$this->buildSearchSql($where, $this->id, $default, FALSE); // id
 		$this->buildSearchSql($where, $this->Export_Import, $default, FALSE); // Export_Import
+		$this->buildSearchSql($where, $this->No_BL, $default, FALSE); // No_BL
 		$this->buildSearchSql($where, $this->Nomor_JO, $default, FALSE); // Nomor_JO
 		$this->buildSearchSql($where, $this->Shipper_id, $default, FALSE); // Shipper_id
 		$this->buildSearchSql($where, $this->Party, $default, FALSE); // Party
 		$this->buildSearchSql($where, $this->Container, $default, FALSE); // Container
-		$this->buildSearchSql($where, $this->Tanggal_Stuffing, $default, FALSE); // Tanggal_Stuffing
 		$this->buildSearchSql($where, $this->Destination_id, $default, FALSE); // Destination_id
 		$this->buildSearchSql($where, $this->Feeder_id, $default, FALSE); // Feeder_id
 
@@ -1076,11 +1457,11 @@ class t101_jo_head_list extends t101_jo_head
 		if (!$default && $this->Command == "search") {
 			$this->id->AdvancedSearch->save(); // id
 			$this->Export_Import->AdvancedSearch->save(); // Export_Import
+			$this->No_BL->AdvancedSearch->save(); // No_BL
 			$this->Nomor_JO->AdvancedSearch->save(); // Nomor_JO
 			$this->Shipper_id->AdvancedSearch->save(); // Shipper_id
 			$this->Party->AdvancedSearch->save(); // Party
 			$this->Container->AdvancedSearch->save(); // Container
-			$this->Tanggal_Stuffing->AdvancedSearch->save(); // Tanggal_Stuffing
 			$this->Destination_id->AdvancedSearch->save(); // Destination_id
 			$this->Feeder_id->AdvancedSearch->save(); // Feeder_id
 		}
@@ -1143,6 +1524,7 @@ class t101_jo_head_list extends t101_jo_head
 	protected function basicSearchSql($arKeywords, $type)
 	{
 		$where = "";
+		$this->buildBasicSearchSql($where, $this->No_BL, $arKeywords, $type);
 		$this->buildBasicSearchSql($where, $this->Nomor_JO, $arKeywords, $type);
 		return $where;
 	}
@@ -1261,6 +1643,8 @@ class t101_jo_head_list extends t101_jo_head
 			return TRUE;
 		if ($this->Export_Import->AdvancedSearch->issetSession())
 			return TRUE;
+		if ($this->No_BL->AdvancedSearch->issetSession())
+			return TRUE;
 		if ($this->Nomor_JO->AdvancedSearch->issetSession())
 			return TRUE;
 		if ($this->Shipper_id->AdvancedSearch->issetSession())
@@ -1268,8 +1652,6 @@ class t101_jo_head_list extends t101_jo_head
 		if ($this->Party->AdvancedSearch->issetSession())
 			return TRUE;
 		if ($this->Container->AdvancedSearch->issetSession())
-			return TRUE;
-		if ($this->Tanggal_Stuffing->AdvancedSearch->issetSession())
 			return TRUE;
 		if ($this->Destination_id->AdvancedSearch->issetSession())
 			return TRUE;
@@ -1310,11 +1692,11 @@ class t101_jo_head_list extends t101_jo_head
 	{
 		$this->id->AdvancedSearch->unsetSession();
 		$this->Export_Import->AdvancedSearch->unsetSession();
+		$this->No_BL->AdvancedSearch->unsetSession();
 		$this->Nomor_JO->AdvancedSearch->unsetSession();
 		$this->Shipper_id->AdvancedSearch->unsetSession();
 		$this->Party->AdvancedSearch->unsetSession();
 		$this->Container->AdvancedSearch->unsetSession();
-		$this->Tanggal_Stuffing->AdvancedSearch->unsetSession();
 		$this->Destination_id->AdvancedSearch->unsetSession();
 		$this->Feeder_id->AdvancedSearch->unsetSession();
 	}
@@ -1330,11 +1712,11 @@ class t101_jo_head_list extends t101_jo_head
 		// Restore advanced search values
 		$this->id->AdvancedSearch->load();
 		$this->Export_Import->AdvancedSearch->load();
+		$this->No_BL->AdvancedSearch->load();
 		$this->Nomor_JO->AdvancedSearch->load();
 		$this->Shipper_id->AdvancedSearch->load();
 		$this->Party->AdvancedSearch->load();
 		$this->Container->AdvancedSearch->load();
-		$this->Tanggal_Stuffing->AdvancedSearch->load();
 		$this->Destination_id->AdvancedSearch->load();
 		$this->Feeder_id->AdvancedSearch->load();
 	}
@@ -1351,11 +1733,11 @@ class t101_jo_head_list extends t101_jo_head
 			$this->CurrentOrder = Get("order");
 			$this->CurrentOrderType = Get("ordertype", "");
 			$this->updateSort($this->Export_Import, $ctrl); // Export_Import
+			$this->updateSort($this->No_BL, $ctrl); // No_BL
 			$this->updateSort($this->Nomor_JO, $ctrl); // Nomor_JO
 			$this->updateSort($this->Shipper_id, $ctrl); // Shipper_id
 			$this->updateSort($this->Party, $ctrl); // Party
 			$this->updateSort($this->Container, $ctrl); // Container
-			$this->updateSort($this->Tanggal_Stuffing, $ctrl); // Tanggal_Stuffing
 			$this->updateSort($this->Destination_id, $ctrl); // Destination_id
 			$this->updateSort($this->Feeder_id, $ctrl); // Feeder_id
 			$this->setStartRecordNumber(1); // Reset start position
@@ -1370,6 +1752,8 @@ class t101_jo_head_list extends t101_jo_head
 			if ($this->getSqlOrderBy() <> "") {
 				$orderBy = $this->getSqlOrderBy();
 				$this->setSessionOrderBy($orderBy);
+				$this->Export_Import->setSort("ASC");
+				$this->Nomor_JO->setSort("ASC");
 			}
 		}
 	}
@@ -1394,11 +1778,11 @@ class t101_jo_head_list extends t101_jo_head
 				$orderBy = "";
 				$this->setSessionOrderBy($orderBy);
 				$this->Export_Import->setSort("");
+				$this->No_BL->setSort("");
 				$this->Nomor_JO->setSort("");
 				$this->Shipper_id->setSort("");
 				$this->Party->setSort("");
 				$this->Container->setSort("");
-				$this->Tanggal_Stuffing->setSort("");
 				$this->Destination_id->setSort("");
 				$this->Feeder_id->setSort("");
 			}
@@ -1413,6 +1797,14 @@ class t101_jo_head_list extends t101_jo_head
 	protected function setupListOptions()
 	{
 		global $Security, $Language;
+
+		// "griddelete"
+		if ($this->AllowAddDeleteRow) {
+			$item = &$this->ListOptions->add("griddelete");
+			$item->CssClass = "text-nowrap";
+			$item->OnLeft = FALSE;
+			$item->Visible = FALSE; // Default hidden
+		}
 
 		// Add group option item
 		$item = &$this->ListOptions->add($this->ListOptions->GroupOptionName);
@@ -1516,9 +1908,48 @@ class t101_jo_head_list extends t101_jo_head
 		// Call ListOptions_Rendering event
 		$this->ListOptions_Rendering();
 
+		// Set up row action and key
+		if (is_numeric($this->RowIndex) && $this->CurrentMode <> "view") {
+			$CurrentForm->Index = $this->RowIndex;
+			$actionName = str_replace("k_", "k" . $this->RowIndex . "_", $this->FormActionName);
+			$oldKeyName = str_replace("k_", "k" . $this->RowIndex . "_", $this->FormOldKeyName);
+			$keyName = str_replace("k_", "k" . $this->RowIndex . "_", $this->FormKeyName);
+			$blankRowName = str_replace("k_", "k" . $this->RowIndex . "_", $this->FormBlankRowName);
+			if ($this->RowAction <> "")
+				$this->MultiSelectKey .= "<input type=\"hidden\" name=\"" . $actionName . "\" id=\"" . $actionName . "\" value=\"" . $this->RowAction . "\">";
+			if ($this->RowAction == "delete") {
+				$rowkey = $CurrentForm->getValue($this->FormKeyName);
+				$this->setupKeyValues($rowkey);
+			}
+			if ($this->RowAction == "insert" && $this->isConfirm() && $this->emptyRow())
+				$this->MultiSelectKey .= "<input type=\"hidden\" name=\"" . $blankRowName . "\" id=\"" . $blankRowName . "\" value=\"1\">";
+		}
+
+		// "delete"
+		if ($this->AllowAddDeleteRow) {
+			if ($this->isGridAdd() || $this->isGridEdit()) {
+				$options = &$this->ListOptions;
+				$options->UseButtonGroup = TRUE; // Use button group for grid delete button
+				$opt = &$options->Items["griddelete"];
+				$opt->Body = "<a class=\"ew-grid-link ew-grid-delete\" title=\"" . HtmlTitle($Language->phrase("DeleteLink")) . "\" data-caption=\"" . HtmlTitle($Language->phrase("DeleteLink")) . "\" onclick=\"return ew.deleteGridRow(this, " . $this->RowIndex . ");\">" . $Language->phrase("DeleteLink") . "</a>";
+			}
+		}
+
 		// "sequence"
 		$opt = &$this->ListOptions->Items["sequence"];
 		$opt->Body = FormatSequenceNumber($this->RecCnt);
+
+		// "edit"
+		$opt = &$this->ListOptions->Items["edit"];
+		if ($this->isInlineEditRow()) { // Inline-Edit
+			$this->ListOptions->CustomItem = "edit"; // Show edit column only
+				$opt->Body = "<div" . (($opt->OnLeft) ? " class=\"text-right\"" : "") . ">" .
+					"<a class=\"ew-grid-link ew-inline-update\" title=\"" . HtmlTitle($Language->phrase("UpdateLink")) . "\" data-caption=\"" . HtmlTitle($Language->phrase("UpdateLink")) . "\" href=\"\" onclick=\"return ew.forms(this).submit('" . UrlAddHash($this->pageName(), "r" . $this->RowCnt . "_" . $this->TableVar) . "');\">" . $Language->phrase("UpdateLink") . "</a>&nbsp;" .
+					"<a class=\"ew-grid-link ew-inline-cancel\" title=\"" . HtmlTitle($Language->phrase("CancelLink")) . "\" data-caption=\"" . HtmlTitle($Language->phrase("CancelLink")) . "\" href=\"" . $this->CancelUrl . "\">" . $Language->phrase("CancelLink") . "</a>" .
+					"<input type=\"hidden\" name=\"action\" id=\"action\" value=\"update\"></div>";
+			$opt->Body .= "<input type=\"hidden\" name=\"k" . $this->RowIndex . "_key\" id=\"k" . $this->RowIndex . "_key\" value=\"" . HtmlEncode($this->id->CurrentValue) . "\">";
+			return;
+		}
 
 		// "view"
 		$opt = &$this->ListOptions->Items["view"];
@@ -1534,6 +1965,7 @@ class t101_jo_head_list extends t101_jo_head
 		$editcaption = HtmlTitle($Language->phrase("EditLink"));
 		if (TRUE) {
 			$opt->Body = "<a class=\"ew-row-link ew-edit\" title=\"" . HtmlTitle($Language->phrase("EditLink")) . "\" data-caption=\"" . HtmlTitle($Language->phrase("EditLink")) . "\" href=\"" . HtmlEncode($this->EditUrl) . "\">" . $Language->phrase("EditLink") . "</a>";
+			$opt->Body .= "<a class=\"ew-row-link ew-inline-edit\" title=\"" . HtmlTitle($Language->phrase("InlineEditLink")) . "\" data-caption=\"" . HtmlTitle($Language->phrase("InlineEditLink")) . "\" href=\"" . HtmlEncode(UrlAddHash($this->InlineEditUrl, "r" . $this->RowCnt . "_" . $this->TableVar)) . "\">" . $Language->phrase("InlineEditLink") . "</a>";
 		} else {
 			$opt->Body = "";
 		}
@@ -1651,6 +2083,9 @@ class t101_jo_head_list extends t101_jo_head
 		// "checkbox"
 		$opt = &$this->ListOptions->Items["checkbox"];
 		$opt->Body = "<input type=\"checkbox\" name=\"key_m[]\" class=\"ew-multi-select\" value=\"" . HtmlEncode($this->id->CurrentValue) . "\" onclick=\"ew.clickMultiCheckbox(event);\">";
+		if ($this->isGridEdit() && is_numeric($this->RowIndex)) {
+			$this->MultiSelectKey .= "<input type=\"hidden\" name=\"" . $keyName . "\" id=\"" . $keyName . "\" value=\"" . $this->id->CurrentValue . "\">";
+		}
 		$this->renderListOptionsExt();
 
 		// Call ListOptions_Rendered event
@@ -1698,6 +2133,12 @@ class t101_jo_head_list extends t101_jo_head
 					$item->Visible = FALSE;
 			}
 		}
+
+		// Add grid edit
+		$option = $options["addedit"];
+		$item = &$option->add("gridedit");
+		$item->Body = "<a class=\"ew-add-edit ew-grid-edit\" title=\"" . HtmlTitle($Language->phrase("GridEditLink")) . "\" data-caption=\"" . HtmlTitle($Language->phrase("GridEditLink")) . "\" href=\"" . HtmlEncode($this->GridEditUrl) . "\">" . $Language->phrase("GridEditLink") . "</a>";
+		$item->Visible = ($this->GridEditUrl <> "");
 		$option = $options["action"];
 
 		// Set up options default
@@ -1736,6 +2177,7 @@ class t101_jo_head_list extends t101_jo_head
 	{
 		global $Language, $Security;
 		$options = &$this->OtherOptions;
+		if (!$this->isGridAdd() && !$this->isGridEdit()) { // Not grid add/edit mode
 			$option = &$options["action"];
 
 			// Set up list action buttons
@@ -1757,6 +2199,29 @@ class t101_jo_head_list extends t101_jo_head
 				$option = &$options["action"];
 				$option->hideAllOptions();
 			}
+		} else { // Grid add/edit mode
+
+			// Hide all options first
+			foreach ($options as &$option)
+				$option->hideAllOptions();
+			if ($this->isGridEdit()) {
+				if ($this->AllowAddDeleteRow) {
+
+					// Add add blank row
+					$option = &$options["addedit"];
+					$option->UseDropDownButton = FALSE;
+					$item = &$option->add("addblankrow");
+					$item->Body = "<a class=\"ew-add-edit ew-add-blank-row\" title=\"" . HtmlTitle($Language->phrase("AddBlankRow")) . "\" data-caption=\"" . HtmlTitle($Language->phrase("AddBlankRow")) . "\" href=\"javascript:void(0);\" onclick=\"ew.addGridRow(this);\">" . $Language->phrase("AddBlankRow") . "</a>";
+					$item->Visible = TRUE;
+				}
+				$option = &$options["action"];
+				$option->UseDropDownButton = FALSE;
+					$item = &$option->add("gridsave");
+					$item->Body = "<a class=\"ew-action ew-grid-save\" title=\"" . HtmlTitle($Language->phrase("GridSaveLink")) . "\" data-caption=\"" . HtmlTitle($Language->phrase("GridSaveLink")) . "\" href=\"\" onclick=\"return ew.forms(this).submit('" . $this->pageName() . "');\">" . $Language->phrase("GridSaveLink") . "</a>";
+					$item = &$option->add("gridcancel");
+					$item->Body = "<a class=\"ew-action ew-grid-cancel\" title=\"" . HtmlTitle($Language->phrase("GridCancelLink")) . "\" data-caption=\"" . HtmlTitle($Language->phrase("GridCancelLink")) . "\" href=\"" . $this->CancelUrl . "\">" . $Language->phrase("GridCancelLink") . "</a>";
+			}
+		}
 	}
 
 	// Process list action
@@ -1994,6 +2459,29 @@ class t101_jo_head_list extends t101_jo_head
 		}
 	}
 
+	// Load default values
+	protected function loadDefaultValues()
+	{
+		$this->id->CurrentValue = NULL;
+		$this->id->OldValue = $this->id->CurrentValue;
+		$this->Export_Import->CurrentValue = "Export";
+		$this->Export_Import->OldValue = $this->Export_Import->CurrentValue;
+		$this->No_BL->CurrentValue = "-";
+		$this->No_BL->OldValue = $this->No_BL->CurrentValue;
+		$this->Nomor_JO->CurrentValue = "-";
+		$this->Nomor_JO->OldValue = $this->Nomor_JO->CurrentValue;
+		$this->Shipper_id->CurrentValue = NULL;
+		$this->Shipper_id->OldValue = $this->Shipper_id->CurrentValue;
+		$this->Party->CurrentValue = NULL;
+		$this->Party->OldValue = $this->Party->CurrentValue;
+		$this->Container->CurrentValue = "40";
+		$this->Container->OldValue = $this->Container->CurrentValue;
+		$this->Destination_id->CurrentValue = NULL;
+		$this->Destination_id->OldValue = $this->Destination_id->CurrentValue;
+		$this->Feeder_id->CurrentValue = NULL;
+		$this->Feeder_id->OldValue = $this->Feeder_id->CurrentValue;
+	}
+
 	// Load basic search values
 	protected function loadBasicSearchValues()
 	{
@@ -2024,6 +2512,13 @@ class t101_jo_head_list extends t101_jo_head
 			$this->Command = "search";
 		$this->Export_Import->AdvancedSearch->setSearchOperator(Get("z_Export_Import", ""));
 
+		// No_BL
+		if (!$this->isAddOrEdit())
+			$this->No_BL->AdvancedSearch->setSearchValue(Get("x_No_BL", Get("No_BL", "")));
+		if ($this->No_BL->AdvancedSearch->SearchValue <> "" && $this->Command == "")
+			$this->Command = "search";
+		$this->No_BL->AdvancedSearch->setSearchOperator(Get("z_No_BL", ""));
+
 		// Nomor_JO
 		if (!$this->isAddOrEdit())
 			$this->Nomor_JO->AdvancedSearch->setSearchValue(Get("x_Nomor_JO", Get("Nomor_JO", "")));
@@ -2052,13 +2547,6 @@ class t101_jo_head_list extends t101_jo_head
 			$this->Command = "search";
 		$this->Container->AdvancedSearch->setSearchOperator(Get("z_Container", ""));
 
-		// Tanggal_Stuffing
-		if (!$this->isAddOrEdit())
-			$this->Tanggal_Stuffing->AdvancedSearch->setSearchValue(Get("x_Tanggal_Stuffing", Get("Tanggal_Stuffing", "")));
-		if ($this->Tanggal_Stuffing->AdvancedSearch->SearchValue <> "" && $this->Command == "")
-			$this->Command = "search";
-		$this->Tanggal_Stuffing->AdvancedSearch->setSearchOperator(Get("z_Tanggal_Stuffing", ""));
-
 		// Destination_id
 		if (!$this->isAddOrEdit())
 			$this->Destination_id->AdvancedSearch->setSearchValue(Get("x_Destination_id", Get("Destination_id", "")));
@@ -2072,6 +2560,107 @@ class t101_jo_head_list extends t101_jo_head
 		if ($this->Feeder_id->AdvancedSearch->SearchValue <> "" && $this->Command == "")
 			$this->Command = "search";
 		$this->Feeder_id->AdvancedSearch->setSearchOperator(Get("z_Feeder_id", ""));
+	}
+
+	// Load form values
+	protected function loadFormValues()
+	{
+
+		// Load from form
+		global $CurrentForm;
+
+		// Check field name 'Export_Import' first before field var 'x_Export_Import'
+		$val = $CurrentForm->hasValue("Export_Import") ? $CurrentForm->getValue("Export_Import") : $CurrentForm->getValue("x_Export_Import");
+		if (!$this->Export_Import->IsDetailKey) {
+			if (IsApi() && $val == NULL)
+				$this->Export_Import->Visible = FALSE; // Disable update for API request
+			else
+				$this->Export_Import->setFormValue($val);
+		}
+
+		// Check field name 'No_BL' first before field var 'x_No_BL'
+		$val = $CurrentForm->hasValue("No_BL") ? $CurrentForm->getValue("No_BL") : $CurrentForm->getValue("x_No_BL");
+		if (!$this->No_BL->IsDetailKey) {
+			if (IsApi() && $val == NULL)
+				$this->No_BL->Visible = FALSE; // Disable update for API request
+			else
+				$this->No_BL->setFormValue($val);
+		}
+
+		// Check field name 'Nomor_JO' first before field var 'x_Nomor_JO'
+		$val = $CurrentForm->hasValue("Nomor_JO") ? $CurrentForm->getValue("Nomor_JO") : $CurrentForm->getValue("x_Nomor_JO");
+		if (!$this->Nomor_JO->IsDetailKey) {
+			if (IsApi() && $val == NULL)
+				$this->Nomor_JO->Visible = FALSE; // Disable update for API request
+			else
+				$this->Nomor_JO->setFormValue($val);
+		}
+
+		// Check field name 'Shipper_id' first before field var 'x_Shipper_id'
+		$val = $CurrentForm->hasValue("Shipper_id") ? $CurrentForm->getValue("Shipper_id") : $CurrentForm->getValue("x_Shipper_id");
+		if (!$this->Shipper_id->IsDetailKey) {
+			if (IsApi() && $val == NULL)
+				$this->Shipper_id->Visible = FALSE; // Disable update for API request
+			else
+				$this->Shipper_id->setFormValue($val);
+		}
+
+		// Check field name 'Party' first before field var 'x_Party'
+		$val = $CurrentForm->hasValue("Party") ? $CurrentForm->getValue("Party") : $CurrentForm->getValue("x_Party");
+		if (!$this->Party->IsDetailKey) {
+			if (IsApi() && $val == NULL)
+				$this->Party->Visible = FALSE; // Disable update for API request
+			else
+				$this->Party->setFormValue($val);
+		}
+
+		// Check field name 'Container' first before field var 'x_Container'
+		$val = $CurrentForm->hasValue("Container") ? $CurrentForm->getValue("Container") : $CurrentForm->getValue("x_Container");
+		if (!$this->Container->IsDetailKey) {
+			if (IsApi() && $val == NULL)
+				$this->Container->Visible = FALSE; // Disable update for API request
+			else
+				$this->Container->setFormValue($val);
+		}
+
+		// Check field name 'Destination_id' first before field var 'x_Destination_id'
+		$val = $CurrentForm->hasValue("Destination_id") ? $CurrentForm->getValue("Destination_id") : $CurrentForm->getValue("x_Destination_id");
+		if (!$this->Destination_id->IsDetailKey) {
+			if (IsApi() && $val == NULL)
+				$this->Destination_id->Visible = FALSE; // Disable update for API request
+			else
+				$this->Destination_id->setFormValue($val);
+		}
+
+		// Check field name 'Feeder_id' first before field var 'x_Feeder_id'
+		$val = $CurrentForm->hasValue("Feeder_id") ? $CurrentForm->getValue("Feeder_id") : $CurrentForm->getValue("x_Feeder_id");
+		if (!$this->Feeder_id->IsDetailKey) {
+			if (IsApi() && $val == NULL)
+				$this->Feeder_id->Visible = FALSE; // Disable update for API request
+			else
+				$this->Feeder_id->setFormValue($val);
+		}
+
+		// Check field name 'id' first before field var 'x_id'
+		$val = $CurrentForm->hasValue("id") ? $CurrentForm->getValue("id") : $CurrentForm->getValue("x_id");
+		if (!$this->id->IsDetailKey && !$this->isGridAdd() && !$this->isAdd())
+			$this->id->setFormValue($val);
+	}
+
+	// Restore form values
+	public function restoreFormValues()
+	{
+		global $CurrentForm;
+		if (!$this->isGridAdd() && !$this->isAdd())
+			$this->id->CurrentValue = $this->id->FormValue;
+		$this->Export_Import->CurrentValue = $this->Export_Import->FormValue;
+		$this->No_BL->CurrentValue = $this->No_BL->FormValue;
+		$this->Nomor_JO->CurrentValue = $this->Nomor_JO->FormValue;
+		$this->Shipper_id->CurrentValue = $this->Shipper_id->FormValue;
+		$this->Party->CurrentValue = $this->Party->FormValue;
+		$this->Container->CurrentValue = $this->Container->FormValue;
+		$this->Destination_id->CurrentValue = $this->Destination_id->FormValue;
+		$this->Feeder_id->CurrentValue = $this->Feeder_id->FormValue;
 	}
 
 	// Load recordset
@@ -2119,6 +2708,8 @@ class t101_jo_head_list extends t101_jo_head
 		if ($rs && !$rs->EOF) {
 			$res = TRUE;
 			$this->loadRowValues($rs); // Load row values
+			if (!$this->EventCancelled)
+				$this->HashValue = $this->getRowHash($rs); // Get hash value for record
 			$rs->close();
 		}
 		return $res;
@@ -2138,11 +2729,11 @@ class t101_jo_head_list extends t101_jo_head
 			return;
 		$this->id->setDbValue($row['id']);
 		$this->Export_Import->setDbValue($row['Export_Import']);
+		$this->No_BL->setDbValue($row['No_BL']);
 		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
 		$this->Shipper_id->setDbValue($row['Shipper_id']);
 		$this->Party->setDbValue($row['Party']);
 		$this->Container->setDbValue($row['Container']);
-		$this->Tanggal_Stuffing->setDbValue($row['Tanggal_Stuffing']);
 		$this->Destination_id->setDbValue($row['Destination_id']);
 		$this->Feeder_id->setDbValue($row['Feeder_id']);
 	}
@@ -2150,16 +2741,17 @@ class t101_jo_head_list extends t101_jo_head
 	// Return a row with default values
 	protected function newRow()
 	{
+		$this->loadDefaultValues();
 		$row = [];
-		$row['id'] = NULL;
-		$row['Export_Import'] = NULL;
-		$row['Nomor_JO'] = NULL;
-		$row['Shipper_id'] = NULL;
-		$row['Party'] = NULL;
-		$row['Container'] = NULL;
-		$row['Tanggal_Stuffing'] = NULL;
-		$row['Destination_id'] = NULL;
-		$row['Feeder_id'] = NULL;
+		$row['id'] = $this->id->CurrentValue;
+		$row['Export_Import'] = $this->Export_Import->CurrentValue;
+		$row['No_BL'] = $this->No_BL->CurrentValue;
+		$row['Nomor_JO'] = $this->Nomor_JO->CurrentValue;
+		$row['Shipper_id'] = $this->Shipper_id->CurrentValue;
+		$row['Party'] = $this->Party->CurrentValue;
+		$row['Container'] = $this->Container->CurrentValue;
+		$row['Destination_id'] = $this->Destination_id->CurrentValue;
+		$row['Feeder_id'] = $this->Feeder_id->CurrentValue;
 		return $row;
 	}
 
@@ -2205,14 +2797,19 @@ class t101_jo_head_list extends t101_jo_head
 		// Common render codes for all row types
 		// id
 		// Export_Import
+		// No_BL
 		// Nomor_JO
 		// Shipper_id
 		// Party
 		// Container
-		// Tanggal_Stuffing
 		// Destination_id
 		// Feeder_id
+		// Accumulate aggregate value
 
+		if ($this->RowType <> ROWTYPE_AGGREGATEINIT && $this->RowType <> ROWTYPE_AGGREGATE) {
+			if (is_numeric($this->Party->CurrentValue))
+				$this->Party->Total += $this->Party->CurrentValue; // Accumulate total
+		}
 		if ($this->RowType == ROWTYPE_VIEW) { // View row
 
 			// id
@@ -2226,6 +2823,10 @@ class t101_jo_head_list extends t101_jo_head
 				$this->Export_Import->ViewValue = NULL;
 			}
 			$this->Export_Import->ViewCustomAttributes = "";
+
+			// No_BL
+			$this->No_BL->ViewValue = $this->No_BL->CurrentValue;
+			$this->No_BL->ViewCustomAttributes = "";
 
 			// Nomor_JO
 			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
@@ -2265,11 +2866,6 @@ class t101_jo_head_list extends t101_jo_head
 				$this->Container->ViewValue = NULL;
 			}
 			$this->Container->ViewCustomAttributes = "";
-
-			// Tanggal_Stuffing
-			$this->Tanggal_Stuffing->ViewValue = $this->Tanggal_Stuffing->CurrentValue;
-			$this->Tanggal_Stuffing->ViewValue = FormatDateTime($this->Tanggal_Stuffing->ViewValue, 11);
-			$this->Tanggal_Stuffing->ViewCustomAttributes = "";
 
 			// Destination_id
 			$curVal = strval($this->Destination_id->CurrentValue);
@@ -2320,6 +2916,11 @@ class t101_jo_head_list extends t101_jo_head
 			$this->Export_Import->HrefValue = "";
 			$this->Export_Import->TooltipValue = "";
 
+			// No_BL
+			$this->No_BL->LinkCustomAttributes = "";
+			$this->No_BL->HrefValue = "";
+			$this->No_BL->TooltipValue = "";
+
 			// Nomor_JO
 			$this->Nomor_JO->LinkCustomAttributes = "";
 			$this->Nomor_JO->HrefValue = "";
@@ -2340,11 +2941,6 @@ class t101_jo_head_list extends t101_jo_head
 			$this->Container->HrefValue = "";
 			$this->Container->TooltipValue = "";
 
-			// Tanggal_Stuffing
-			$this->Tanggal_Stuffing->LinkCustomAttributes = "";
-			$this->Tanggal_Stuffing->HrefValue = "";
-			$this->Tanggal_Stuffing->TooltipValue = "";
-
 			// Destination_id
 			$this->Destination_id->LinkCustomAttributes = "";
 			$this->Destination_id->HrefValue = "";
@@ -2354,11 +2950,287 @@ class t101_jo_head_list extends t101_jo_head
 			$this->Feeder_id->LinkCustomAttributes = "";
 			$this->Feeder_id->HrefValue = "";
 			$this->Feeder_id->TooltipValue = "";
+		} elseif ($this->RowType == ROWTYPE_ADD) { // Add row
+
+			// Export_Import
+			$this->Export_Import->EditCustomAttributes = "";
+			$this->Export_Import->EditValue = $this->Export_Import->options(FALSE);
+
+			// No_BL
+			$this->No_BL->EditAttrs["class"] = "form-control";
+			$this->No_BL->EditCustomAttributes = "";
+			if (REMOVE_XSS)
+				$this->No_BL->CurrentValue = HtmlDecode($this->No_BL->CurrentValue);
+			$this->No_BL->EditValue = HtmlEncode($this->No_BL->CurrentValue);
+			$this->No_BL->PlaceHolder = RemoveHtml($this->No_BL->caption());
+
+			// Nomor_JO
+			$this->Nomor_JO->EditAttrs["class"] = "form-control";
+			$this->Nomor_JO->EditCustomAttributes = "";
+			if (REMOVE_XSS)
+				$this->Nomor_JO->CurrentValue = HtmlDecode($this->Nomor_JO->CurrentValue);
+			$this->Nomor_JO->EditValue = HtmlEncode($this->Nomor_JO->CurrentValue);
+			$this->Nomor_JO->PlaceHolder = RemoveHtml($this->Nomor_JO->caption());
+
+			// Shipper_id
+			$this->Shipper_id->EditAttrs["class"] = "form-control";
+			$this->Shipper_id->EditCustomAttributes = "";
+			$curVal = trim(strval($this->Shipper_id->CurrentValue));
+			if ($curVal <> "")
+				$this->Shipper_id->ViewValue = $this->Shipper_id->lookupCacheOption($curVal);
+			else
+				$this->Shipper_id->ViewValue = $this->Shipper_id->Lookup !== NULL && is_array($this->Shipper_id->Lookup->Options) ? $curVal : NULL;
+			if ($this->Shipper_id->ViewValue !== NULL) { // Load from cache
+				$this->Shipper_id->EditValue = array_values($this->Shipper_id->Lookup->Options);
+			} else { // Lookup from database
+				if ($curVal == "") {
+					$filterWrk = "0=1";
+				} else {
+					$filterWrk = "`id`" . SearchString("=", $this->Shipper_id->CurrentValue, DATATYPE_NUMBER, "");
+				}
+				$sqlWrk = $this->Shipper_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+				if ($rswrk) $rswrk->Close();
+				$this->Shipper_id->EditValue = $arwrk;
+			}
+
+			// Party
+			$this->Party->EditAttrs["class"] = "form-control";
+			$this->Party->EditCustomAttributes = "";
+			$this->Party->EditValue = HtmlEncode($this->Party->CurrentValue);
+			$this->Party->PlaceHolder = RemoveHtml($this->Party->caption());
+
+			// Container
+			$this->Container->EditCustomAttributes = "";
+			$this->Container->EditValue = $this->Container->options(FALSE);
+
+			// Destination_id
+			$this->Destination_id->EditAttrs["class"] = "form-control";
+			$this->Destination_id->EditCustomAttributes = "";
+			$curVal = trim(strval($this->Destination_id->CurrentValue));
+			if ($curVal <> "")
+				$this->Destination_id->ViewValue = $this->Destination_id->lookupCacheOption($curVal);
+			else
+				$this->Destination_id->ViewValue = $this->Destination_id->Lookup !== NULL && is_array($this->Destination_id->Lookup->Options) ? $curVal : NULL;
+			if ($this->Destination_id->ViewValue !== NULL) { // Load from cache
+				$this->Destination_id->EditValue = array_values($this->Destination_id->Lookup->Options);
+			} else { // Lookup from database
+				if ($curVal == "") {
+					$filterWrk = "0=1";
+				} else {
+					$filterWrk = "`id`" . SearchString("=", $this->Destination_id->CurrentValue, DATATYPE_NUMBER, "");
+				}
+				$sqlWrk = $this->Destination_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+				if ($rswrk) $rswrk->Close();
+				$this->Destination_id->EditValue = $arwrk;
+			}
+
+			// Feeder_id
+			$this->Feeder_id->EditAttrs["class"] = "form-control";
+			$this->Feeder_id->EditCustomAttributes = "";
+			$curVal = trim(strval($this->Feeder_id->CurrentValue));
+			if ($curVal <> "")
+				$this->Feeder_id->ViewValue = $this->Feeder_id->lookupCacheOption($curVal);
+			else
+				$this->Feeder_id->ViewValue = $this->Feeder_id->Lookup !== NULL && is_array($this->Feeder_id->Lookup->Options) ? $curVal : NULL;
+			if ($this->Feeder_id->ViewValue !== NULL) { // Load from cache
+				$this->Feeder_id->EditValue = array_values($this->Feeder_id->Lookup->Options);
+			} else { // Lookup from database
+				if ($curVal == "") {
+					$filterWrk = "0=1";
+				} else {
+					$filterWrk = "`id`" . SearchString("=", $this->Feeder_id->CurrentValue, DATATYPE_NUMBER, "");
+				}
+				$sqlWrk = $this->Feeder_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+				if ($rswrk) $rswrk->Close();
+				$this->Feeder_id->EditValue = $arwrk;
+			}
+
+			// Add refer script
+			// Export_Import
+
+			$this->Export_Import->LinkCustomAttributes = "";
+			$this->Export_Import->HrefValue = "";
+
+			// No_BL
+			$this->No_BL->LinkCustomAttributes = "";
+			$this->No_BL->HrefValue = "";
+
+			// Nomor_JO
+			$this->Nomor_JO->LinkCustomAttributes = "";
+			$this->Nomor_JO->HrefValue = "";
+
+			// Shipper_id
+			$this->Shipper_id->LinkCustomAttributes = "";
+			$this->Shipper_id->HrefValue = "";
+
+			// Party
+			$this->Party->LinkCustomAttributes = "";
+			$this->Party->HrefValue = "";
+
+			// Container
+			$this->Container->LinkCustomAttributes = "";
+			$this->Container->HrefValue = "";
+
+			// Destination_id
+			$this->Destination_id->LinkCustomAttributes = "";
+			$this->Destination_id->HrefValue = "";
+
+			// Feeder_id
+			$this->Feeder_id->LinkCustomAttributes = "";
+			$this->Feeder_id->HrefValue = "";
+		} elseif ($this->RowType == ROWTYPE_EDIT) { // Edit row
+
+			// Export_Import
+			$this->Export_Import->EditCustomAttributes = "";
+			$this->Export_Import->EditValue = $this->Export_Import->options(FALSE);
+
+			// No_BL
+			$this->No_BL->EditAttrs["class"] = "form-control";
+			$this->No_BL->EditCustomAttributes = "";
+			if (REMOVE_XSS)
+				$this->No_BL->CurrentValue = HtmlDecode($this->No_BL->CurrentValue);
+			$this->No_BL->EditValue = HtmlEncode($this->No_BL->CurrentValue);
+			$this->No_BL->PlaceHolder = RemoveHtml($this->No_BL->caption());
+
+			// Nomor_JO
+			$this->Nomor_JO->EditAttrs["class"] = "form-control";
+			$this->Nomor_JO->EditCustomAttributes = "";
+			if (REMOVE_XSS)
+				$this->Nomor_JO->CurrentValue = HtmlDecode($this->Nomor_JO->CurrentValue);
+			$this->Nomor_JO->EditValue = HtmlEncode($this->Nomor_JO->CurrentValue);
+			$this->Nomor_JO->PlaceHolder = RemoveHtml($this->Nomor_JO->caption());
+
+			// Shipper_id
+			$this->Shipper_id->EditAttrs["class"] = "form-control";
+			$this->Shipper_id->EditCustomAttributes = "";
+			$curVal = trim(strval($this->Shipper_id->CurrentValue));
+			if ($curVal <> "")
+				$this->Shipper_id->ViewValue = $this->Shipper_id->lookupCacheOption($curVal);
+			else
+				$this->Shipper_id->ViewValue = $this->Shipper_id->Lookup !== NULL && is_array($this->Shipper_id->Lookup->Options) ? $curVal : NULL;
+			if ($this->Shipper_id->ViewValue !== NULL) { // Load from cache
+				$this->Shipper_id->EditValue = array_values($this->Shipper_id->Lookup->Options);
+			} else { // Lookup from database
+				if ($curVal == "") {
+					$filterWrk = "0=1";
+				} else {
+					$filterWrk = "`id`" . SearchString("=", $this->Shipper_id->CurrentValue, DATATYPE_NUMBER, "");
+				}
+				$sqlWrk = $this->Shipper_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+				if ($rswrk) $rswrk->Close();
+				$this->Shipper_id->EditValue = $arwrk;
+			}
+
+			// Party
+			$this->Party->EditAttrs["class"] = "form-control";
+			$this->Party->EditCustomAttributes = "";
+			$this->Party->EditValue = HtmlEncode($this->Party->CurrentValue);
+			$this->Party->PlaceHolder = RemoveHtml($this->Party->caption());
+
+			// Container
+			$this->Container->EditCustomAttributes = "";
+			$this->Container->EditValue = $this->Container->options(FALSE);
+
+			// Destination_id
+			$this->Destination_id->EditAttrs["class"] = "form-control";
+			$this->Destination_id->EditCustomAttributes = "";
+			$curVal = trim(strval($this->Destination_id->CurrentValue));
+			if ($curVal <> "")
+				$this->Destination_id->ViewValue = $this->Destination_id->lookupCacheOption($curVal);
+			else
+				$this->Destination_id->ViewValue = $this->Destination_id->Lookup !== NULL && is_array($this->Destination_id->Lookup->Options) ? $curVal : NULL;
+			if ($this->Destination_id->ViewValue !== NULL) { // Load from cache
+				$this->Destination_id->EditValue = array_values($this->Destination_id->Lookup->Options);
+			} else { // Lookup from database
+				if ($curVal == "") {
+					$filterWrk = "0=1";
+				} else {
+					$filterWrk = "`id`" . SearchString("=", $this->Destination_id->CurrentValue, DATATYPE_NUMBER, "");
+				}
+				$sqlWrk = $this->Destination_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+				if ($rswrk) $rswrk->Close();
+				$this->Destination_id->EditValue = $arwrk;
+			}
+
+			// Feeder_id
+			$this->Feeder_id->EditAttrs["class"] = "form-control";
+			$this->Feeder_id->EditCustomAttributes = "";
+			$curVal = trim(strval($this->Feeder_id->CurrentValue));
+			if ($curVal <> "")
+				$this->Feeder_id->ViewValue = $this->Feeder_id->lookupCacheOption($curVal);
+			else
+				$this->Feeder_id->ViewValue = $this->Feeder_id->Lookup !== NULL && is_array($this->Feeder_id->Lookup->Options) ? $curVal : NULL;
+			if ($this->Feeder_id->ViewValue !== NULL) { // Load from cache
+				$this->Feeder_id->EditValue = array_values($this->Feeder_id->Lookup->Options);
+			} else { // Lookup from database
+				if ($curVal == "") {
+					$filterWrk = "0=1";
+				} else {
+					$filterWrk = "`id`" . SearchString("=", $this->Feeder_id->CurrentValue, DATATYPE_NUMBER, "");
+				}
+				$sqlWrk = $this->Feeder_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+				if ($rswrk) $rswrk->Close();
+				$this->Feeder_id->EditValue = $arwrk;
+			}
+
+			// Edit refer script
+			// Export_Import
+
+			$this->Export_Import->LinkCustomAttributes = "";
+			$this->Export_Import->HrefValue = "";
+
+			// No_BL
+			$this->No_BL->LinkCustomAttributes = "";
+			$this->No_BL->HrefValue = "";
+
+			// Nomor_JO
+			$this->Nomor_JO->LinkCustomAttributes = "";
+			$this->Nomor_JO->HrefValue = "";
+
+			// Shipper_id
+			$this->Shipper_id->LinkCustomAttributes = "";
+			$this->Shipper_id->HrefValue = "";
+
+			// Party
+			$this->Party->LinkCustomAttributes = "";
+			$this->Party->HrefValue = "";
+
+			// Container
+			$this->Container->LinkCustomAttributes = "";
+			$this->Container->HrefValue = "";
+
+			// Destination_id
+			$this->Destination_id->LinkCustomAttributes = "";
+			$this->Destination_id->HrefValue = "";
+
+			// Feeder_id
+			$this->Feeder_id->LinkCustomAttributes = "";
+			$this->Feeder_id->HrefValue = "";
 		} elseif ($this->RowType == ROWTYPE_SEARCH) { // Search row
 
 			// Export_Import
 			$this->Export_Import->EditCustomAttributes = "";
 			$this->Export_Import->EditValue = $this->Export_Import->options(FALSE);
+
+			// No_BL
+			$this->No_BL->EditAttrs["class"] = "form-control";
+			$this->No_BL->EditCustomAttributes = "";
+			if (REMOVE_XSS)
+				$this->No_BL->AdvancedSearch->SearchValue = HtmlDecode($this->No_BL->AdvancedSearch->SearchValue);
+			$this->No_BL->EditValue = HtmlEncode($this->No_BL->AdvancedSearch->SearchValue);
+			$this->No_BL->PlaceHolder = RemoveHtml($this->No_BL->caption());
 
 			// Nomor_JO
 			$this->Nomor_JO->EditAttrs["class"] = "form-control";
@@ -2371,6 +3243,25 @@ class t101_jo_head_list extends t101_jo_head
 			// Shipper_id
 			$this->Shipper_id->EditAttrs["class"] = "form-control";
 			$this->Shipper_id->EditCustomAttributes = "";
+			$curVal = trim(strval($this->Shipper_id->AdvancedSearch->SearchValue));
+			if ($curVal <> "")
+				$this->Shipper_id->AdvancedSearch->ViewValue = $this->Shipper_id->lookupCacheOption($curVal);
+			else
+				$this->Shipper_id->AdvancedSearch->ViewValue = $this->Shipper_id->Lookup !== NULL && is_array($this->Shipper_id->Lookup->Options) ? $curVal : NULL;
+			if ($this->Shipper_id->AdvancedSearch->ViewValue !== NULL) { // Load from cache
+				$this->Shipper_id->EditValue = array_values($this->Shipper_id->Lookup->Options);
+			} else { // Lookup from database
+				if ($curVal == "") {
+					$filterWrk = "0=1";
+				} else {
+					$filterWrk = "`id`" . SearchString("=", $this->Shipper_id->AdvancedSearch->SearchValue, DATATYPE_NUMBER, "");
+				}
+				$sqlWrk = $this->Shipper_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+				if ($rswrk) $rswrk->Close();
+				$this->Shipper_id->EditValue = $arwrk;
+			}
 
 			// Party
 			$this->Party->EditAttrs["class"] = "form-control";
@@ -2382,12 +3273,6 @@ class t101_jo_head_list extends t101_jo_head
 			$this->Container->EditCustomAttributes = "";
 			$this->Container->EditValue = $this->Container->options(FALSE);
 
-			// Tanggal_Stuffing
-			$this->Tanggal_Stuffing->EditAttrs["class"] = "form-control";
-			$this->Tanggal_Stuffing->EditCustomAttributes = "";
-			$this->Tanggal_Stuffing->EditValue = HtmlEncode(FormatDateTime(UnFormatDateTime($this->Tanggal_Stuffing->AdvancedSearch->SearchValue, 11), 11));
-			$this->Tanggal_Stuffing->PlaceHolder = RemoveHtml($this->Tanggal_Stuffing->caption());
-
 			// Destination_id
 			$this->Destination_id->EditAttrs["class"] = "form-control";
 			$this->Destination_id->EditCustomAttributes = "";
@@ -2395,6 +3280,33 @@ class t101_jo_head_list extends t101_jo_head
 			// Feeder_id
 			$this->Feeder_id->EditAttrs["class"] = "form-control";
 			$this->Feeder_id->EditCustomAttributes = "";
+			$curVal = trim(strval($this->Feeder_id->AdvancedSearch->SearchValue));
+			if ($curVal <> "")
+				$this->Feeder_id->AdvancedSearch->ViewValue = $this->Feeder_id->lookupCacheOption($curVal);
+			else
+				$this->Feeder_id->AdvancedSearch->ViewValue = $this->Feeder_id->Lookup !== NULL && is_array($this->Feeder_id->Lookup->Options) ? $curVal : NULL;
+			if ($this->Feeder_id->AdvancedSearch->ViewValue !== NULL) { // Load from cache
+				$this->Feeder_id->EditValue = array_values($this->Feeder_id->Lookup->Options);
+			} else { // Lookup from database
+				if ($curVal == "") {
+					$filterWrk = "0=1";
+				} else {
+					$filterWrk = "`id`" . SearchString("=", $this->Feeder_id->AdvancedSearch->SearchValue, DATATYPE_NUMBER, "");
+				}
+				$sqlWrk = $this->Feeder_id->Lookup->getSql(TRUE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				$arwrk = ($rswrk) ? $rswrk->GetRows() : array();
+				if ($rswrk) $rswrk->Close();
+				$this->Feeder_id->EditValue = $arwrk;
+			}
+		} elseif ($this->RowType == ROWTYPE_AGGREGATEINIT) { // Initialize aggregate row
+			$this->Party->Total = 0; // Initialize total
+		} elseif ($this->RowType == ROWTYPE_AGGREGATE) { // Aggregate row
+			$this->Party->CurrentValue = $this->Party->Total;
+			$this->Party->ViewValue = $this->Party->CurrentValue;
+			$this->Party->ViewValue = FormatNumber($this->Party->ViewValue, 0, -2, -2, -2);
+			$this->Party->ViewCustomAttributes = "";
+			$this->Party->HrefValue = ""; // Clear href value
 		}
 		if ($this->RowType == ROWTYPE_ADD || $this->RowType == ROWTYPE_EDIT || $this->RowType == ROWTYPE_SEARCH) // Add/Edit/Search row
 			$this->setupFieldTitles();
@@ -2428,16 +3340,359 @@ class t101_jo_head_list extends t101_jo_head
 		return $validateSearch;
 	}
 
+	// Validate form
+	protected function validateForm()
+	{
+		global $Language, $FormError;
+
+		// Initialize form error message
+		$FormError = "";
+
+		// Check if validation required
+		if (!SERVER_VALIDATE)
+			return ($FormError == "");
+		if ($this->id->Required) {
+			if (!$this->id->IsDetailKey && $this->id->FormValue != NULL && $this->id->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->id->caption(), $this->id->RequiredErrorMessage));
+			}
+		}
+		if ($this->Export_Import->Required) {
+			if ($this->Export_Import->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->Export_Import->caption(), $this->Export_Import->RequiredErrorMessage));
+			}
+		}
+		if ($this->No_BL->Required) {
+			if (!$this->No_BL->IsDetailKey && $this->No_BL->FormValue != NULL && $this->No_BL->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->No_BL->caption(), $this->No_BL->RequiredErrorMessage));
+			}
+		}
+		if ($this->Nomor_JO->Required) {
+			if (!$this->Nomor_JO->IsDetailKey && $this->Nomor_JO->FormValue != NULL && $this->Nomor_JO->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->Nomor_JO->caption(), $this->Nomor_JO->RequiredErrorMessage));
+			}
+		}
+		if ($this->Shipper_id->Required) {
+			if (!$this->Shipper_id->IsDetailKey && $this->Shipper_id->FormValue != NULL && $this->Shipper_id->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->Shipper_id->caption(), $this->Shipper_id->RequiredErrorMessage));
+			}
+		}
+		if ($this->Party->Required) {
+			if (!$this->Party->IsDetailKey && $this->Party->FormValue != NULL && $this->Party->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->Party->caption(), $this->Party->RequiredErrorMessage));
+			}
+		}
+		if (!CheckInteger($this->Party->FormValue)) {
+			AddMessage($FormError, $this->Party->errorMessage());
+		}
+		if ($this->Container->Required) {
+			if ($this->Container->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->Container->caption(), $this->Container->RequiredErrorMessage));
+			}
+		}
+		if ($this->Destination_id->Required) {
+			if (!$this->Destination_id->IsDetailKey && $this->Destination_id->FormValue != NULL && $this->Destination_id->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->Destination_id->caption(), $this->Destination_id->RequiredErrorMessage));
+			}
+		}
+		if ($this->Feeder_id->Required) {
+			if (!$this->Feeder_id->IsDetailKey && $this->Feeder_id->FormValue != NULL && $this->Feeder_id->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->Feeder_id->caption(), $this->Feeder_id->RequiredErrorMessage));
+			}
+		}
+
+		// Return validate result
+		$validateForm = ($FormError == "");
+
+		// Call Form_CustomValidate event
+		$formCustomError = "";
+		$validateForm = $validateForm && $this->Form_CustomValidate($formCustomError);
+		if ($formCustomError <> "") {
+			AddMessage($FormError, $formCustomError);
+		}
+		return $validateForm;
+	}
+
+	// Delete records based on current filter
+	protected function deleteRows()
+	{
+		global $Language, $Security;
+		$deleteRows = TRUE;
+		$sql = $this->getCurrentSql();
+		$conn = &$this->getConnection();
+		$conn->raiseErrorFn = $GLOBALS["ERROR_FUNC"];
+		$rs = $conn->execute($sql);
+		$conn->raiseErrorFn = '';
+		if ($rs === FALSE) {
+			return FALSE;
+		} elseif ($rs->EOF) {
+			$this->setFailureMessage($Language->phrase("NoRecord")); // No record found
+			$rs->close();
+			return FALSE;
+		}
+		$rows = ($rs) ? $rs->getRows() : [];
+		if ($this->AuditTrailOnDelete)
+			$this->writeAuditTrailDummy($Language->phrase("BatchDeleteBegin")); // Batch delete begin
+
+		// Clone old rows
+		$rsold = $rows;
+		if ($rs)
+			$rs->close();
+
+		// Call row deleting event
+		if ($deleteRows) {
+			foreach ($rsold as $row) {
+				$deleteRows = $this->Row_Deleting($row);
+				if (!$deleteRows)
+					break;
+			}
+		}
+		if ($deleteRows) {
+			$key = "";
+			foreach ($rsold as $row) {
+				$thisKey = "";
+				if ($thisKey <> "")
+					$thisKey .= $GLOBALS["COMPOSITE_KEY_SEPARATOR"];
+				$thisKey .= $row['id'];
+				if (DELETE_UPLOADED_FILES) // Delete old files
+					$this->deleteUploadedFiles($row);
+				$conn->raiseErrorFn = $GLOBALS["ERROR_FUNC"];
+				$deleteRows = $this->delete($row); // Delete
+				$conn->raiseErrorFn = '';
+				if ($deleteRows === FALSE)
+					break;
+				if ($key <> "")
+					$key .= ", ";
+				$key .= $thisKey;
+			}
+		}
+		if (!$deleteRows) {
+
+			// Set up error message
+			if ($this->getSuccessMessage() <> "" || $this->getFailureMessage() <> "") {
+
+				// Use the message, do nothing
+			} elseif ($this->CancelMessage <> "") {
+				$this->setFailureMessage($this->CancelMessage);
+				$this->CancelMessage = "";
+			} else {
+				$this->setFailureMessage($Language->phrase("DeleteCancelled"));
+			}
+		}
+
+		// Call Row Deleted event
+		if ($deleteRows) {
+			foreach ($rsold as $row) {
+				$this->Row_Deleted($row);
+			}
+		}
+
+		// Write JSON for API request (Support single row only)
+		if (IsApi() && $deleteRows) {
+			$row = $this->getRecordsFromRecordset($rsold, TRUE);
+			WriteJson(["success" => TRUE, $this->TableVar => $row]);
+		}
+		return $deleteRows;
+	}
+
+	// Update record based on key values
+	protected function editRow()
+	{
+		global $Security, $Language;
+		$filter = $this->getRecordFilter();
+		$filter = $this->applyUserIDFilters($filter);
+		$conn = &$this->getConnection();
+		$this->CurrentFilter = $filter;
+		$sql = $this->getCurrentSql();
+		$conn->raiseErrorFn = $GLOBALS["ERROR_FUNC"];
+		$rs = $conn->execute($sql);
+		$conn->raiseErrorFn = '';
+		if ($rs === FALSE)
+			return FALSE;
+		if ($rs->EOF) {
+			$this->setFailureMessage($Language->phrase("NoRecord")); // Set no record message
+			$editRow = FALSE; // Update Failed
+		} else {
+
+			// Save old values
+			$rsold = &$rs->fields;
+			$this->loadDbValues($rsold);
+			$rsnew = [];
+
+			// Export_Import
+			$this->Export_Import->setDbValueDef($rsnew, $this->Export_Import->CurrentValue, "", $this->Export_Import->ReadOnly);
+
+			// No_BL
+			$this->No_BL->setDbValueDef($rsnew, $this->No_BL->CurrentValue, NULL, $this->No_BL->ReadOnly);
+
+			// Nomor_JO
+			$this->Nomor_JO->setDbValueDef($rsnew, $this->Nomor_JO->CurrentValue, "", $this->Nomor_JO->ReadOnly);
+
+			// Shipper_id
+			$this->Shipper_id->setDbValueDef($rsnew, $this->Shipper_id->CurrentValue, 0, $this->Shipper_id->ReadOnly);
+
+			// Party
+			$this->Party->setDbValueDef($rsnew, $this->Party->CurrentValue, 0, $this->Party->ReadOnly);
+
+			// Container
+			$this->Container->setDbValueDef($rsnew, $this->Container->CurrentValue, "", $this->Container->ReadOnly);
+
+			// Destination_id
+			$this->Destination_id->setDbValueDef($rsnew, $this->Destination_id->CurrentValue, 0, $this->Destination_id->ReadOnly);
+
+			// Feeder_id
+			$this->Feeder_id->setDbValueDef($rsnew, $this->Feeder_id->CurrentValue, 0, $this->Feeder_id->ReadOnly);
+
+			// Call Row Updating event
+			$updateRow = $this->Row_Updating($rsold, $rsnew);
+			if ($updateRow) {
+				$conn->raiseErrorFn = $GLOBALS["ERROR_FUNC"];
+				if (count($rsnew) > 0)
+					$editRow = $this->update($rsnew, "", $rsold);
+				else
+					$editRow = TRUE; // No field to update
+				$conn->raiseErrorFn = '';
+				if ($editRow) {
+				}
+			} else {
+				if ($this->getSuccessMessage() <> "" || $this->getFailureMessage() <> "") {
+
+					// Use the message, do nothing
+				} elseif ($this->CancelMessage <> "") {
+					$this->setFailureMessage($this->CancelMessage);
+					$this->CancelMessage = "";
+				} else {
+					$this->setFailureMessage($Language->phrase("UpdateCancelled"));
+				}
+				$editRow = FALSE;
+			}
+		}
+
+		// Call Row_Updated event
+		if ($editRow)
+			$this->Row_Updated($rsold, $rsnew);
+		$rs->close();
+
+		// Write JSON for API request
+		if (IsApi() && $editRow) {
+			$row = $this->getRecordsFromRecordset([$rsnew], TRUE);
+			WriteJson(["success" => TRUE, $this->TableVar => $row]);
+		}
+		return $editRow;
+	}
+
+	// Load row hash
+	protected function loadRowHash()
+	{
+		$filter = $this->getRecordFilter();
+
+		// Load SQL based on filter
+		$this->CurrentFilter = $filter;
+		$sql = $this->getCurrentSql();
+		$conn = &$this->getConnection();
+		$rsRow = $conn->Execute($sql);
+		$this->HashValue = ($rsRow && !$rsRow->EOF) ? $this->getRowHash($rsRow) : ""; // Get hash value for record
+		$rsRow->close();
+	}
+
+	// Get Row Hash
+	public function getRowHash(&$rs)
+	{
+		if (!$rs)
+			return "";
+		$hash = "";
+		$hash .= GetFieldHash($rs->fields('Export_Import')); // Export_Import
+		$hash .= GetFieldHash($rs->fields('No_BL')); // No_BL
+		$hash .= GetFieldHash($rs->fields('Nomor_JO')); // Nomor_JO
+		$hash .= GetFieldHash($rs->fields('Shipper_id')); // Shipper_id
+		$hash .= GetFieldHash($rs->fields('Party')); // Party
+		$hash .= GetFieldHash($rs->fields('Container')); // Container
+		$hash .= GetFieldHash($rs->fields('Destination_id')); // Destination_id
+		$hash .= GetFieldHash($rs->fields('Feeder_id')); // Feeder_id
+		return md5($hash);
+	}
+
+	// Add record
+	protected function addRow($rsold = NULL)
+	{
+		global $Language, $Security;
+		$conn = &$this->getConnection();
+
+		// Load db values from rsold
+		$this->loadDbValues($rsold);
+		if ($rsold) {
+		}
+		$rsnew = [];
+
+		// Export_Import
+		$this->Export_Import->setDbValueDef($rsnew, $this->Export_Import->CurrentValue, "", strval($this->Export_Import->CurrentValue) == "");
+
+		// No_BL
+		$this->No_BL->setDbValueDef($rsnew, $this->No_BL->CurrentValue, NULL, strval($this->No_BL->CurrentValue) == "");
+
+		// Nomor_JO
+		$this->Nomor_JO->setDbValueDef($rsnew, $this->Nomor_JO->CurrentValue, "", strval($this->Nomor_JO->CurrentValue) == "");
+
+		// Shipper_id
+		$this->Shipper_id->setDbValueDef($rsnew, $this->Shipper_id->CurrentValue, 0, FALSE);
+
+		// Party
+		$this->Party->setDbValueDef($rsnew, $this->Party->CurrentValue, 0, FALSE);
+
+		// Container
+		$this->Container->setDbValueDef($rsnew, $this->Container->CurrentValue, "", strval($this->Container->CurrentValue) == "");
+
+		// Destination_id
+		$this->Destination_id->setDbValueDef($rsnew, $this->Destination_id->CurrentValue, 0, FALSE);
+
+		// Feeder_id
+		$this->Feeder_id->setDbValueDef($rsnew, $this->Feeder_id->CurrentValue, 0, FALSE);
+
+		// Call Row Inserting event
+		$rs = ($rsold) ? $rsold->fields : NULL;
+		$insertRow = $this->Row_Inserting($rs, $rsnew);
+		if ($insertRow) {
+			$conn->raiseErrorFn = $GLOBALS["ERROR_FUNC"];
+			$addRow = $this->insert($rsnew);
+			$conn->raiseErrorFn = '';
+			if ($addRow) {
+			}
+		} else {
+			if ($this->getSuccessMessage() <> "" || $this->getFailureMessage() <> "") {
+
+				// Use the message, do nothing
+			} elseif ($this->CancelMessage <> "") {
+				$this->setFailureMessage($this->CancelMessage);
+				$this->CancelMessage = "";
+			} else {
+				$this->setFailureMessage($Language->phrase("InsertCancelled"));
+			}
+			$addRow = FALSE;
+		}
+		if ($addRow) {
+
+			// Call Row Inserted event
+			$rs = ($rsold) ? $rsold->fields : NULL;
+			$this->Row_Inserted($rs, $rsnew);
+		}
+
+		// Write JSON for API request
+		if (IsApi() && $addRow) {
+			$row = $this->getRecordsFromRecordset([$rsnew], TRUE);
+			WriteJson(["success" => TRUE, $this->TableVar => $row]);
+		}
+		return $addRow;
+	}
+
 	// Load advanced search
 	public function loadAdvancedSearch()
 	{
 		$this->id->AdvancedSearch->load();
 		$this->Export_Import->AdvancedSearch->load();
+		$this->No_BL->AdvancedSearch->load();
 		$this->Nomor_JO->AdvancedSearch->load();
 		$this->Shipper_id->AdvancedSearch->load();
 		$this->Party->AdvancedSearch->load();
 		$this->Container->AdvancedSearch->load();
-		$this->Tanggal_Stuffing->AdvancedSearch->load();
 		$this->Destination_id->AdvancedSearch->load();
 		$this->Feeder_id->AdvancedSearch->load();
 	}

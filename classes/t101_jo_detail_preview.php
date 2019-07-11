@@ -19,6 +19,14 @@ class t101_jo_detail_preview extends t101_jo_detail
 	// Page object name
 	public $PageObjName = "t101_jo_detail_preview";
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -557,11 +565,15 @@ class t101_jo_detail_preview extends t101_jo_detail
 		$this->JOHead_id->Visible = FALSE;
 		$this->TruckingVendor_id->setVisibility();
 		$this->Driver_id->setVisibility();
+		$this->Tanggal_Stuffing->setVisibility();
 		$this->Nomor_Polisi_1->setVisibility();
 		$this->Nomor_Polisi_2->setVisibility();
 		$this->Nomor_Polisi_3->setVisibility();
 		$this->Nomor_Container_1->setVisibility();
 		$this->Nomor_Container_2->setVisibility();
+		$this->Ref_JOHead_id->setVisibility();
+		$this->No_Tagihan->setVisibility();
+		$this->Jumlah_Tagihan->setVisibility();
 		$this->hideFieldsForAddEdit();
 
 		// Do not use lookup cache
@@ -588,6 +600,7 @@ class t101_jo_detail_preview extends t101_jo_detail
 		// Set up lookup cache
 		$this->setupLookupOptions($this->TruckingVendor_id);
 		$this->setupLookupOptions($this->Driver_id);
+		$this->setupLookupOptions($this->Ref_JOHead_id);
 
 		// Load filter
 		$filter = Get("f", "");
@@ -879,6 +892,8 @@ class t101_jo_detail_preview extends t101_jo_detail
 						case "x_TruckingVendor_id":
 							break;
 						case "x_Driver_id":
+							break;
+						case "x_Ref_JOHead_id":
 							break;
 					}
 					$ar[strval($row[0])] = $row;

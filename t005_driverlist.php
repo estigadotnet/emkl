@@ -51,8 +51,10 @@ ft005_driverlist.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LI
 ft005_driverlist.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-// Form object for search
+ft005_driverlist.lists["x_TruckingVendor_id"] = <?php echo $t005_driver_list->TruckingVendor_id->Lookup->toClientList() ?>;
+ft005_driverlist.lists["x_TruckingVendor_id"].options = <?php echo JsonEncode($t005_driver_list->TruckingVendor_id->lookupOptions()) ?>;
 
+// Form object for search
 var ft005_driverlistsrch = currentSearchForm = new ew.Form("ft005_driverlistsrch");
 
 // Filters
@@ -173,15 +175,6 @@ $t005_driver_list->renderListOptions();
 // Render list options (header, left)
 $t005_driver_list->ListOptions->render("header", "left");
 ?>
-<?php if ($t005_driver->id->Visible) { // id ?>
-	<?php if ($t005_driver->sortUrl($t005_driver->id) == "") { ?>
-		<th data-name="id" class="<?php echo $t005_driver->id->headerCellClass() ?>"><div id="elh_t005_driver_id" class="t005_driver_id"><div class="ew-table-header-caption"><?php echo $t005_driver->id->caption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="id" class="<?php echo $t005_driver->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t005_driver->SortUrl($t005_driver->id) ?>',2);"><div id="elh_t005_driver_id" class="t005_driver_id">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t005_driver->id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t005_driver->id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t005_driver->id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
 <?php if ($t005_driver->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 	<?php if ($t005_driver->sortUrl($t005_driver->TruckingVendor_id) == "") { ?>
 		<th data-name="TruckingVendor_id" class="<?php echo $t005_driver->TruckingVendor_id->headerCellClass() ?>"><div id="elh_t005_driver_TruckingVendor_id" class="t005_driver_TruckingVendor_id"><div class="ew-table-header-caption"><?php echo $t005_driver->TruckingVendor_id->caption() ?></div></div></th>
@@ -283,14 +276,6 @@ while ($t005_driver_list->RecCnt < $t005_driver_list->StopRec) {
 // Render list options (body, left)
 $t005_driver_list->ListOptions->render("body", "left", $t005_driver_list->RowCnt);
 ?>
-	<?php if ($t005_driver->id->Visible) { // id ?>
-		<td data-name="id"<?php echo $t005_driver->id->cellAttributes() ?>>
-<span id="el<?php echo $t005_driver_list->RowCnt ?>_t005_driver_id" class="t005_driver_id">
-<span<?php echo $t005_driver->id->viewAttributes() ?>>
-<?php echo $t005_driver->id->getViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
 	<?php if ($t005_driver->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 		<td data-name="TruckingVendor_id"<?php echo $t005_driver->TruckingVendor_id->cellAttributes() ?>>
 <span id="el<?php echo $t005_driver_list->RowCnt ?>_t005_driver_TruckingVendor_id" class="t005_driver_TruckingVendor_id">
@@ -397,6 +382,18 @@ if ($t005_driver_list->Recordset)
 <?php if ($t005_driver_list->Pager->RecordCount > 0) { ?>
 <div class="ew-pager ew-rec">
 	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $t005_driver_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $t005_driver_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $t005_driver_list->Pager->RecordCount ?></span>
+</div>
+<?php } ?>
+<?php if ($t005_driver_list->TotalRecs > 0 && (!$t005_driver_list->AutoHidePageSizeSelector || $t005_driver_list->Pager->Visible)) { ?>
+<div class="ew-pager">
+<input type="hidden" name="t" value="t005_driver">
+<select name="<?php echo TABLE_REC_PER_PAGE ?>" class="form-control form-control-sm ew-tooltip" title="<?php echo $Language->phrase("RecordsPerPage") ?>" onchange="this.form.submit();">
+<option value="10"<?php if ($t005_driver_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
+<option value="20"<?php if ($t005_driver_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
+<option value="50"<?php if ($t005_driver_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
+<option value="100"<?php if ($t005_driver_list->DisplayRecs == 100) { ?> selected<?php } ?>>100</option>
+<option value="ALL"<?php if ($t005_driver->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
+</select>
 </div>
 <?php } ?>
 </form>

@@ -19,6 +19,14 @@ class t005_driver_preview extends t005_driver
 	// Page object name
 	public $PageObjName = "t005_driver_preview";
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -553,7 +561,7 @@ class t005_driver_preview extends t005_driver
 
 		// Set up list options
 		$this->setupListOptions();
-		$this->id->setVisibility();
+		$this->id->Visible = FALSE;
 		$this->TruckingVendor_id->setVisibility();
 		$this->Nama->setVisibility();
 		$this->No_HP_1->setVisibility();
@@ -582,8 +590,9 @@ class t005_driver_preview extends t005_driver
 		$this->setupOtherOptions();
 
 		// Set up lookup cache
-		// Load filter
+		$this->setupLookupOptions($this->TruckingVendor_id);
 
+		// Load filter
 		$filter = Get("f", "");
 		$filter = Decrypt($filter);
 		if ($filter == "") $filter = "0=1";
@@ -870,6 +879,8 @@ class t005_driver_preview extends t005_driver
 
 					// Format the field values
 					switch ($fld->FieldVar) {
+						case "x_TruckingVendor_id":
+							break;
 					}
 					$ar[strval($row[0])] = $row;
 					$rs->moveNext();

@@ -76,17 +76,6 @@ $t006_trucking_vendor_view->showMessage();
 <input type="hidden" name="t" value="t006_trucking_vendor">
 <input type="hidden" name="modal" value="<?php echo (int)$t006_trucking_vendor_view->IsModal ?>">
 <table class="table table-striped table-sm ew-view-table">
-<?php if ($t006_trucking_vendor->id->Visible) { // id ?>
-	<tr id="r_id">
-		<td class="<?php echo $t006_trucking_vendor_view->TableLeftColumnClass ?>"><span id="elh_t006_trucking_vendor_id"><?php echo $t006_trucking_vendor->id->caption() ?></span></td>
-		<td data-name="id"<?php echo $t006_trucking_vendor->id->cellAttributes() ?>>
-<span id="el_t006_trucking_vendor_id">
-<span<?php echo $t006_trucking_vendor->id->viewAttributes() ?>>
-<?php echo $t006_trucking_vendor->id->getViewValue() ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
 <?php if ($t006_trucking_vendor->Nama->Visible) { // Nama ?>
 	<tr id="r_Nama">
 		<td class="<?php echo $t006_trucking_vendor_view->TableLeftColumnClass ?>"><span id="elh_t006_trucking_vendor_Nama"><?php echo $t006_trucking_vendor->Nama->caption() ?></span></td>

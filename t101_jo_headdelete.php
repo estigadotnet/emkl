@@ -88,6 +88,9 @@ $t101_jo_head_delete->showMessage();
 <?php if ($t101_jo_head->Export_Import->Visible) { // Export_Import ?>
 		<th class="<?php echo $t101_jo_head->Export_Import->headerCellClass() ?>"><span id="elh_t101_jo_head_Export_Import" class="t101_jo_head_Export_Import"><?php echo $t101_jo_head->Export_Import->caption() ?></span></th>
 <?php } ?>
+<?php if ($t101_jo_head->No_BL->Visible) { // No_BL ?>
+		<th class="<?php echo $t101_jo_head->No_BL->headerCellClass() ?>"><span id="elh_t101_jo_head_No_BL" class="t101_jo_head_No_BL"><?php echo $t101_jo_head->No_BL->caption() ?></span></th>
+<?php } ?>
 <?php if ($t101_jo_head->Nomor_JO->Visible) { // Nomor_JO ?>
 		<th class="<?php echo $t101_jo_head->Nomor_JO->headerCellClass() ?>"><span id="elh_t101_jo_head_Nomor_JO" class="t101_jo_head_Nomor_JO"><?php echo $t101_jo_head->Nomor_JO->caption() ?></span></th>
 <?php } ?>
@@ -99,9 +102,6 @@ $t101_jo_head_delete->showMessage();
 <?php } ?>
 <?php if ($t101_jo_head->Container->Visible) { // Container ?>
 		<th class="<?php echo $t101_jo_head->Container->headerCellClass() ?>"><span id="elh_t101_jo_head_Container" class="t101_jo_head_Container"><?php echo $t101_jo_head->Container->caption() ?></span></th>
-<?php } ?>
-<?php if ($t101_jo_head->Tanggal_Stuffing->Visible) { // Tanggal_Stuffing ?>
-		<th class="<?php echo $t101_jo_head->Tanggal_Stuffing->headerCellClass() ?>"><span id="elh_t101_jo_head_Tanggal_Stuffing" class="t101_jo_head_Tanggal_Stuffing"><?php echo $t101_jo_head->Tanggal_Stuffing->caption() ?></span></th>
 <?php } ?>
 <?php if ($t101_jo_head->Destination_id->Visible) { // Destination_id ?>
 		<th class="<?php echo $t101_jo_head->Destination_id->headerCellClass() ?>"><span id="elh_t101_jo_head_Destination_id" class="t101_jo_head_Destination_id"><?php echo $t101_jo_head->Destination_id->caption() ?></span></th>
@@ -138,6 +138,14 @@ while (!$t101_jo_head_delete->Recordset->EOF) {
 </span>
 </td>
 <?php } ?>
+<?php if ($t101_jo_head->No_BL->Visible) { // No_BL ?>
+		<td<?php echo $t101_jo_head->No_BL->cellAttributes() ?>>
+<span id="el<?php echo $t101_jo_head_delete->RowCnt ?>_t101_jo_head_No_BL" class="t101_jo_head_No_BL">
+<span<?php echo $t101_jo_head->No_BL->viewAttributes() ?>>
+<?php echo $t101_jo_head->No_BL->getViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
 <?php if ($t101_jo_head->Nomor_JO->Visible) { // Nomor_JO ?>
 		<td<?php echo $t101_jo_head->Nomor_JO->cellAttributes() ?>>
 <span id="el<?php echo $t101_jo_head_delete->RowCnt ?>_t101_jo_head_Nomor_JO" class="t101_jo_head_Nomor_JO">
@@ -167,14 +175,6 @@ while (!$t101_jo_head_delete->Recordset->EOF) {
 <span id="el<?php echo $t101_jo_head_delete->RowCnt ?>_t101_jo_head_Container" class="t101_jo_head_Container">
 <span<?php echo $t101_jo_head->Container->viewAttributes() ?>>
 <?php echo $t101_jo_head->Container->getViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
-<?php if ($t101_jo_head->Tanggal_Stuffing->Visible) { // Tanggal_Stuffing ?>
-		<td<?php echo $t101_jo_head->Tanggal_Stuffing->cellAttributes() ?>>
-<span id="el<?php echo $t101_jo_head_delete->RowCnt ?>_t101_jo_head_Tanggal_Stuffing" class="t101_jo_head_Tanggal_Stuffing">
-<span<?php echo $t101_jo_head->Tanggal_Stuffing->viewAttributes() ?>>
-<?php echo $t101_jo_head->Tanggal_Stuffing->getViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

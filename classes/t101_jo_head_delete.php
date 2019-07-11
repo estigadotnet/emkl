@@ -19,6 +19,14 @@ class t101_jo_head_delete extends t101_jo_head
 	// Page object name
 	public $PageObjName = "t101_jo_head_delete";
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -533,11 +541,11 @@ class t101_jo_head_delete extends t101_jo_head
 		$this->CurrentAction = Param("action"); // Set up current action
 		$this->id->Visible = FALSE;
 		$this->Export_Import->setVisibility();
+		$this->No_BL->setVisibility();
 		$this->Nomor_JO->setVisibility();
 		$this->Shipper_id->setVisibility();
 		$this->Party->setVisibility();
 		$this->Container->setVisibility();
-		$this->Tanggal_Stuffing->setVisibility();
 		$this->Destination_id->setVisibility();
 		$this->Feeder_id->setVisibility();
 		$this->hideFieldsForAddEdit();
@@ -683,11 +691,11 @@ class t101_jo_head_delete extends t101_jo_head
 			return;
 		$this->id->setDbValue($row['id']);
 		$this->Export_Import->setDbValue($row['Export_Import']);
+		$this->No_BL->setDbValue($row['No_BL']);
 		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
 		$this->Shipper_id->setDbValue($row['Shipper_id']);
 		$this->Party->setDbValue($row['Party']);
 		$this->Container->setDbValue($row['Container']);
-		$this->Tanggal_Stuffing->setDbValue($row['Tanggal_Stuffing']);
 		$this->Destination_id->setDbValue($row['Destination_id']);
 		$this->Feeder_id->setDbValue($row['Feeder_id']);
 	}
@@ -698,11 +706,11 @@ class t101_jo_head_delete extends t101_jo_head
 		$row = [];
 		$row['id'] = NULL;
 		$row['Export_Import'] = NULL;
+		$row['No_BL'] = NULL;
 		$row['Nomor_JO'] = NULL;
 		$row['Shipper_id'] = NULL;
 		$row['Party'] = NULL;
 		$row['Container'] = NULL;
-		$row['Tanggal_Stuffing'] = NULL;
 		$row['Destination_id'] = NULL;
 		$row['Feeder_id'] = NULL;
 		return $row;
@@ -721,11 +729,11 @@ class t101_jo_head_delete extends t101_jo_head
 		// Common render codes for all row types
 		// id
 		// Export_Import
+		// No_BL
 		// Nomor_JO
 		// Shipper_id
 		// Party
 		// Container
-		// Tanggal_Stuffing
 		// Destination_id
 		// Feeder_id
 
@@ -742,6 +750,10 @@ class t101_jo_head_delete extends t101_jo_head
 				$this->Export_Import->ViewValue = NULL;
 			}
 			$this->Export_Import->ViewCustomAttributes = "";
+
+			// No_BL
+			$this->No_BL->ViewValue = $this->No_BL->CurrentValue;
+			$this->No_BL->ViewCustomAttributes = "";
 
 			// Nomor_JO
 			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
@@ -781,11 +793,6 @@ class t101_jo_head_delete extends t101_jo_head
 				$this->Container->ViewValue = NULL;
 			}
 			$this->Container->ViewCustomAttributes = "";
-
-			// Tanggal_Stuffing
-			$this->Tanggal_Stuffing->ViewValue = $this->Tanggal_Stuffing->CurrentValue;
-			$this->Tanggal_Stuffing->ViewValue = FormatDateTime($this->Tanggal_Stuffing->ViewValue, 11);
-			$this->Tanggal_Stuffing->ViewCustomAttributes = "";
 
 			// Destination_id
 			$curVal = strval($this->Destination_id->CurrentValue);
@@ -836,6 +843,11 @@ class t101_jo_head_delete extends t101_jo_head
 			$this->Export_Import->HrefValue = "";
 			$this->Export_Import->TooltipValue = "";
 
+			// No_BL
+			$this->No_BL->LinkCustomAttributes = "";
+			$this->No_BL->HrefValue = "";
+			$this->No_BL->TooltipValue = "";
+
 			// Nomor_JO
 			$this->Nomor_JO->LinkCustomAttributes = "";
 			$this->Nomor_JO->HrefValue = "";
@@ -855,11 +867,6 @@ class t101_jo_head_delete extends t101_jo_head
 			$this->Container->LinkCustomAttributes = "";
 			$this->Container->HrefValue = "";
 			$this->Container->TooltipValue = "";
-
-			// Tanggal_Stuffing
-			$this->Tanggal_Stuffing->LinkCustomAttributes = "";
-			$this->Tanggal_Stuffing->HrefValue = "";
-			$this->Tanggal_Stuffing->TooltipValue = "";
 
 			// Destination_id
 			$this->Destination_id->LinkCustomAttributes = "";
@@ -896,6 +903,8 @@ class t101_jo_head_delete extends t101_jo_head
 		}
 		$rows = ($rs) ? $rs->getRows() : [];
 		$conn->beginTrans();
+		if ($this->AuditTrailOnDelete)
+			$this->writeAuditTrailDummy($Language->phrase("BatchDeleteBegin")); // Batch delete begin
 
 		// Clone old rows
 		$rsold = $rows;
@@ -944,8 +953,12 @@ class t101_jo_head_delete extends t101_jo_head
 		}
 		if ($deleteRows) {
 			$conn->commitTrans(); // Commit the changes
+			if ($this->AuditTrailOnDelete)
+				$this->writeAuditTrailDummy($Language->phrase("BatchDeleteSuccess")); // Batch delete success
 		} else {
 			$conn->rollbackTrans(); // Rollback changes
+			if ($this->AuditTrailOnDelete)
+				$this->writeAuditTrailDummy($Language->phrase("BatchDeleteRollback")); // Batch delete rollback
 		}
 
 		// Call Row Deleted event

@@ -53,11 +53,6 @@ ft006_trucking_vendoredit.validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
-		<?php if ($t006_trucking_vendor_edit->id->Required) { ?>
-			elm = this.getElements("x" + infix + "_id");
-			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
-				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t006_trucking_vendor->id->caption(), $t006_trucking_vendor->id->RequiredErrorMessage)) ?>");
-		<?php } ?>
 		<?php if ($t006_trucking_vendor_edit->Nama->Required) { ?>
 			elm = this.getElements("x" + infix + "_Nama");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -110,18 +105,6 @@ $t006_trucking_vendor_edit->showMessage();
 <input type="hidden" name="action" id="action" value="update">
 <input type="hidden" name="modal" value="<?php echo (int)$t006_trucking_vendor_edit->IsModal ?>">
 <div class="ew-edit-div"><!-- page* -->
-<?php if ($t006_trucking_vendor->id->Visible) { // id ?>
-	<div id="r_id" class="form-group row">
-		<label id="elh_t006_trucking_vendor_id" class="<?php echo $t006_trucking_vendor_edit->LeftColumnClass ?>"><?php echo $t006_trucking_vendor->id->caption() ?><?php echo ($t006_trucking_vendor->id->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
-		<div class="<?php echo $t006_trucking_vendor_edit->RightColumnClass ?>"><div<?php echo $t006_trucking_vendor->id->cellAttributes() ?>>
-<span id="el_t006_trucking_vendor_id">
-<span<?php echo $t006_trucking_vendor->id->viewAttributes() ?>>
-<input type="text" readonly class="form-control-plaintext" value="<?php echo RemoveHtml($t006_trucking_vendor->id->EditValue) ?>"></span>
-</span>
-<input type="hidden" data-table="t006_trucking_vendor" data-field="x_id" name="x_id" id="x_id" value="<?php echo HtmlEncode($t006_trucking_vendor->id->CurrentValue) ?>">
-<?php echo $t006_trucking_vendor->id->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
 <?php if ($t006_trucking_vendor->Nama->Visible) { // Nama ?>
 	<div id="r_Nama" class="form-group row">
 		<label id="elh_t006_trucking_vendor_Nama" for="x_Nama" class="<?php echo $t006_trucking_vendor_edit->LeftColumnClass ?>"><?php echo $t006_trucking_vendor->Nama->caption() ?><?php echo ($t006_trucking_vendor->Nama->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
@@ -133,6 +116,7 @@ $t006_trucking_vendor_edit->showMessage();
 	</div>
 <?php } ?>
 </div><!-- /page* -->
+	<input type="hidden" data-table="t006_trucking_vendor" data-field="x_id" name="x_id" id="x_id" value="<?php echo HtmlEncode($t006_trucking_vendor->id->CurrentValue) ?>">
 <?php
 	if (in_array("t005_driver", explode(",", $t006_trucking_vendor->getCurrentDetailTable())) && $t005_driver->DetailEdit) {
 ?>

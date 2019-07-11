@@ -52,6 +52,14 @@ class t006_trucking_vendor_view extends t006_trucking_vendor
 	public $MultiDeleteUrl;
 	public $MultiUpdateUrl;
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -615,7 +623,7 @@ class t006_trucking_vendor_view extends t006_trucking_vendor
 		// Is modal
 		$this->IsModal = (Param("modal") == "1");
 		$this->CurrentAction = Param("action"); // Set up current action
-		$this->id->setVisibility();
+		$this->id->Visible = FALSE;
 		$this->Nama->setVisibility();
 		$this->hideFieldsForAddEdit();
 
@@ -916,6 +924,8 @@ class t006_trucking_vendor_view extends t006_trucking_vendor
 		$this->Row_Selected($row);
 		if (!$rs || $rs->EOF)
 			return;
+		if ($this->AuditTrailOnView)
+			$this->writeAuditTrailOnView($row);
 		$this->id->setDbValue($row['id']);
 		$this->Nama->setDbValue($row['Nama']);
 	}
@@ -958,11 +968,6 @@ class t006_trucking_vendor_view extends t006_trucking_vendor
 			// Nama
 			$this->Nama->ViewValue = $this->Nama->CurrentValue;
 			$this->Nama->ViewCustomAttributes = "";
-
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
 
 			// Nama
 			$this->Nama->LinkCustomAttributes = "";

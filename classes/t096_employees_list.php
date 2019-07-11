@@ -60,6 +60,14 @@ class t096_employees_list extends t096_employees
 	public $MultiDeleteUrl;
 	public $MultiUpdateUrl;
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -609,7 +617,7 @@ class t096_employees_list extends t096_employees
 	public $ListActions; // List actions
 	public $SelectedCount = 0;
 	public $SelectedIndex = 0;
-	public $DisplayRecs = 20;
+	public $DisplayRecs = 50;
 	public $StartRec;
 	public $StopRec;
 	public $TotalRecs = 0;
@@ -733,6 +741,9 @@ class t096_employees_list extends t096_employees
 			if ($this->processListAction()) // Ajax request
 				$this->terminate();
 
+			// Set up records per page
+			$this->setupDisplayRecs();
+
 			// Handle reset command
 			$this->resetCmd();
 
@@ -801,7 +812,7 @@ class t096_employees_list extends t096_employees
 		if ($this->Command <> "json" && $this->getRecordsPerPage() <> "") {
 			$this->DisplayRecs = $this->getRecordsPerPage(); // Restore from Session
 		} else {
-			$this->DisplayRecs = 20; // Load default
+			$this->DisplayRecs = 50; // Load default
 		}
 
 		// Load Sorting Order
@@ -880,6 +891,13 @@ class t096_employees_list extends t096_employees
 				else
 					$this->setWarningMessage($Language->phrase("NoRecord"));
 			}
+
+			// Audit trail on search
+			if ($this->AuditTrailOnSearch && $this->Command == "search" && !$this->RestoreSearch) {
+				$searchParm = ServerVar("QUERY_STRING");
+				$searchSql = $this->getSessionWhere();
+				$this->writeAuditTrailOnSearch($searchParm, $searchSql);
+			}
 		}
 
 		// Search options
@@ -891,6 +909,28 @@ class t096_employees_list extends t096_employees
 			$this->Recordset->close();
 			WriteJson(["success" => TRUE, $this->TableVar => $rows, "totalRecordCount" => $this->TotalRecs]);
 			$this->terminate(TRUE);
+		}
+	}
+
+	// Set up number of records displayed per page
+	protected function setupDisplayRecs()
+	{
+		$wrk = Get(TABLE_REC_PER_PAGE, "");
+		if ($wrk <> "") {
+			if (is_numeric($wrk)) {
+				$this->DisplayRecs = (int)$wrk;
+			} else {
+				if (SameText($wrk, "all")) { // Display all records
+					$this->DisplayRecs = -1;
+				} else {
+					$this->DisplayRecs = 50; // Non-numeric, load default
+				}
+			}
+			$this->setRecordsPerPage($this->DisplayRecs); // Save to Session
+
+			// Reset start position
+			$this->StartRec = 1;
+			$this->setStartRecordNumber($this->StartRec);
 		}
 	}
 

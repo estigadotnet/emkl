@@ -75,9 +75,6 @@ $t006_trucking_vendor_delete->showMessage();
 <table class="table ew-table">
 	<thead>
 	<tr class="ew-table-header">
-<?php if ($t006_trucking_vendor->id->Visible) { // id ?>
-		<th class="<?php echo $t006_trucking_vendor->id->headerCellClass() ?>"><span id="elh_t006_trucking_vendor_id" class="t006_trucking_vendor_id"><?php echo $t006_trucking_vendor->id->caption() ?></span></th>
-<?php } ?>
 <?php if ($t006_trucking_vendor->Nama->Visible) { // Nama ?>
 		<th class="<?php echo $t006_trucking_vendor->Nama->headerCellClass() ?>"><span id="elh_t006_trucking_vendor_Nama" class="t006_trucking_vendor_Nama"><?php echo $t006_trucking_vendor->Nama->caption() ?></span></th>
 <?php } ?>
@@ -102,14 +99,6 @@ while (!$t006_trucking_vendor_delete->Recordset->EOF) {
 	$t006_trucking_vendor_delete->renderRow();
 ?>
 	<tr<?php echo $t006_trucking_vendor->rowAttributes() ?>>
-<?php if ($t006_trucking_vendor->id->Visible) { // id ?>
-		<td<?php echo $t006_trucking_vendor->id->cellAttributes() ?>>
-<span id="el<?php echo $t006_trucking_vendor_delete->RowCnt ?>_t006_trucking_vendor_id" class="t006_trucking_vendor_id">
-<span<?php echo $t006_trucking_vendor->id->viewAttributes() ?>>
-<?php echo $t006_trucking_vendor->id->getViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
 <?php if ($t006_trucking_vendor->Nama->Visible) { // Nama ?>
 		<td<?php echo $t006_trucking_vendor->Nama->cellAttributes() ?>>
 <span id="el<?php echo $t006_trucking_vendor_delete->RowCnt ?>_t006_trucking_vendor_Nama" class="t006_trucking_vendor_Nama">

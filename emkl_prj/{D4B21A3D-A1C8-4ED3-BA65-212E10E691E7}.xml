@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<configuration date="2019/06/15" author="e.World Technology Ltd.">
-  <project id="{D4B21A3D-A1C8-4ED3-BA65-212E10E691E7}" file="C:\xampp\htdocs\emkl\emkl_prj.pmp" name="emkl_prj" product="PHPMaker" version="15.0" datetime="2019/06/15 13:29:32" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;">
+<configuration date="2019/07/10" author="e.World Technology Ltd.">
+  <project id="{D4B21A3D-A1C8-4ED3-BA65-212E10E691E7}" file="C:\xampp\htdocs\emkl\emkl_prj.pmp" name="emkl_prj" product="PHPMaker" version="15.0" datetime="2019/07/10 20:31:35" languagefolder="phplang" userlevel="-2,&quot;Anonymous&quot;,0;">
     <table id="cf301_home" name="cf301_home.php" caption="Home" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
     <table id="t001_shipper" name="t001_shipper" caption="Shipper" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
     <table id="t002_destination" name="t002_destination" caption="Destination" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
@@ -15,5 +15,6 @@
     <table id="t101_jo_head" name="t101_jo_head" caption="Job Order" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
     <table id="t101_tagihan_trucking" name="t101_tagihan_trucking" caption="Tagihan Trucking" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
     <table id="t399_audit_trail" name="t399_audit_trail" caption="t 399 audit trail" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
+    <table id="v101_jo_head_detail" name="v101_jo_head_detail" caption="Tagihan Trucking" userlevel="-2,&quot;Anonymous&quot;,0;" priv="1" />
   </project>
 </configuration>

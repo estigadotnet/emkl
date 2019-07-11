@@ -107,6 +107,14 @@ ew.vars = <?php echo JsonEncode($CLIENT_VAR) ?>;
 <link rel="stylesheet" type="text/css" href="<?php echo $RELATIVE_PATH ?>phpcss/bootstrap-datetimepicker.css">
 <script src="<?php echo $RELATIVE_PATH ?>phpjs/bootstrap-datetimepicker.js"></script>
 <script src="<?php echo $RELATIVE_PATH ?>phpjs/ewdatetimepicker.js"></script>
+<style>
+.form-group {
+	margin-bottom: .25rem;
+}
+.table td {
+	padding: 5px;
+}
+</style>
 <script src="<?php echo $RELATIVE_PATH ?>phpjs/userfn15.js"></script>
 <script>
 

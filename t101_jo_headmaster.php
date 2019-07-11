@@ -16,6 +16,17 @@ namespace PHPMaker2019\emkl_prj;
 </td>
 		</tr>
 <?php } ?>
+<?php if ($t101_jo_head->No_BL->Visible) { // No_BL ?>
+		<tr id="r_No_BL">
+			<td class="<?php echo $t101_jo_head->TableLeftColumnClass ?>"><?php echo $t101_jo_head->No_BL->caption() ?></td>
+			<td<?php echo $t101_jo_head->No_BL->cellAttributes() ?>>
+<span id="el_t101_jo_head_No_BL">
+<span<?php echo $t101_jo_head->No_BL->viewAttributes() ?>>
+<?php echo $t101_jo_head->No_BL->getViewValue() ?></span>
+</span>
+</td>
+		</tr>
+<?php } ?>
 <?php if ($t101_jo_head->Nomor_JO->Visible) { // Nomor_JO ?>
 		<tr id="r_Nomor_JO">
 			<td class="<?php echo $t101_jo_head->TableLeftColumnClass ?>"><?php echo $t101_jo_head->Nomor_JO->caption() ?></td>
@@ -56,17 +67,6 @@ namespace PHPMaker2019\emkl_prj;
 <span id="el_t101_jo_head_Container">
 <span<?php echo $t101_jo_head->Container->viewAttributes() ?>>
 <?php echo $t101_jo_head->Container->getViewValue() ?></span>
-</span>
-</td>
-		</tr>
-<?php } ?>
-<?php if ($t101_jo_head->Tanggal_Stuffing->Visible) { // Tanggal_Stuffing ?>
-		<tr id="r_Tanggal_Stuffing">
-			<td class="<?php echo $t101_jo_head->TableLeftColumnClass ?>"><?php echo $t101_jo_head->Tanggal_Stuffing->caption() ?></td>
-			<td<?php echo $t101_jo_head->Tanggal_Stuffing->cellAttributes() ?>>
-<span id="el_t101_jo_head_Tanggal_Stuffing">
-<span<?php echo $t101_jo_head->Tanggal_Stuffing->viewAttributes() ?>>
-<?php echo $t101_jo_head->Tanggal_Stuffing->getViewValue() ?></span>
 </span>
 </td>
 		</tr>

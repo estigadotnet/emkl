@@ -19,6 +19,14 @@ class t005_driver_delete extends t005_driver
 	// Page object name
 	public $PageObjName = "t005_driver_delete";
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -535,7 +543,7 @@ class t005_driver_delete extends t005_driver
 				session_start();
 		}
 		$this->CurrentAction = Param("action"); // Set up current action
-		$this->id->setVisibility();
+		$this->id->Visible = FALSE;
 		$this->TruckingVendor_id->setVisibility();
 		$this->Nama->setVisibility();
 		$this->No_HP_1->setVisibility();
@@ -561,8 +569,9 @@ class t005_driver_delete extends t005_driver
 		$this->createToken();
 
 		// Set up lookup cache
-		// Set up master/detail parameters
+		$this->setupLookupOptions($this->TruckingVendor_id);
 
+		// Set up master/detail parameters
 		$this->setupMasterParms();
 
 		// Set up Breadcrumb
@@ -724,8 +733,25 @@ class t005_driver_delete extends t005_driver
 			$this->id->ViewCustomAttributes = "";
 
 			// TruckingVendor_id
-			$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
-			$this->TruckingVendor_id->ViewValue = FormatNumber($this->TruckingVendor_id->ViewValue, 0, -2, -2, -2);
+			$curVal = strval($this->TruckingVendor_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->lookupCacheOption($curVal);
+				if ($this->TruckingVendor_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->TruckingVendor_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->TruckingVendor_id->ViewValue = NULL;
+			}
 			$this->TruckingVendor_id->ViewCustomAttributes = "";
 
 			// Nama
@@ -739,11 +765,6 @@ class t005_driver_delete extends t005_driver
 			// No_HP_2
 			$this->No_HP_2->ViewValue = $this->No_HP_2->CurrentValue;
 			$this->No_HP_2->ViewCustomAttributes = "";
-
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
 
 			// TruckingVendor_id
 			$this->TruckingVendor_id->LinkCustomAttributes = "";
@@ -790,6 +811,8 @@ class t005_driver_delete extends t005_driver
 		}
 		$rows = ($rs) ? $rs->getRows() : [];
 		$conn->beginTrans();
+		if ($this->AuditTrailOnDelete)
+			$this->writeAuditTrailDummy($Language->phrase("BatchDeleteBegin")); // Batch delete begin
 
 		// Clone old rows
 		$rsold = $rows;
@@ -838,8 +861,12 @@ class t005_driver_delete extends t005_driver
 		}
 		if ($deleteRows) {
 			$conn->commitTrans(); // Commit the changes
+			if ($this->AuditTrailOnDelete)
+				$this->writeAuditTrailDummy($Language->phrase("BatchDeleteSuccess")); // Batch delete success
 		} else {
 			$conn->rollbackTrans(); // Rollback changes
+			if ($this->AuditTrailOnDelete)
+				$this->writeAuditTrailDummy($Language->phrase("BatchDeleteRollback")); // Batch delete rollback
 		}
 
 		// Call Row Deleted event
@@ -963,6 +990,8 @@ class t005_driver_delete extends t005_driver
 
 					// Format the field values
 					switch ($fld->FieldVar) {
+						case "x_TruckingVendor_id":
+							break;
 					}
 					$ar[strval($row[0])] = $row;
 					$rs->moveNext();

@@ -21,17 +21,25 @@ class t101_jo_head extends DbTable
 	public $OffsetColumnClass = "col-sm-10 offset-sm-2";
 	public $TableLeftColumnClass = "w-col-2";
 
+	// Audit trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Export
 	public $ExportDoc;
 
 	// Fields
 	public $id;
 	public $Export_Import;
+	public $No_BL;
 	public $Nomor_JO;
 	public $Shipper_id;
 	public $Party;
 	public $Container;
-	public $Tanggal_Stuffing;
 	public $Destination_id;
 	public $Feeder_id;
 
@@ -62,7 +70,7 @@ class t101_jo_head extends DbTable
 		$this->DetailEdit = FALSE; // Allow detail edit
 		$this->DetailView = FALSE; // Allow detail view
 		$this->ShowMultipleDetails = FALSE; // Show multiple details
-		$this->GridAddRowCount = 5;
+		$this->GridAddRowCount = 1;
 		$this->AllowAddDeleteRow = TRUE; // Allow add/delete row
 		$this->UserIDAllowSecurity = 0; // User ID Allow
 		$this->BasicSearch = new BasicSearch($this->TableVar);
@@ -83,6 +91,11 @@ class t101_jo_head extends DbTable
 		$this->Export_Import->Lookup = new Lookup('Export_Import', 't101_jo_head', FALSE, '', ["","","",""], [], [], [], [], [], [], '', '');
 		$this->Export_Import->OptionCount = 2;
 		$this->fields['Export_Import'] = &$this->Export_Import;
+
+		// No_BL
+		$this->No_BL = new DbField('t101_jo_head', 't101_jo_head', 'x_No_BL', 'No_BL', '`No_BL`', '`No_BL`', 200, -1, FALSE, '`No_BL`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->No_BL->Sortable = TRUE; // Allow sort
+		$this->fields['No_BL'] = &$this->No_BL;
 
 		// Nomor_JO
 		$this->Nomor_JO = new DbField('t101_jo_head', 't101_jo_head', 'x_Nomor_JO', 'Nomor_JO', '`Nomor_JO`', '`Nomor_JO`', 200, -1, FALSE, '`Nomor_JO`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
@@ -117,14 +130,6 @@ class t101_jo_head extends DbTable
 		$this->Container->OptionCount = 2;
 		$this->fields['Container'] = &$this->Container;
 
-		// Tanggal_Stuffing
-		$this->Tanggal_Stuffing = new DbField('t101_jo_head', 't101_jo_head', 'x_Tanggal_Stuffing', 'Tanggal_Stuffing', '`Tanggal_Stuffing`', CastDateFieldForLike('`Tanggal_Stuffing`', 11, "DB"), 135, 11, FALSE, '`Tanggal_Stuffing`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
-		$this->Tanggal_Stuffing->Nullable = FALSE; // NOT NULL field
-		$this->Tanggal_Stuffing->Required = TRUE; // Required field
-		$this->Tanggal_Stuffing->Sortable = TRUE; // Allow sort
-		$this->Tanggal_Stuffing->DefaultErrorMessage = str_replace("%s", $GLOBALS["DATE_SEPARATOR"], $Language->phrase("IncorrectDateDMY"));
-		$this->fields['Tanggal_Stuffing'] = &$this->Tanggal_Stuffing;
-
 		// Destination_id
 		$this->Destination_id = new DbField('t101_jo_head', 't101_jo_head', 'x_Destination_id', 'Destination_id', '`Destination_id`', '`Destination_id`', 3, -1, FALSE, '`Destination_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->Destination_id->Nullable = FALSE; // NOT NULL field
@@ -143,7 +148,7 @@ class t101_jo_head extends DbTable
 		$this->Feeder_id->Sortable = TRUE; // Allow sort
 		$this->Feeder_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
 		$this->Feeder_id->PleaseSelectText = $Language->phrase("PleaseSelect"); // PleaseSelect text
-		$this->Feeder_id->Lookup = new Lookup('Feeder_id', 't003_feeder', FALSE, 'id', ["Nama","","",""], [], [], [], [], [], [], '', '');
+		$this->Feeder_id->Lookup = new Lookup('Feeder_id', 't003_feeder', FALSE, 'id', ["Nama","","",""], [], [], [], [], [], [], '`id` DESC', '');
 		$this->Feeder_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
 		$this->fields['Feeder_id'] = &$this->Feeder_id;
 	}
@@ -288,7 +293,7 @@ class t101_jo_head extends DbTable
 	}
 	public function getSqlOrderBy() // Order By
 	{
-		return ($this->SqlOrderBy <> "") ? $this->SqlOrderBy : "";
+		return ($this->SqlOrderBy <> "") ? $this->SqlOrderBy : "`Export_Import` ASC,`Nomor_JO` ASC";
 	}
 	public function sqlOrderBy() // For backward compatibility
 	{
@@ -459,6 +464,8 @@ class t101_jo_head extends DbTable
 			// Get insert id if necessary
 			$this->id->setDbValue($conn->insert_ID());
 			$rs['id'] = $this->id->DbValue;
+			if ($this->AuditTrailOnAdd)
+				$this->writeAuditTrailOnAdd($rs);
 		}
 		return $success;
 	}
@@ -487,7 +494,45 @@ class t101_jo_head extends DbTable
 	public function update(&$rs, $where = "", $rsold = NULL, $curfilter = TRUE)
 	{
 		$conn = &$this->getConnection();
+
+		// Cascade Update detail table 't101_jo_detail'
+		$cascadeUpdate = FALSE;
+		$rscascade = array();
+		if ($rsold && (isset($rs['id']) && $rsold['id'] <> $rs['id'])) { // Update detail field 'JOHead_id'
+			$cascadeUpdate = TRUE;
+			$rscascade['JOHead_id'] = $rs['id']; 
+		}
+		if ($cascadeUpdate) {
+			if (!isset($GLOBALS["t101_jo_detail"]))
+				$GLOBALS["t101_jo_detail"] = new t101_jo_detail();
+			$rswrk = $GLOBALS["t101_jo_detail"]->loadRs("`JOHead_id` = " . QuotedValue($rsold['id'], DATATYPE_NUMBER, 'DB')); 
+			while ($rswrk && !$rswrk->EOF) {
+				$rskey = array();
+				$fldname = 'id';
+				$rskey[$fldname] = $rswrk->fields[$fldname];
+				$rsdtlold = &$rswrk->fields;
+				$rsdtlnew = array_merge($rsdtlold, $rscascade);
+
+				// Call Row_Updating event
+				$success = $GLOBALS["t101_jo_detail"]->Row_Updating($rsdtlold, $rsdtlnew);
+				if ($success)
+					$success = $GLOBALS["t101_jo_detail"]->update($rscascade, $rskey, $rswrk->fields);
+				if (!$success)
+					return FALSE;
+
+				// Call Row_Updated event
+				$GLOBALS["t101_jo_detail"]->Row_Updated($rsdtlold, $rsdtlnew);
+				$rswrk->moveNext();
+			}
+		}
 		$success = $conn->execute($this->updateSql($rs, $where, $curfilter));
+		if ($success && $this->AuditTrailOnEdit && $rsold) {
+			$rsaudit = $rs;
+			$fldname = 'id';
+			if (!array_key_exists($fldname, $rsaudit))
+				$rsaudit[$fldname] = $rsold[$fldname];
+			$this->writeAuditTrailOnEdit($rsold, $rsaudit);
+		}
 		return $success;
 	}
 
@@ -515,8 +560,36 @@ class t101_jo_head extends DbTable
 	{
 		$success = TRUE;
 		$conn = &$this->getConnection();
+
+		// Cascade delete detail table 't101_jo_detail'
+		if (!isset($GLOBALS["t101_jo_detail"]))
+			$GLOBALS["t101_jo_detail"] = new t101_jo_detail();
+		$rscascade = $GLOBALS["t101_jo_detail"]->loadRs("`JOHead_id` = " . QuotedValue($rs['id'], DATATYPE_NUMBER, "DB")); 
+		$dtlrows = ($rscascade) ? $rscascade->getRows() : array();
+
+		// Call Row Deleting event
+		foreach ($dtlrows as $dtlrow) {
+			$success = $GLOBALS["t101_jo_detail"]->Row_Deleting($dtlrow);
+			if (!$success)
+				break;
+		}
+		if ($success) {
+			foreach ($dtlrows as $dtlrow) {
+				$success = $GLOBALS["t101_jo_detail"]->delete($dtlrow); // Delete
+				if (!$success)
+					break;
+			}
+		}
+
+		// Call Row Deleted event
+		if ($success) {
+			foreach ($dtlrows as $dtlrow)
+				$GLOBALS["t101_jo_detail"]->Row_Deleted($dtlrow);
+		}
 		if ($success)
 			$success = $conn->execute($this->deleteSql($rs, $where, $curfilter));
+		if ($success && $this->AuditTrailOnDelete)
+			$this->writeAuditTrailOnDelete($rs);
 		return $success;
 	}
 
@@ -528,11 +601,11 @@ class t101_jo_head extends DbTable
 		$row = is_array($rs) ? $rs : $rs->fields;
 		$this->id->DbValue = $row['id'];
 		$this->Export_Import->DbValue = $row['Export_Import'];
+		$this->No_BL->DbValue = $row['No_BL'];
 		$this->Nomor_JO->DbValue = $row['Nomor_JO'];
 		$this->Shipper_id->DbValue = $row['Shipper_id'];
 		$this->Party->DbValue = $row['Party'];
 		$this->Container->DbValue = $row['Container'];
-		$this->Tanggal_Stuffing->DbValue = $row['Tanggal_Stuffing'];
 		$this->Destination_id->DbValue = $row['Destination_id'];
 		$this->Feeder_id->DbValue = $row['Feeder_id'];
 	}
@@ -768,11 +841,11 @@ class t101_jo_head extends DbTable
 	{
 		$this->id->setDbValue($rs->fields('id'));
 		$this->Export_Import->setDbValue($rs->fields('Export_Import'));
+		$this->No_BL->setDbValue($rs->fields('No_BL'));
 		$this->Nomor_JO->setDbValue($rs->fields('Nomor_JO'));
 		$this->Shipper_id->setDbValue($rs->fields('Shipper_id'));
 		$this->Party->setDbValue($rs->fields('Party'));
 		$this->Container->setDbValue($rs->fields('Container'));
-		$this->Tanggal_Stuffing->setDbValue($rs->fields('Tanggal_Stuffing'));
 		$this->Destination_id->setDbValue($rs->fields('Destination_id'));
 		$this->Feeder_id->setDbValue($rs->fields('Feeder_id'));
 	}
@@ -788,11 +861,11 @@ class t101_jo_head extends DbTable
 		// Common render codes
 		// id
 		// Export_Import
+		// No_BL
 		// Nomor_JO
 		// Shipper_id
 		// Party
 		// Container
-		// Tanggal_Stuffing
 		// Destination_id
 		// Feeder_id
 		// id
@@ -807,6 +880,10 @@ class t101_jo_head extends DbTable
 			$this->Export_Import->ViewValue = NULL;
 		}
 		$this->Export_Import->ViewCustomAttributes = "";
+
+		// No_BL
+		$this->No_BL->ViewValue = $this->No_BL->CurrentValue;
+		$this->No_BL->ViewCustomAttributes = "";
 
 		// Nomor_JO
 		$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
@@ -846,11 +923,6 @@ class t101_jo_head extends DbTable
 			$this->Container->ViewValue = NULL;
 		}
 		$this->Container->ViewCustomAttributes = "";
-
-		// Tanggal_Stuffing
-		$this->Tanggal_Stuffing->ViewValue = $this->Tanggal_Stuffing->CurrentValue;
-		$this->Tanggal_Stuffing->ViewValue = FormatDateTime($this->Tanggal_Stuffing->ViewValue, 11);
-		$this->Tanggal_Stuffing->ViewCustomAttributes = "";
 
 		// Destination_id
 		$curVal = strval($this->Destination_id->CurrentValue);
@@ -906,6 +978,11 @@ class t101_jo_head extends DbTable
 		$this->Export_Import->HrefValue = "";
 		$this->Export_Import->TooltipValue = "";
 
+		// No_BL
+		$this->No_BL->LinkCustomAttributes = "";
+		$this->No_BL->HrefValue = "";
+		$this->No_BL->TooltipValue = "";
+
 		// Nomor_JO
 		$this->Nomor_JO->LinkCustomAttributes = "";
 		$this->Nomor_JO->HrefValue = "";
@@ -925,11 +1002,6 @@ class t101_jo_head extends DbTable
 		$this->Container->LinkCustomAttributes = "";
 		$this->Container->HrefValue = "";
 		$this->Container->TooltipValue = "";
-
-		// Tanggal_Stuffing
-		$this->Tanggal_Stuffing->LinkCustomAttributes = "";
-		$this->Tanggal_Stuffing->HrefValue = "";
-		$this->Tanggal_Stuffing->TooltipValue = "";
 
 		// Destination_id
 		$this->Destination_id->LinkCustomAttributes = "";
@@ -966,6 +1038,14 @@ class t101_jo_head extends DbTable
 		$this->Export_Import->EditCustomAttributes = "";
 		$this->Export_Import->EditValue = $this->Export_Import->options(FALSE);
 
+		// No_BL
+		$this->No_BL->EditAttrs["class"] = "form-control";
+		$this->No_BL->EditCustomAttributes = "";
+		if (REMOVE_XSS)
+			$this->No_BL->CurrentValue = HtmlDecode($this->No_BL->CurrentValue);
+		$this->No_BL->EditValue = $this->No_BL->CurrentValue;
+		$this->No_BL->PlaceHolder = RemoveHtml($this->No_BL->caption());
+
 		// Nomor_JO
 		$this->Nomor_JO->EditAttrs["class"] = "form-control";
 		$this->Nomor_JO->EditCustomAttributes = "";
@@ -988,12 +1068,6 @@ class t101_jo_head extends DbTable
 		$this->Container->EditCustomAttributes = "";
 		$this->Container->EditValue = $this->Container->options(FALSE);
 
-		// Tanggal_Stuffing
-		$this->Tanggal_Stuffing->EditAttrs["class"] = "form-control";
-		$this->Tanggal_Stuffing->EditCustomAttributes = "";
-		$this->Tanggal_Stuffing->EditValue = FormatDateTime($this->Tanggal_Stuffing->CurrentValue, 11);
-		$this->Tanggal_Stuffing->PlaceHolder = RemoveHtml($this->Tanggal_Stuffing->caption());
-
 		// Destination_id
 		$this->Destination_id->EditAttrs["class"] = "form-control";
 		$this->Destination_id->EditCustomAttributes = "";
@@ -1009,11 +1083,18 @@ class t101_jo_head extends DbTable
 	// Aggregate list row values
 	public function aggregateListRowValues()
 	{
+			if (is_numeric($this->Party->CurrentValue))
+				$this->Party->Total += $this->Party->CurrentValue; // Accumulate total
 	}
 
 	// Aggregate list row (for rendering)
 	public function aggregateListRow()
 	{
+			$this->Party->CurrentValue = $this->Party->Total;
+			$this->Party->ViewValue = $this->Party->CurrentValue;
+			$this->Party->ViewValue = FormatNumber($this->Party->ViewValue, 0, -2, -2, -2);
+			$this->Party->ViewCustomAttributes = "";
+			$this->Party->HrefValue = ""; // Clear href value
 
 		// Call Row Rendered event
 		$this->Row_Rendered();
@@ -1032,21 +1113,21 @@ class t101_jo_head extends DbTable
 				$doc->beginExportRow();
 				if ($exportPageType == "view") {
 					$doc->exportCaption($this->Export_Import);
+					$doc->exportCaption($this->No_BL);
 					$doc->exportCaption($this->Nomor_JO);
 					$doc->exportCaption($this->Shipper_id);
 					$doc->exportCaption($this->Party);
 					$doc->exportCaption($this->Container);
-					$doc->exportCaption($this->Tanggal_Stuffing);
 					$doc->exportCaption($this->Destination_id);
 					$doc->exportCaption($this->Feeder_id);
 				} else {
 					$doc->exportCaption($this->id);
 					$doc->exportCaption($this->Export_Import);
+					$doc->exportCaption($this->No_BL);
 					$doc->exportCaption($this->Nomor_JO);
 					$doc->exportCaption($this->Shipper_id);
 					$doc->exportCaption($this->Party);
 					$doc->exportCaption($this->Container);
-					$doc->exportCaption($this->Tanggal_Stuffing);
 					$doc->exportCaption($this->Destination_id);
 					$doc->exportCaption($this->Feeder_id);
 				}
@@ -1072,6 +1153,7 @@ class t101_jo_head extends DbTable
 						$doc->exportPageBreak();
 				}
 				$this->loadListRowValues($recordset);
+				$this->aggregateListRowValues(); // Aggregate row values
 
 				// Render row
 				$this->RowType = ROWTYPE_VIEW; // Render view
@@ -1081,21 +1163,21 @@ class t101_jo_head extends DbTable
 					$doc->beginExportRow($rowCnt); // Allow CSS styles if enabled
 					if ($exportPageType == "view") {
 						$doc->exportField($this->Export_Import);
+						$doc->exportField($this->No_BL);
 						$doc->exportField($this->Nomor_JO);
 						$doc->exportField($this->Shipper_id);
 						$doc->exportField($this->Party);
 						$doc->exportField($this->Container);
-						$doc->exportField($this->Tanggal_Stuffing);
 						$doc->exportField($this->Destination_id);
 						$doc->exportField($this->Feeder_id);
 					} else {
 						$doc->exportField($this->id);
 						$doc->exportField($this->Export_Import);
+						$doc->exportField($this->No_BL);
 						$doc->exportField($this->Nomor_JO);
 						$doc->exportField($this->Shipper_id);
 						$doc->exportField($this->Party);
 						$doc->exportField($this->Container);
-						$doc->exportField($this->Tanggal_Stuffing);
 						$doc->exportField($this->Destination_id);
 						$doc->exportField($this->Feeder_id);
 					}
@@ -1107,6 +1189,26 @@ class t101_jo_head extends DbTable
 			if ($doc->ExportCustom)
 				$this->Row_Export($recordset->fields);
 			$recordset->moveNext();
+		}
+
+		// Export aggregates (horizontal format only)
+		if ($doc->Horizontal) {
+			$this->RowType = ROWTYPE_AGGREGATE;
+			$this->resetAttributes();
+			$this->aggregateListRow();
+			if (!$doc->ExportCustom) {
+				$doc->beginExportRow(-1);
+				$doc->exportAggregate($this->id, '');
+				$doc->exportAggregate($this->Export_Import, '');
+				$doc->exportAggregate($this->No_BL, '');
+				$doc->exportAggregate($this->Nomor_JO, '');
+				$doc->exportAggregate($this->Shipper_id, '');
+				$doc->exportAggregate($this->Party, 'TOTAL');
+				$doc->exportAggregate($this->Container, '');
+				$doc->exportAggregate($this->Destination_id, '');
+				$doc->exportAggregate($this->Feeder_id, '');
+				$doc->endExportRow();
+			}
 		}
 		if (!$doc->ExportCustom) {
 			$doc->exportTableFooter();
@@ -1212,6 +1314,138 @@ class t101_jo_head extends DbTable
 
 		// No binary fields
 		return FALSE;
+	}
+
+	// Write Audit Trail start/end for grid update
+	public function writeAuditTrailDummy($typ)
+	{
+		$table = 't101_jo_head';
+		$usr = CurrentUserName();
+		WriteAuditTrail("log", DbCurrentDateTime(), ScriptName(), $usr, $typ, $table, "", "", "", "");
+	}
+
+	// Write Audit Trail (add page)
+	public function writeAuditTrailOnAdd(&$rs)
+	{
+		global $Language;
+		if (!$this->AuditTrailOnAdd)
+			return;
+		$table = 't101_jo_head';
+
+		// Get key value
+		$key = "";
+		if ($key <> "")
+			$key .= $GLOBALS["COMPOSITE_KEY_SEPARATOR"];
+		$key .= $rs['id'];
+
+		// Write Audit Trail
+		$dt = DbCurrentDateTime();
+		$id = ScriptName();
+		$usr = CurrentUserName();
+		foreach (array_keys($rs) as $fldname) {
+			if (array_key_exists($fldname, $this->fields) && $this->fields[$fldname]->DataType <> DATATYPE_BLOB) { // Ignore BLOB fields
+				if ($this->fields[$fldname]->HtmlTag == "PASSWORD") {
+					$newvalue = $Language->phrase("PasswordMask"); // Password Field
+				} elseif ($this->fields[$fldname]->DataType == DATATYPE_MEMO) {
+					if (AUDIT_TRAIL_TO_DATABASE)
+						$newvalue = $rs[$fldname];
+					else
+						$newvalue = "[MEMO]"; // Memo Field
+				} elseif ($this->fields[$fldname]->DataType == DATATYPE_XML) {
+					$newvalue = "[XML]"; // XML Field
+				} else {
+					$newvalue = $rs[$fldname];
+				}
+				WriteAuditTrail("log", $dt, $id, $usr, "A", $table, $fldname, $key, "", $newvalue);
+			}
+		}
+	}
+
+	// Write Audit Trail (edit page)
+	public function writeAuditTrailOnEdit(&$rsold, &$rsnew)
+	{
+		global $Language;
+		if (!$this->AuditTrailOnEdit)
+			return;
+		$table = 't101_jo_head';
+
+		// Get key value
+		$key = "";
+		if ($key <> "")
+			$key .= $GLOBALS["COMPOSITE_KEY_SEPARATOR"];
+		$key .= $rsold['id'];
+
+		// Write Audit Trail
+		$dt = DbCurrentDateTime();
+		$id = ScriptName();
+		$usr = CurrentUserName();
+		foreach (array_keys($rsnew) as $fldname) {
+			if (array_key_exists($fldname, $this->fields) && array_key_exists($fldname, $rsold) && $this->fields[$fldname]->DataType <> DATATYPE_BLOB) { // Ignore BLOB fields
+				if ($this->fields[$fldname]->DataType == DATATYPE_DATE) { // DateTime field
+					$modified = (FormatDateTime($rsold[$fldname], 0) <> FormatDateTime($rsnew[$fldname], 0));
+				} else {
+					$modified = !CompareValue($rsold[$fldname], $rsnew[$fldname]);
+				}
+				if ($modified) {
+					if ($this->fields[$fldname]->HtmlTag == "PASSWORD") { // Password Field
+						$oldvalue = $Language->phrase("PasswordMask");
+						$newvalue = $Language->phrase("PasswordMask");
+					} elseif ($this->fields[$fldname]->DataType == DATATYPE_MEMO) { // Memo field
+						if (AUDIT_TRAIL_TO_DATABASE) {
+							$oldvalue = $rsold[$fldname];
+							$newvalue = $rsnew[$fldname];
+						} else {
+							$oldvalue = "[MEMO]";
+							$newvalue = "[MEMO]";
+						}
+					} elseif ($this->fields[$fldname]->DataType == DATATYPE_XML) { // XML field
+						$oldvalue = "[XML]";
+						$newvalue = "[XML]";
+					} else {
+						$oldvalue = $rsold[$fldname];
+						$newvalue = $rsnew[$fldname];
+					}
+					WriteAuditTrail("log", $dt, $id, $usr, "U", $table, $fldname, $key, $oldvalue, $newvalue);
+				}
+			}
+		}
+	}
+
+	// Write Audit Trail (delete page)
+	public function writeAuditTrailOnDelete(&$rs)
+	{
+		global $Language;
+		if (!$this->AuditTrailOnDelete)
+			return;
+		$table = 't101_jo_head';
+
+		// Get key value
+		$key = "";
+		if ($key <> "")
+			$key .= $GLOBALS["COMPOSITE_KEY_SEPARATOR"];
+		$key .= $rs['id'];
+
+		// Write Audit Trail
+		$dt = DbCurrentDateTime();
+		$id = ScriptName();
+		$curUser = CurrentUserName();
+		foreach (array_keys($rs) as $fldname) {
+			if (array_key_exists($fldname, $this->fields) && $this->fields[$fldname]->DataType <> DATATYPE_BLOB) { // Ignore BLOB fields
+				if ($this->fields[$fldname]->HtmlTag == "PASSWORD") {
+					$oldvalue = $Language->phrase("PasswordMask"); // Password Field
+				} elseif ($this->fields[$fldname]->DataType == DATATYPE_MEMO) {
+					if (AUDIT_TRAIL_TO_DATABASE)
+						$oldvalue = $rs[$fldname];
+					else
+						$oldvalue = "[MEMO]"; // Memo field
+				} elseif ($this->fields[$fldname]->DataType == DATATYPE_XML) {
+					$oldvalue = "[XML]"; // XML field
+				} else {
+					$oldvalue = $rs[$fldname];
+				}
+				WriteAuditTrail("log", $dt, $id, $curUser, "D", $table, $fldname, $key, $oldvalue, "");
+			}
+		}
 	}
 
 	// Table level events

@@ -53,19 +53,11 @@ ft005_driveredit.validate = function() {
 	for (var i = startcnt; i <= rowcnt; i++) {
 		var infix = ($k[0]) ? String(i) : "";
 		$fobj.data("rowindex", infix);
-		<?php if ($t005_driver_edit->id->Required) { ?>
-			elm = this.getElements("x" + infix + "_id");
-			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
-				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t005_driver->id->caption(), $t005_driver->id->RequiredErrorMessage)) ?>");
-		<?php } ?>
 		<?php if ($t005_driver_edit->TruckingVendor_id->Required) { ?>
 			elm = this.getElements("x" + infix + "_TruckingVendor_id");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
 				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t005_driver->TruckingVendor_id->caption(), $t005_driver->TruckingVendor_id->RequiredErrorMessage)) ?>");
 		<?php } ?>
-			elm = this.getElements("x" + infix + "_TruckingVendor_id");
-			if (elm && !ew.checkInteger(elm.value))
-				return this.onError(elm, "<?php echo JsEncode($t005_driver->TruckingVendor_id->errorMessage()) ?>");
 		<?php if ($t005_driver_edit->Nama->Required) { ?>
 			elm = this.getElements("x" + infix + "_Nama");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -109,8 +101,10 @@ ft005_driveredit.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LI
 ft005_driveredit.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-// Form object for search
+ft005_driveredit.lists["x_TruckingVendor_id"] = <?php echo $t005_driver_edit->TruckingVendor_id->Lookup->toClientList() ?>;
+ft005_driveredit.lists["x_TruckingVendor_id"].options = <?php echo JsonEncode($t005_driver_edit->TruckingVendor_id->lookupOptions()) ?>;
 
+// Form object for search
 </script>
 <script>
 
@@ -132,18 +126,6 @@ $t005_driver_edit->showMessage();
 <input type="hidden" name="fk_id" value="<?php echo $t005_driver->TruckingVendor_id->getSessionValue() ?>">
 <?php } ?>
 <div class="ew-edit-div"><!-- page* -->
-<?php if ($t005_driver->id->Visible) { // id ?>
-	<div id="r_id" class="form-group row">
-		<label id="elh_t005_driver_id" class="<?php echo $t005_driver_edit->LeftColumnClass ?>"><?php echo $t005_driver->id->caption() ?><?php echo ($t005_driver->id->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
-		<div class="<?php echo $t005_driver_edit->RightColumnClass ?>"><div<?php echo $t005_driver->id->cellAttributes() ?>>
-<span id="el_t005_driver_id">
-<span<?php echo $t005_driver->id->viewAttributes() ?>>
-<input type="text" readonly class="form-control-plaintext" value="<?php echo RemoveHtml($t005_driver->id->EditValue) ?>"></span>
-</span>
-<input type="hidden" data-table="t005_driver" data-field="x_id" name="x_id" id="x_id" value="<?php echo HtmlEncode($t005_driver->id->CurrentValue) ?>">
-<?php echo $t005_driver->id->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
 <?php if ($t005_driver->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 	<div id="r_TruckingVendor_id" class="form-group row">
 		<label id="elh_t005_driver_TruckingVendor_id" for="x_TruckingVendor_id" class="<?php echo $t005_driver_edit->LeftColumnClass ?>"><?php echo $t005_driver->TruckingVendor_id->caption() ?><?php echo ($t005_driver->TruckingVendor_id->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
@@ -156,7 +138,13 @@ $t005_driver_edit->showMessage();
 <input type="hidden" id="x_TruckingVendor_id" name="x_TruckingVendor_id" value="<?php echo HtmlEncode($t005_driver->TruckingVendor_id->CurrentValue) ?>">
 <?php } else { ?>
 <span id="el_t005_driver_TruckingVendor_id">
-<input type="text" data-table="t005_driver" data-field="x_TruckingVendor_id" name="x_TruckingVendor_id" id="x_TruckingVendor_id" size="30" placeholder="<?php echo HtmlEncode($t005_driver->TruckingVendor_id->getPlaceHolder()) ?>" value="<?php echo $t005_driver->TruckingVendor_id->EditValue ?>"<?php echo $t005_driver->TruckingVendor_id->editAttributes() ?>>
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t005_driver" data-field="x_TruckingVendor_id" data-value-separator="<?php echo $t005_driver->TruckingVendor_id->displayValueSeparatorAttribute() ?>" id="x_TruckingVendor_id" name="x_TruckingVendor_id"<?php echo $t005_driver->TruckingVendor_id->editAttributes() ?>>
+		<?php echo $t005_driver->TruckingVendor_id->selectOptionListHtml("x_TruckingVendor_id") ?>
+	</select>
+<div class="input-group-append"><button type="button" class="btn btn-default ew-add-opt-btn" id="aol_x_TruckingVendor_id" title="<?php echo HtmlTitle($Language->phrase("AddLink")) . "&nbsp;" . $t005_driver->TruckingVendor_id->caption() ?>" data-title="<?php echo $t005_driver->TruckingVendor_id->caption() ?>" onclick="ew.addOptionDialogShow({lnk:this,el:'x_TruckingVendor_id',url:'t006_trucking_vendoraddopt.php'});"><i class="fa fa-plus ew-icon"></i></button></div>
+</div>
+<?php echo $t005_driver->TruckingVendor_id->Lookup->getParamTag("p_x_TruckingVendor_id") ?>
 </span>
 <?php } ?>
 <?php echo $t005_driver->TruckingVendor_id->CustomMsg ?></div></div>
@@ -193,6 +181,7 @@ $t005_driver_edit->showMessage();
 	</div>
 <?php } ?>
 </div><!-- /page* -->
+	<input type="hidden" data-table="t005_driver" data-field="x_id" name="x_id" id="x_id" value="<?php echo HtmlEncode($t005_driver->id->CurrentValue) ?>">
 <?php if (!$t005_driver_edit->IsModal) { ?>
 <div class="form-group row"><!-- buttons .form-group -->
 	<div class="<?php echo $t005_driver_edit->OffsetColumnClass ?>"><!-- buttons offset -->

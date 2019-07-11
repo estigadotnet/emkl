@@ -45,19 +45,11 @@ ft005_drivergrid.validate = function() {
 		var checkrow = (gridinsert) ? !this.emptyRow(infix) : true;
 		if (checkrow) {
 			addcnt++;
-		<?php if ($t005_driver_grid->id->Required) { ?>
-			elm = this.getElements("x" + infix + "_id");
-			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
-				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t005_driver->id->caption(), $t005_driver->id->RequiredErrorMessage)) ?>");
-		<?php } ?>
 		<?php if ($t005_driver_grid->TruckingVendor_id->Required) { ?>
 			elm = this.getElements("x" + infix + "_TruckingVendor_id");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
 				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t005_driver->TruckingVendor_id->caption(), $t005_driver->TruckingVendor_id->RequiredErrorMessage)) ?>");
 		<?php } ?>
-			elm = this.getElements("x" + infix + "_TruckingVendor_id");
-			if (elm && !ew.checkInteger(elm.value))
-				return this.onError(elm, "<?php echo JsEncode($t005_driver->TruckingVendor_id->errorMessage()) ?>");
 		<?php if ($t005_driver_grid->Nama->Required) { ?>
 			elm = this.getElements("x" + infix + "_Nama");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -103,8 +95,10 @@ ft005_drivergrid.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LI
 ft005_drivergrid.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-// Form object for search
+ft005_drivergrid.lists["x_TruckingVendor_id"] = <?php echo $t005_driver_grid->TruckingVendor_id->Lookup->toClientList() ?>;
+ft005_drivergrid.lists["x_TruckingVendor_id"].options = <?php echo JsonEncode($t005_driver_grid->TruckingVendor_id->lookupOptions()) ?>;
 
+// Form object for search
 </script>
 <script src="phpjs/ewscrolltable.js"></script>
 <?php } ?>
@@ -133,15 +127,6 @@ $t005_driver_grid->renderListOptions();
 // Render list options (header, left)
 $t005_driver_grid->ListOptions->render("header", "left");
 ?>
-<?php if ($t005_driver->id->Visible) { // id ?>
-	<?php if ($t005_driver->sortUrl($t005_driver->id) == "") { ?>
-		<th data-name="id" class="<?php echo $t005_driver->id->headerCellClass() ?>"><div id="elh_t005_driver_id" class="t005_driver_id"><div class="ew-table-header-caption"><?php echo $t005_driver->id->caption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="id" class="<?php echo $t005_driver->id->headerCellClass() ?>"><div><div id="elh_t005_driver_id" class="t005_driver_id">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t005_driver->id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t005_driver->id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t005_driver->id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
 <?php if ($t005_driver->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 	<?php if ($t005_driver->sortUrl($t005_driver->TruckingVendor_id) == "") { ?>
 		<th data-name="TruckingVendor_id" class="<?php echo $t005_driver->TruckingVendor_id->headerCellClass() ?>"><div id="elh_t005_driver_TruckingVendor_id" class="t005_driver_TruckingVendor_id"><div class="ew-table-header-caption"><?php echo $t005_driver->TruckingVendor_id->caption() ?></div></div></th>
@@ -286,33 +271,6 @@ while ($t005_driver_grid->RecCnt < $t005_driver_grid->StopRec) {
 // Render list options (body, left)
 $t005_driver_grid->ListOptions->render("body", "left", $t005_driver_grid->RowCnt);
 ?>
-	<?php if ($t005_driver->id->Visible) { // id ?>
-		<td data-name="id"<?php echo $t005_driver->id->cellAttributes() ?>>
-<?php if ($t005_driver->RowType == ROWTYPE_ADD) { // Add record ?>
-<input type="hidden" data-table="t005_driver" data-field="x_id" name="o<?php echo $t005_driver_grid->RowIndex ?>_id" id="o<?php echo $t005_driver_grid->RowIndex ?>_id" value="<?php echo HtmlEncode($t005_driver->id->OldValue) ?>">
-<?php } ?>
-<?php if ($t005_driver->RowType == ROWTYPE_EDIT) { // Edit record ?>
-<span id="el<?php echo $t005_driver_grid->RowCnt ?>_t005_driver_id" class="form-group t005_driver_id">
-<span<?php echo $t005_driver->id->viewAttributes() ?>>
-<input type="text" readonly class="form-control-plaintext" value="<?php echo RemoveHtml($t005_driver->id->EditValue) ?>"></span>
-</span>
-<input type="hidden" data-table="t005_driver" data-field="x_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_id" id="x<?php echo $t005_driver_grid->RowIndex ?>_id" value="<?php echo HtmlEncode($t005_driver->id->CurrentValue) ?>">
-<?php } ?>
-<?php if ($t005_driver->RowType == ROWTYPE_VIEW) { // View record ?>
-<span id="el<?php echo $t005_driver_grid->RowCnt ?>_t005_driver_id" class="t005_driver_id">
-<span<?php echo $t005_driver->id->viewAttributes() ?>>
-<?php echo $t005_driver->id->getViewValue() ?></span>
-</span>
-<?php if (!$t005_driver->isConfirm()) { ?>
-<input type="hidden" data-table="t005_driver" data-field="x_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_id" id="x<?php echo $t005_driver_grid->RowIndex ?>_id" value="<?php echo HtmlEncode($t005_driver->id->FormValue) ?>">
-<input type="hidden" data-table="t005_driver" data-field="x_id" name="o<?php echo $t005_driver_grid->RowIndex ?>_id" id="o<?php echo $t005_driver_grid->RowIndex ?>_id" value="<?php echo HtmlEncode($t005_driver->id->OldValue) ?>">
-<?php } else { ?>
-<input type="hidden" data-table="t005_driver" data-field="x_id" name="ft005_drivergrid$x<?php echo $t005_driver_grid->RowIndex ?>_id" id="ft005_drivergrid$x<?php echo $t005_driver_grid->RowIndex ?>_id" value="<?php echo HtmlEncode($t005_driver->id->FormValue) ?>">
-<input type="hidden" data-table="t005_driver" data-field="x_id" name="ft005_drivergrid$o<?php echo $t005_driver_grid->RowIndex ?>_id" id="ft005_drivergrid$o<?php echo $t005_driver_grid->RowIndex ?>_id" value="<?php echo HtmlEncode($t005_driver->id->OldValue) ?>">
-<?php } ?>
-<?php } ?>
-</td>
-	<?php } ?>
 	<?php if ($t005_driver->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 		<td data-name="TruckingVendor_id"<?php echo $t005_driver->TruckingVendor_id->cellAttributes() ?>>
 <?php if ($t005_driver->RowType == ROWTYPE_ADD) { // Add record ?>
@@ -324,7 +282,13 @@ $t005_driver_grid->ListOptions->render("body", "left", $t005_driver_grid->RowCnt
 <input type="hidden" id="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" value="<?php echo HtmlEncode($t005_driver->TruckingVendor_id->CurrentValue) ?>">
 <?php } else { ?>
 <span id="el<?php echo $t005_driver_grid->RowCnt ?>_t005_driver_TruckingVendor_id" class="form-group t005_driver_TruckingVendor_id">
-<input type="text" data-table="t005_driver" data-field="x_TruckingVendor_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" id="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" size="30" placeholder="<?php echo HtmlEncode($t005_driver->TruckingVendor_id->getPlaceHolder()) ?>" value="<?php echo $t005_driver->TruckingVendor_id->EditValue ?>"<?php echo $t005_driver->TruckingVendor_id->editAttributes() ?>>
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t005_driver" data-field="x_TruckingVendor_id" data-value-separator="<?php echo $t005_driver->TruckingVendor_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id"<?php echo $t005_driver->TruckingVendor_id->editAttributes() ?>>
+		<?php echo $t005_driver->TruckingVendor_id->selectOptionListHtml("x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id") ?>
+	</select>
+<div class="input-group-append"><button type="button" class="btn btn-default ew-add-opt-btn" id="aol_x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" title="<?php echo HtmlTitle($Language->phrase("AddLink")) . "&nbsp;" . $t005_driver->TruckingVendor_id->caption() ?>" data-title="<?php echo $t005_driver->TruckingVendor_id->caption() ?>" onclick="ew.addOptionDialogShow({lnk:this,el:'x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id',url:'t006_trucking_vendoraddopt.php'});"><i class="fa fa-plus ew-icon"></i></button></div>
+</div>
+<?php echo $t005_driver->TruckingVendor_id->Lookup->getParamTag("p_x" . $t005_driver_grid->RowIndex . "_TruckingVendor_id") ?>
 </span>
 <?php } ?>
 <input type="hidden" data-table="t005_driver" data-field="x_TruckingVendor_id" name="o<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" id="o<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" value="<?php echo HtmlEncode($t005_driver->TruckingVendor_id->OldValue) ?>">
@@ -338,7 +302,13 @@ $t005_driver_grid->ListOptions->render("body", "left", $t005_driver_grid->RowCnt
 <input type="hidden" id="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" value="<?php echo HtmlEncode($t005_driver->TruckingVendor_id->CurrentValue) ?>">
 <?php } else { ?>
 <span id="el<?php echo $t005_driver_grid->RowCnt ?>_t005_driver_TruckingVendor_id" class="form-group t005_driver_TruckingVendor_id">
-<input type="text" data-table="t005_driver" data-field="x_TruckingVendor_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" id="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" size="30" placeholder="<?php echo HtmlEncode($t005_driver->TruckingVendor_id->getPlaceHolder()) ?>" value="<?php echo $t005_driver->TruckingVendor_id->EditValue ?>"<?php echo $t005_driver->TruckingVendor_id->editAttributes() ?>>
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t005_driver" data-field="x_TruckingVendor_id" data-value-separator="<?php echo $t005_driver->TruckingVendor_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id"<?php echo $t005_driver->TruckingVendor_id->editAttributes() ?>>
+		<?php echo $t005_driver->TruckingVendor_id->selectOptionListHtml("x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id") ?>
+	</select>
+<div class="input-group-append"><button type="button" class="btn btn-default ew-add-opt-btn" id="aol_x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" title="<?php echo HtmlTitle($Language->phrase("AddLink")) . "&nbsp;" . $t005_driver->TruckingVendor_id->caption() ?>" data-title="<?php echo $t005_driver->TruckingVendor_id->caption() ?>" onclick="ew.addOptionDialogShow({lnk:this,el:'x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id',url:'t006_trucking_vendoraddopt.php'});"><i class="fa fa-plus ew-icon"></i></button></div>
+</div>
+<?php echo $t005_driver->TruckingVendor_id->Lookup->getParamTag("p_x" . $t005_driver_grid->RowIndex . "_TruckingVendor_id") ?>
 </span>
 <?php } ?>
 <?php } ?>
@@ -357,6 +327,13 @@ $t005_driver_grid->ListOptions->render("body", "left", $t005_driver_grid->RowCnt
 <?php } ?>
 </td>
 	<?php } ?>
+<?php if ($t005_driver->RowType == ROWTYPE_ADD) { // Add record ?>
+<input type="hidden" data-table="t005_driver" data-field="x_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_id" id="x<?php echo $t005_driver_grid->RowIndex ?>_id" value="<?php echo HtmlEncode($t005_driver->id->CurrentValue) ?>">
+<input type="hidden" data-table="t005_driver" data-field="x_id" name="o<?php echo $t005_driver_grid->RowIndex ?>_id" id="o<?php echo $t005_driver_grid->RowIndex ?>_id" value="<?php echo HtmlEncode($t005_driver->id->OldValue) ?>">
+<?php } ?>
+<?php if ($t005_driver->RowType == ROWTYPE_EDIT || $t005_driver->CurrentMode == "edit") { ?>
+<input type="hidden" data-table="t005_driver" data-field="x_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_id" id="x<?php echo $t005_driver_grid->RowIndex ?>_id" value="<?php echo HtmlEncode($t005_driver->id->CurrentValue) ?>">
+<?php } ?>
 	<?php if ($t005_driver->Nama->Visible) { // Nama ?>
 		<td data-name="Nama"<?php echo $t005_driver->Nama->cellAttributes() ?>>
 <?php if ($t005_driver->RowType == ROWTYPE_ADD) { // Add record ?>
@@ -484,19 +461,6 @@ ft005_drivergrid.updateLists(<?php echo $t005_driver_grid->RowIndex ?>);
 // Render list options (body, left)
 $t005_driver_grid->ListOptions->render("body", "left", $t005_driver_grid->RowIndex);
 ?>
-	<?php if ($t005_driver->id->Visible) { // id ?>
-		<td data-name="id">
-<?php if (!$t005_driver->isConfirm()) { ?>
-<?php } else { ?>
-<span id="el$rowindex$_t005_driver_id" class="form-group t005_driver_id">
-<span<?php echo $t005_driver->id->viewAttributes() ?>>
-<input type="text" readonly class="form-control-plaintext" value="<?php echo RemoveHtml($t005_driver->id->ViewValue) ?>"></span>
-</span>
-<input type="hidden" data-table="t005_driver" data-field="x_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_id" id="x<?php echo $t005_driver_grid->RowIndex ?>_id" value="<?php echo HtmlEncode($t005_driver->id->FormValue) ?>">
-<?php } ?>
-<input type="hidden" data-table="t005_driver" data-field="x_id" name="o<?php echo $t005_driver_grid->RowIndex ?>_id" id="o<?php echo $t005_driver_grid->RowIndex ?>_id" value="<?php echo HtmlEncode($t005_driver->id->OldValue) ?>">
-</td>
-	<?php } ?>
 	<?php if ($t005_driver->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 		<td data-name="TruckingVendor_id">
 <?php if (!$t005_driver->isConfirm()) { ?>
@@ -508,7 +472,13 @@ $t005_driver_grid->ListOptions->render("body", "left", $t005_driver_grid->RowInd
 <input type="hidden" id="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" value="<?php echo HtmlEncode($t005_driver->TruckingVendor_id->CurrentValue) ?>">
 <?php } else { ?>
 <span id="el$rowindex$_t005_driver_TruckingVendor_id" class="form-group t005_driver_TruckingVendor_id">
-<input type="text" data-table="t005_driver" data-field="x_TruckingVendor_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" id="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" size="30" placeholder="<?php echo HtmlEncode($t005_driver->TruckingVendor_id->getPlaceHolder()) ?>" value="<?php echo $t005_driver->TruckingVendor_id->EditValue ?>"<?php echo $t005_driver->TruckingVendor_id->editAttributes() ?>>
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t005_driver" data-field="x_TruckingVendor_id" data-value-separator="<?php echo $t005_driver->TruckingVendor_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" name="x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id"<?php echo $t005_driver->TruckingVendor_id->editAttributes() ?>>
+		<?php echo $t005_driver->TruckingVendor_id->selectOptionListHtml("x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id") ?>
+	</select>
+<div class="input-group-append"><button type="button" class="btn btn-default ew-add-opt-btn" id="aol_x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id" title="<?php echo HtmlTitle($Language->phrase("AddLink")) . "&nbsp;" . $t005_driver->TruckingVendor_id->caption() ?>" data-title="<?php echo $t005_driver->TruckingVendor_id->caption() ?>" onclick="ew.addOptionDialogShow({lnk:this,el:'x<?php echo $t005_driver_grid->RowIndex ?>_TruckingVendor_id',url:'t006_trucking_vendoraddopt.php'});"><i class="fa fa-plus ew-icon"></i></button></div>
+</div>
+<?php echo $t005_driver->TruckingVendor_id->Lookup->getParamTag("p_x" . $t005_driver_grid->RowIndex . "_TruckingVendor_id") ?>
 </span>
 <?php } ?>
 <?php } else { ?>

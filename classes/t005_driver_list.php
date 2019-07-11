@@ -60,6 +60,14 @@ class t005_driver_list extends t005_driver
 	public $MultiDeleteUrl;
 	public $MultiUpdateUrl;
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -613,7 +621,7 @@ class t005_driver_list extends t005_driver
 	public $ListActions; // List actions
 	public $SelectedCount = 0;
 	public $SelectedIndex = 0;
-	public $DisplayRecs = 20;
+	public $DisplayRecs = 50;
 	public $StartRec;
 	public $StopRec;
 	public $TotalRecs = 0;
@@ -667,7 +675,7 @@ class t005_driver_list extends t005_driver
 
 		// Set up list options
 		$this->setupListOptions();
-		$this->id->setVisibility();
+		$this->id->Visible = FALSE;
 		$this->TruckingVendor_id->setVisibility();
 		$this->Nama->setVisibility();
 		$this->No_HP_1->setVisibility();
@@ -708,8 +716,9 @@ class t005_driver_list extends t005_driver
 		}
 
 		// Set up lookup cache
-		// Search filters
+		$this->setupLookupOptions($this->TruckingVendor_id);
 
+		// Search filters
 		$srchAdvanced = ""; // Advanced search filter
 		$srchBasic = ""; // Basic search filter
 		$filter = "";
@@ -721,6 +730,9 @@ class t005_driver_list extends t005_driver
 			// Process list action first
 			if ($this->processListAction()) // Ajax request
 				$this->terminate();
+
+			// Set up records per page
+			$this->setupDisplayRecs();
 
 			// Handle reset command
 			$this->resetCmd();
@@ -780,7 +792,7 @@ class t005_driver_list extends t005_driver
 		if ($this->Command <> "json" && $this->getRecordsPerPage() <> "") {
 			$this->DisplayRecs = $this->getRecordsPerPage(); // Restore from Session
 		} else {
-			$this->DisplayRecs = 20; // Load default
+			$this->DisplayRecs = 50; // Load default
 		}
 
 		// Load Sorting Order
@@ -874,6 +886,13 @@ class t005_driver_list extends t005_driver
 				else
 					$this->setWarningMessage($Language->phrase("NoRecord"));
 			}
+
+			// Audit trail on search
+			if ($this->AuditTrailOnSearch && $this->Command == "search" && !$this->RestoreSearch) {
+				$searchParm = ServerVar("QUERY_STRING");
+				$searchSql = $this->getSessionWhere();
+				$this->writeAuditTrailOnSearch($searchParm, $searchSql);
+			}
 		}
 
 		// Search options
@@ -885,6 +904,28 @@ class t005_driver_list extends t005_driver
 			$this->Recordset->close();
 			WriteJson(["success" => TRUE, $this->TableVar => $rows, "totalRecordCount" => $this->TotalRecs]);
 			$this->terminate(TRUE);
+		}
+	}
+
+	// Set up number of records displayed per page
+	protected function setupDisplayRecs()
+	{
+		$wrk = Get(TABLE_REC_PER_PAGE, "");
+		if ($wrk <> "") {
+			if (is_numeric($wrk)) {
+				$this->DisplayRecs = (int)$wrk;
+			} else {
+				if (SameText($wrk, "all")) { // Display all records
+					$this->DisplayRecs = -1;
+				} else {
+					$this->DisplayRecs = 50; // Non-numeric, load default
+				}
+			}
+			$this->setRecordsPerPage($this->DisplayRecs); // Save to Session
+
+			// Reset start position
+			$this->StartRec = 1;
+			$this->setStartRecordNumber($this->StartRec);
 		}
 	}
 
@@ -1190,7 +1231,6 @@ class t005_driver_list extends t005_driver
 		if (Get("order") !== NULL) {
 			$this->CurrentOrder = Get("order");
 			$this->CurrentOrderType = Get("ordertype", "");
-			$this->updateSort($this->id, $ctrl); // id
 			$this->updateSort($this->TruckingVendor_id, $ctrl); // TruckingVendor_id
 			$this->updateSort($this->Nama, $ctrl); // Nama
 			$this->updateSort($this->No_HP_1, $ctrl); // No_HP_1
@@ -1238,7 +1278,6 @@ class t005_driver_list extends t005_driver
 			if ($this->Command == "resetsort") {
 				$orderBy = "";
 				$this->setSessionOrderBy($orderBy);
-				$this->id->setSort("");
 				$this->TruckingVendor_id->setSort("");
 				$this->Nama->setSort("");
 				$this->No_HP_1->setSort("");
@@ -1790,8 +1829,25 @@ class t005_driver_list extends t005_driver
 			$this->id->ViewCustomAttributes = "";
 
 			// TruckingVendor_id
-			$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
-			$this->TruckingVendor_id->ViewValue = FormatNumber($this->TruckingVendor_id->ViewValue, 0, -2, -2, -2);
+			$curVal = strval($this->TruckingVendor_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->lookupCacheOption($curVal);
+				if ($this->TruckingVendor_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->TruckingVendor_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->TruckingVendor_id->ViewValue = NULL;
+			}
 			$this->TruckingVendor_id->ViewCustomAttributes = "";
 
 			// Nama
@@ -1805,11 +1861,6 @@ class t005_driver_list extends t005_driver
 			// No_HP_2
 			$this->No_HP_2->ViewValue = $this->No_HP_2->CurrentValue;
 			$this->No_HP_2->ViewCustomAttributes = "";
-
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
 
 			// TruckingVendor_id
 			$this->TruckingVendor_id->LinkCustomAttributes = "";
@@ -1949,6 +2000,8 @@ class t005_driver_list extends t005_driver
 
 					// Format the field values
 					switch ($fld->FieldVar) {
+						case "x_TruckingVendor_id":
+							break;
 					}
 					$ar[strval($row[0])] = $row;
 					$rs->moveNext();

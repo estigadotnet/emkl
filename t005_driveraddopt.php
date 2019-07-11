@@ -57,9 +57,6 @@ ft005_driveraddopt.validate = function() {
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
 				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t005_driver->TruckingVendor_id->caption(), $t005_driver->TruckingVendor_id->RequiredErrorMessage)) ?>");
 		<?php } ?>
-			elm = this.getElements("x" + infix + "_TruckingVendor_id");
-			if (elm && !ew.checkInteger(elm.value))
-				return this.onError(elm, "<?php echo JsEncode($t005_driver->TruckingVendor_id->errorMessage()) ?>");
 		<?php if ($t005_driver_addopt->Nama->Required) { ?>
 			elm = this.getElements("x" + infix + "_Nama");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -94,8 +91,10 @@ ft005_driveraddopt.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS 
 ft005_driveraddopt.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-// Form object for search
+ft005_driveraddopt.lists["x_TruckingVendor_id"] = <?php echo $t005_driver_addopt->TruckingVendor_id->Lookup->toClientList() ?>;
+ft005_driveraddopt.lists["x_TruckingVendor_id"].options = <?php echo JsonEncode($t005_driver_addopt->TruckingVendor_id->lookupOptions()) ?>;
 
+// Form object for search
 </script>
 <script>
 
@@ -115,7 +114,12 @@ $t005_driver_addopt->showMessage();
 	<div class="form-group row">
 		<label class="col-sm-2 col-form-label ew-label" for="x_TruckingVendor_id"><?php echo $t005_driver->TruckingVendor_id->caption() ?><?php echo ($t005_driver->TruckingVendor_id->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
 		<div class="col-sm-10">
-<input type="text" data-table="t005_driver" data-field="x_TruckingVendor_id" name="x_TruckingVendor_id" id="x_TruckingVendor_id" size="30" placeholder="<?php echo HtmlEncode($t005_driver->TruckingVendor_id->getPlaceHolder()) ?>" value="<?php echo $t005_driver->TruckingVendor_id->EditValue ?>"<?php echo $t005_driver->TruckingVendor_id->editAttributes() ?>>
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t005_driver" data-field="x_TruckingVendor_id" data-value-separator="<?php echo $t005_driver->TruckingVendor_id->displayValueSeparatorAttribute() ?>" id="x_TruckingVendor_id" name="x_TruckingVendor_id"<?php echo $t005_driver->TruckingVendor_id->editAttributes() ?>>
+		<?php echo $t005_driver->TruckingVendor_id->selectOptionListHtml("x_TruckingVendor_id") ?>
+	</select>
+</div>
+<?php echo $t005_driver->TruckingVendor_id->Lookup->getParamTag("p_x_TruckingVendor_id") ?>
 <?php echo $t005_driver->TruckingVendor_id->CustomMsg ?></div>
 	</div>
 <?php } ?>

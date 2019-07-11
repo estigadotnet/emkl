@@ -1313,6 +1313,18 @@ if ($t101_tagihan_trucking_list->Recordset)
 	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $t101_tagihan_trucking_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $t101_tagihan_trucking_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $t101_tagihan_trucking_list->Pager->RecordCount ?></span>
 </div>
 <?php } ?>
+<?php if ($t101_tagihan_trucking_list->TotalRecs > 0 && (!$t101_tagihan_trucking_list->AutoHidePageSizeSelector || $t101_tagihan_trucking_list->Pager->Visible)) { ?>
+<div class="ew-pager">
+<input type="hidden" name="t" value="t101_tagihan_trucking">
+<select name="<?php echo TABLE_REC_PER_PAGE ?>" class="form-control form-control-sm ew-tooltip" title="<?php echo $Language->phrase("RecordsPerPage") ?>" onchange="this.form.submit();">
+<option value="10"<?php if ($t101_tagihan_trucking_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
+<option value="20"<?php if ($t101_tagihan_trucking_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
+<option value="50"<?php if ($t101_tagihan_trucking_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
+<option value="100"<?php if ($t101_tagihan_trucking_list->DisplayRecs == 100) { ?> selected<?php } ?>>100</option>
+<option value="ALL"<?php if ($t101_tagihan_trucking->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
+</select>
+</div>
+<?php } ?>
 </form>
 <?php } ?>
 <div class="ew-list-other-options">

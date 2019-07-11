@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ew-language date="2019/6/15" version="15.0.0.1" id="en" name="English" desc="English" author="e.World Technology Ltd.">
+<ew-language date="2019/7/10" version="15.0.0.1" id="en" name="English" desc="English" author="e.World Technology Ltd.">
   <!-- 
 	*** Important Notes:
 	1. Language ID should follow: https://developers.google.com/recaptcha/docs/language,
@@ -735,6 +735,9 @@
     <menu id="1">
       <phrase id="menutext" value="Tagihan Trucking" />
     </menu>
+    <menu id="28">
+      <phrase id="menutext" value="Tagihan Trucking" />
+    </menu>
     <menu id="22">
       <phrase id="menutext" value="General" />
     </menu>
@@ -927,6 +930,9 @@
       <field id="driver_id">
         <phrase id="fldcaption" value="Driver" />
       </field>
+      <field id="tanggal_stuffing">
+        <phrase id="fldcaption" value="Tanggal Stuffing" />
+      </field>
       <field id="nomor_polisi_1">
         <phrase id="fldcaption" value="No. Pol." />
       </field>
@@ -936,6 +942,15 @@
         <phrase id="fldcaption" value="No. Cont." />
       </field>
       <field id="nomor_container_2" />
+      <field id="ref_johead_id">
+        <phrase id="fldcaption" value="Ref. JO" />
+      </field>
+      <field id="no_tagihan">
+        <phrase id="fldcaption" value="No Tagihan" />
+      </field>
+      <field id="jumlah_tagihan">
+        <phrase id="fldcaption" value="Jumlah Tagihan" />
+      </field>
     </table>
     <table id="t101_jo_head">
       <phrase id="tblcaption" value="Job Order" />
@@ -948,6 +963,9 @@
         <phrase id="fldtagcaption1" value="Export" />
         <phrase id="fldtagvalue2" value="Import" />
         <phrase id="fldtagcaption2" value="Import" />
+      </field>
+      <field id="no_bl">
+        <phrase id="fldcaption" value="No BL" />
       </field>
       <field id="nomor_jo">
         <phrase id="fldcaption" value="Nomor JO" />
@@ -964,9 +982,6 @@
         <phrase id="fldtagcaption1" value="40" />
         <phrase id="fldtagvalue2" value="20" />
         <phrase id="fldtagcaption2" value="20" />
-      </field>
-      <field id="tanggal_stuffing">
-        <phrase id="fldcaption" value="Tanggal Stuffing" />
       </field>
       <field id="destination_id">
         <phrase id="fldcaption" value="Destination" />
@@ -1055,6 +1070,76 @@
       </field>
       <field id="newvalue">
         <phrase id="fldcaption" value="newvalue" />
+      </field>
+    </table>
+    <table id="v101_jo_head_detail">
+      <phrase id="tblcaption" value="Tagihan Trucking" />
+      <field id="id">
+        <phrase id="fldcaption" value="detail id" />
+      </field>
+      <field id="export_import">
+        <phrase id="fldtagvalue1" value="Export" />
+        <phrase id="fldtagcaption1" value="Export" />
+        <phrase id="fldtagvalue2" value="Import" />
+        <phrase id="fldtagcaption2" value="Import" />
+      </field>
+      <field id="no_bl">
+        <phrase id="fldcaption" value="No. BL" />
+      </field>
+      <field id="nomor_jo">
+        <phrase id="fldcaption" value="JO" />
+      </field>
+      <field id="shipper_id">
+        <phrase id="fldcaption" value="Shipper" />
+      </field>
+      <field id="party">
+        <phrase id="fldcaption" value="Party" />
+      </field>
+      <field id="container">
+        <phrase id="fldcaption" value="Container" />
+        <phrase id="fldtagvalue1" value="40" />
+        <phrase id="fldtagcaption1" value="40" />
+        <phrase id="fldtagvalue2" value="20" />
+        <phrase id="fldtagcaption2" value="20" />
+      </field>
+      <field id="tanggal_stuffing">
+        <phrase id="fldcaption" value="Tgl. Stuffing" />
+      </field>
+      <field id="destination_id">
+        <phrase id="fldcaption" value="Dest." />
+      </field>
+      <field id="feeder_id">
+        <phrase id="fldcaption" value="Feeder" />
+      </field>
+      <field id="truckingvendor_id">
+        <phrase id="fldcaption" value="Trucking" />
+      </field>
+      <field id="driver_id">
+        <phrase id="fldcaption" value="Driver" />
+      </field>
+      <field id="nomor_polisi_1">
+        <phrase id="fldcaption" value="No. Pol." />
+      </field>
+      <field id="nomor_polisi_2">
+        <phrase id="fldcaption" value="----" />
+      </field>
+      <field id="nomor_polisi_3">
+        <phrase id="fldcaption" value="----" />
+      </field>
+      <field id="nomor_container_1">
+        <phrase id="fldcaption" value="No. Cont." />
+      </field>
+      <field id="nomor_container_2">
+        <phrase id="fldcaption" value="----" />
+      </field>
+      <field id="ref_johead_id">
+        <phrase id="fldcaption" value="Ref. JO" />
+      </field>
+      <field id="no_tagihan">
+        <phrase id="fldcaption" value="No. Tghn." />
+      </field>
+      <field id="jumlah_tagihan">
+        <phrase id="fldcaption" value="Jml. Tghn." />
       </field>
     </table>
   </project>

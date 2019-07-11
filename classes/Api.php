@@ -8,7 +8,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
  */
 class Api
 {
-	protected $SecretKey = 'x7sBOvcv142w0fN1';
+	protected $SecretKey = '7er91yTcZpl07RZx';
 	protected $Algorithm = 'HS512';
 
 	// For some reason, the "Authorization" header is removed by IIS, changed to "X-Authorization"
@@ -317,7 +317,7 @@ class Api
 			$response = $next($request, $response);
 			return $response
 				->withHeader("Access-Control-Allow-Origin", DomainUrl())
-				->withHeader("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Accept, Origin, Authorization")
+				->withHeader("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Accept, Origin, Authorization, X-Authorization")
 				->withHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
 		});
 		$app->run();

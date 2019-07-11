@@ -335,6 +335,18 @@ if ($t097_userlevels_list->Recordset)
 	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $t097_userlevels_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $t097_userlevels_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $t097_userlevels_list->Pager->RecordCount ?></span>
 </div>
 <?php } ?>
+<?php if ($t097_userlevels_list->TotalRecs > 0 && (!$t097_userlevels_list->AutoHidePageSizeSelector || $t097_userlevels_list->Pager->Visible)) { ?>
+<div class="ew-pager">
+<input type="hidden" name="t" value="t097_userlevels">
+<select name="<?php echo TABLE_REC_PER_PAGE ?>" class="form-control form-control-sm ew-tooltip" title="<?php echo $Language->phrase("RecordsPerPage") ?>" onchange="this.form.submit();">
+<option value="10"<?php if ($t097_userlevels_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
+<option value="20"<?php if ($t097_userlevels_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
+<option value="50"<?php if ($t097_userlevels_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
+<option value="100"<?php if ($t097_userlevels_list->DisplayRecs == 100) { ?> selected<?php } ?>>100</option>
+<option value="ALL"<?php if ($t097_userlevels->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
+</select>
+</div>
+<?php } ?>
 </form>
 <?php } ?>
 <div class="ew-list-other-options">

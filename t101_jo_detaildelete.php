@@ -53,6 +53,8 @@ ft101_jo_detaildelete.lists["x_TruckingVendor_id"] = <?php echo $t101_jo_detail_
 ft101_jo_detaildelete.lists["x_TruckingVendor_id"].options = <?php echo JsonEncode($t101_jo_detail_delete->TruckingVendor_id->lookupOptions()) ?>;
 ft101_jo_detaildelete.lists["x_Driver_id"] = <?php echo $t101_jo_detail_delete->Driver_id->Lookup->toClientList() ?>;
 ft101_jo_detaildelete.lists["x_Driver_id"].options = <?php echo JsonEncode($t101_jo_detail_delete->Driver_id->lookupOptions()) ?>;
+ft101_jo_detaildelete.lists["x_Ref_JOHead_id"] = <?php echo $t101_jo_detail_delete->Ref_JOHead_id->Lookup->toClientList() ?>;
+ft101_jo_detaildelete.lists["x_Ref_JOHead_id"].options = <?php echo JsonEncode($t101_jo_detail_delete->Ref_JOHead_id->lookupOptions()) ?>;
 
 // Form object for search
 </script>
@@ -85,6 +87,9 @@ $t101_jo_detail_delete->showMessage();
 <?php if ($t101_jo_detail->Driver_id->Visible) { // Driver_id ?>
 		<th class="<?php echo $t101_jo_detail->Driver_id->headerCellClass() ?>"><span id="elh_t101_jo_detail_Driver_id" class="t101_jo_detail_Driver_id"><?php echo $t101_jo_detail->Driver_id->caption() ?></span></th>
 <?php } ?>
+<?php if ($t101_jo_detail->Tanggal_Stuffing->Visible) { // Tanggal_Stuffing ?>
+		<th class="<?php echo $t101_jo_detail->Tanggal_Stuffing->headerCellClass() ?>"><span id="elh_t101_jo_detail_Tanggal_Stuffing" class="t101_jo_detail_Tanggal_Stuffing"><?php echo $t101_jo_detail->Tanggal_Stuffing->caption() ?></span></th>
+<?php } ?>
 <?php if ($t101_jo_detail->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
 		<th class="<?php echo $t101_jo_detail->Nomor_Polisi_1->headerCellClass() ?>"><span id="elh_t101_jo_detail_Nomor_Polisi_1" class="t101_jo_detail_Nomor_Polisi_1"><?php echo $t101_jo_detail->Nomor_Polisi_1->caption() ?></span></th>
 <?php } ?>
@@ -99,6 +104,15 @@ $t101_jo_detail_delete->showMessage();
 <?php } ?>
 <?php if ($t101_jo_detail->Nomor_Container_2->Visible) { // Nomor_Container_2 ?>
 		<th class="<?php echo $t101_jo_detail->Nomor_Container_2->headerCellClass() ?>"><span id="elh_t101_jo_detail_Nomor_Container_2" class="t101_jo_detail_Nomor_Container_2"><?php echo $t101_jo_detail->Nomor_Container_2->caption() ?></span></th>
+<?php } ?>
+<?php if ($t101_jo_detail->Ref_JOHead_id->Visible) { // Ref_JOHead_id ?>
+		<th class="<?php echo $t101_jo_detail->Ref_JOHead_id->headerCellClass() ?>"><span id="elh_t101_jo_detail_Ref_JOHead_id" class="t101_jo_detail_Ref_JOHead_id"><?php echo $t101_jo_detail->Ref_JOHead_id->caption() ?></span></th>
+<?php } ?>
+<?php if ($t101_jo_detail->No_Tagihan->Visible) { // No_Tagihan ?>
+		<th class="<?php echo $t101_jo_detail->No_Tagihan->headerCellClass() ?>"><span id="elh_t101_jo_detail_No_Tagihan" class="t101_jo_detail_No_Tagihan"><?php echo $t101_jo_detail->No_Tagihan->caption() ?></span></th>
+<?php } ?>
+<?php if ($t101_jo_detail->Jumlah_Tagihan->Visible) { // Jumlah_Tagihan ?>
+		<th class="<?php echo $t101_jo_detail->Jumlah_Tagihan->headerCellClass() ?>"><span id="elh_t101_jo_detail_Jumlah_Tagihan" class="t101_jo_detail_Jumlah_Tagihan"><?php echo $t101_jo_detail->Jumlah_Tagihan->caption() ?></span></th>
 <?php } ?>
 	</tr>
 	</thead>
@@ -134,6 +148,14 @@ while (!$t101_jo_detail_delete->Recordset->EOF) {
 <span id="el<?php echo $t101_jo_detail_delete->RowCnt ?>_t101_jo_detail_Driver_id" class="t101_jo_detail_Driver_id">
 <span<?php echo $t101_jo_detail->Driver_id->viewAttributes() ?>>
 <?php echo $t101_jo_detail->Driver_id->getViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($t101_jo_detail->Tanggal_Stuffing->Visible) { // Tanggal_Stuffing ?>
+		<td<?php echo $t101_jo_detail->Tanggal_Stuffing->cellAttributes() ?>>
+<span id="el<?php echo $t101_jo_detail_delete->RowCnt ?>_t101_jo_detail_Tanggal_Stuffing" class="t101_jo_detail_Tanggal_Stuffing">
+<span<?php echo $t101_jo_detail->Tanggal_Stuffing->viewAttributes() ?>>
+<?php echo $t101_jo_detail->Tanggal_Stuffing->getViewValue() ?></span>
 </span>
 </td>
 <?php } ?>
@@ -174,6 +196,30 @@ while (!$t101_jo_detail_delete->Recordset->EOF) {
 <span id="el<?php echo $t101_jo_detail_delete->RowCnt ?>_t101_jo_detail_Nomor_Container_2" class="t101_jo_detail_Nomor_Container_2">
 <span<?php echo $t101_jo_detail->Nomor_Container_2->viewAttributes() ?>>
 <?php echo $t101_jo_detail->Nomor_Container_2->getViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($t101_jo_detail->Ref_JOHead_id->Visible) { // Ref_JOHead_id ?>
+		<td<?php echo $t101_jo_detail->Ref_JOHead_id->cellAttributes() ?>>
+<span id="el<?php echo $t101_jo_detail_delete->RowCnt ?>_t101_jo_detail_Ref_JOHead_id" class="t101_jo_detail_Ref_JOHead_id">
+<span<?php echo $t101_jo_detail->Ref_JOHead_id->viewAttributes() ?>>
+<?php echo $t101_jo_detail->Ref_JOHead_id->getViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($t101_jo_detail->No_Tagihan->Visible) { // No_Tagihan ?>
+		<td<?php echo $t101_jo_detail->No_Tagihan->cellAttributes() ?>>
+<span id="el<?php echo $t101_jo_detail_delete->RowCnt ?>_t101_jo_detail_No_Tagihan" class="t101_jo_detail_No_Tagihan">
+<span<?php echo $t101_jo_detail->No_Tagihan->viewAttributes() ?>>
+<?php echo $t101_jo_detail->No_Tagihan->getViewValue() ?></span>
+</span>
+</td>
+<?php } ?>
+<?php if ($t101_jo_detail->Jumlah_Tagihan->Visible) { // Jumlah_Tagihan ?>
+		<td<?php echo $t101_jo_detail->Jumlah_Tagihan->cellAttributes() ?>>
+<span id="el<?php echo $t101_jo_detail_delete->RowCnt ?>_t101_jo_detail_Jumlah_Tagihan" class="t101_jo_detail_Jumlah_Tagihan">
+<span<?php echo $t101_jo_detail->Jumlah_Tagihan->viewAttributes() ?>>
+<?php echo $t101_jo_detail->Jumlah_Tagihan->getViewValue() ?></span>
 </span>
 </td>
 <?php } ?>

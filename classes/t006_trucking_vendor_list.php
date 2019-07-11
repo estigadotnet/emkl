@@ -60,6 +60,14 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 	public $MultiDeleteUrl;
 	public $MultiUpdateUrl;
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -609,7 +617,7 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 	public $ListActions; // List actions
 	public $SelectedCount = 0;
 	public $SelectedIndex = 0;
-	public $DisplayRecs = 20;
+	public $DisplayRecs = 50;
 	public $StartRec;
 	public $StopRec;
 	public $TotalRecs = 0;
@@ -663,7 +671,7 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 
 		// Set up list options
 		$this->setupListOptions();
-		$this->id->setVisibility();
+		$this->id->Visible = FALSE;
 		$this->Nama->setVisibility();
 		$this->hideFieldsForAddEdit();
 
@@ -711,6 +719,9 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 			// Process list action first
 			if ($this->processListAction()) // Ajax request
 				$this->terminate();
+
+			// Set up records per page
+			$this->setupDisplayRecs();
 
 			// Handle reset command
 			$this->resetCmd();
@@ -770,7 +781,7 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 		if ($this->Command <> "json" && $this->getRecordsPerPage() <> "") {
 			$this->DisplayRecs = $this->getRecordsPerPage(); // Restore from Session
 		} else {
-			$this->DisplayRecs = 20; // Load default
+			$this->DisplayRecs = 50; // Load default
 		}
 
 		// Load Sorting Order
@@ -844,6 +855,13 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 				else
 					$this->setWarningMessage($Language->phrase("NoRecord"));
 			}
+
+			// Audit trail on search
+			if ($this->AuditTrailOnSearch && $this->Command == "search" && !$this->RestoreSearch) {
+				$searchParm = ServerVar("QUERY_STRING");
+				$searchSql = $this->getSessionWhere();
+				$this->writeAuditTrailOnSearch($searchParm, $searchSql);
+			}
 		}
 
 		// Search options
@@ -855,6 +873,28 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 			$this->Recordset->close();
 			WriteJson(["success" => TRUE, $this->TableVar => $rows, "totalRecordCount" => $this->TotalRecs]);
 			$this->terminate(TRUE);
+		}
+	}
+
+	// Set up number of records displayed per page
+	protected function setupDisplayRecs()
+	{
+		$wrk = Get(TABLE_REC_PER_PAGE, "");
+		if ($wrk <> "") {
+			if (is_numeric($wrk)) {
+				$this->DisplayRecs = (int)$wrk;
+			} else {
+				if (SameText($wrk, "all")) { // Display all records
+					$this->DisplayRecs = -1;
+				} else {
+					$this->DisplayRecs = 50; // Non-numeric, load default
+				}
+			}
+			$this->setRecordsPerPage($this->DisplayRecs); // Save to Session
+
+			// Reset start position
+			$this->StartRec = 1;
+			$this->setStartRecordNumber($this->StartRec);
 		}
 	}
 
@@ -1131,7 +1171,6 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 		if (Get("order") !== NULL) {
 			$this->CurrentOrder = Get("order");
 			$this->CurrentOrderType = Get("ordertype", "");
-			$this->updateSort($this->id, $ctrl); // id
 			$this->updateSort($this->Nama, $ctrl); // Nama
 			$this->setStartRecordNumber(1); // Reset start position
 		}
@@ -1168,7 +1207,6 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 			if ($this->Command == "resetsort") {
 				$orderBy = "";
 				$this->setSessionOrderBy($orderBy);
-				$this->id->setSort("");
 				$this->Nama->setSort("");
 			}
 
@@ -1899,11 +1937,6 @@ class t006_trucking_vendor_list extends t006_trucking_vendor
 			// Nama
 			$this->Nama->ViewValue = $this->Nama->CurrentValue;
 			$this->Nama->ViewCustomAttributes = "";
-
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
 
 			// Nama
 			$this->Nama->LinkCustomAttributes = "";

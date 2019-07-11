@@ -54,6 +54,8 @@ ft101_jo_detailview.lists["x_TruckingVendor_id"] = <?php echo $t101_jo_detail_vi
 ft101_jo_detailview.lists["x_TruckingVendor_id"].options = <?php echo JsonEncode($t101_jo_detail_view->TruckingVendor_id->lookupOptions()) ?>;
 ft101_jo_detailview.lists["x_Driver_id"] = <?php echo $t101_jo_detail_view->Driver_id->Lookup->toClientList() ?>;
 ft101_jo_detailview.lists["x_Driver_id"].options = <?php echo JsonEncode($t101_jo_detail_view->Driver_id->lookupOptions()) ?>;
+ft101_jo_detailview.lists["x_Ref_JOHead_id"] = <?php echo $t101_jo_detail_view->Ref_JOHead_id->Lookup->toClientList() ?>;
+ft101_jo_detailview.lists["x_Ref_JOHead_id"].options = <?php echo JsonEncode($t101_jo_detail_view->Ref_JOHead_id->lookupOptions()) ?>;
 
 // Form object for search
 </script>
@@ -98,6 +100,17 @@ $t101_jo_detail_view->showMessage();
 <span id="el_t101_jo_detail_Driver_id">
 <span<?php echo $t101_jo_detail->Driver_id->viewAttributes() ?>>
 <?php echo $t101_jo_detail->Driver_id->getViewValue() ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($t101_jo_detail->Tanggal_Stuffing->Visible) { // Tanggal_Stuffing ?>
+	<tr id="r_Tanggal_Stuffing">
+		<td class="<?php echo $t101_jo_detail_view->TableLeftColumnClass ?>"><span id="elh_t101_jo_detail_Tanggal_Stuffing"><?php echo $t101_jo_detail->Tanggal_Stuffing->caption() ?></span></td>
+		<td data-name="Tanggal_Stuffing"<?php echo $t101_jo_detail->Tanggal_Stuffing->cellAttributes() ?>>
+<span id="el_t101_jo_detail_Tanggal_Stuffing">
+<span<?php echo $t101_jo_detail->Tanggal_Stuffing->viewAttributes() ?>>
+<?php echo $t101_jo_detail->Tanggal_Stuffing->getViewValue() ?></span>
 </span>
 </td>
 	</tr>
@@ -153,6 +166,39 @@ $t101_jo_detail_view->showMessage();
 <span id="el_t101_jo_detail_Nomor_Container_2">
 <span<?php echo $t101_jo_detail->Nomor_Container_2->viewAttributes() ?>>
 <?php echo $t101_jo_detail->Nomor_Container_2->getViewValue() ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($t101_jo_detail->Ref_JOHead_id->Visible) { // Ref_JOHead_id ?>
+	<tr id="r_Ref_JOHead_id">
+		<td class="<?php echo $t101_jo_detail_view->TableLeftColumnClass ?>"><span id="elh_t101_jo_detail_Ref_JOHead_id"><?php echo $t101_jo_detail->Ref_JOHead_id->caption() ?></span></td>
+		<td data-name="Ref_JOHead_id"<?php echo $t101_jo_detail->Ref_JOHead_id->cellAttributes() ?>>
+<span id="el_t101_jo_detail_Ref_JOHead_id">
+<span<?php echo $t101_jo_detail->Ref_JOHead_id->viewAttributes() ?>>
+<?php echo $t101_jo_detail->Ref_JOHead_id->getViewValue() ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($t101_jo_detail->No_Tagihan->Visible) { // No_Tagihan ?>
+	<tr id="r_No_Tagihan">
+		<td class="<?php echo $t101_jo_detail_view->TableLeftColumnClass ?>"><span id="elh_t101_jo_detail_No_Tagihan"><?php echo $t101_jo_detail->No_Tagihan->caption() ?></span></td>
+		<td data-name="No_Tagihan"<?php echo $t101_jo_detail->No_Tagihan->cellAttributes() ?>>
+<span id="el_t101_jo_detail_No_Tagihan">
+<span<?php echo $t101_jo_detail->No_Tagihan->viewAttributes() ?>>
+<?php echo $t101_jo_detail->No_Tagihan->getViewValue() ?></span>
+</span>
+</td>
+	</tr>
+<?php } ?>
+<?php if ($t101_jo_detail->Jumlah_Tagihan->Visible) { // Jumlah_Tagihan ?>
+	<tr id="r_Jumlah_Tagihan">
+		<td class="<?php echo $t101_jo_detail_view->TableLeftColumnClass ?>"><span id="elh_t101_jo_detail_Jumlah_Tagihan"><?php echo $t101_jo_detail->Jumlah_Tagihan->caption() ?></span></td>
+		<td data-name="Jumlah_Tagihan"<?php echo $t101_jo_detail->Jumlah_Tagihan->cellAttributes() ?>>
+<span id="el_t101_jo_detail_Jumlah_Tagihan">
+<span<?php echo $t101_jo_detail->Jumlah_Tagihan->viewAttributes() ?>>
+<?php echo $t101_jo_detail->Jumlah_Tagihan->getViewValue() ?></span>
 </span>
 </td>
 	</tr>

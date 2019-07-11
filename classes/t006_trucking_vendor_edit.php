@@ -19,6 +19,14 @@ class t006_trucking_vendor_edit extends t006_trucking_vendor
 	// Page object name
 	public $PageObjName = "t006_trucking_vendor_edit";
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -551,7 +559,7 @@ class t006_trucking_vendor_edit extends t006_trucking_vendor
 		// Create form object
 		$CurrentForm = new HttpForm();
 		$this->CurrentAction = Param("action"); // Set up current action
-		$this->id->setVisibility();
+		$this->id->Visible = FALSE;
 		$this->Nama->setVisibility();
 		$this->hideFieldsForAddEdit();
 
@@ -737,11 +745,6 @@ class t006_trucking_vendor_edit extends t006_trucking_vendor
 		// Load from form
 		global $CurrentForm;
 
-		// Check field name 'id' first before field var 'x_id'
-		$val = $CurrentForm->hasValue("id") ? $CurrentForm->getValue("id") : $CurrentForm->getValue("x_id");
-		if (!$this->id->IsDetailKey)
-			$this->id->setFormValue($val);
-
 		// Check field name 'Nama' first before field var 'x_Nama'
 		$val = $CurrentForm->hasValue("Nama") ? $CurrentForm->getValue("Nama") : $CurrentForm->getValue("x_Nama");
 		if (!$this->Nama->IsDetailKey) {
@@ -750,6 +753,11 @@ class t006_trucking_vendor_edit extends t006_trucking_vendor
 			else
 				$this->Nama->setFormValue($val);
 		}
+
+		// Check field name 'id' first before field var 'x_id'
+		$val = $CurrentForm->hasValue("id") ? $CurrentForm->getValue("id") : $CurrentForm->getValue("x_id");
+		if (!$this->id->IsDetailKey)
+			$this->id->setFormValue($val);
 	}
 
 	// Restore form values
@@ -855,22 +863,11 @@ class t006_trucking_vendor_edit extends t006_trucking_vendor
 			$this->Nama->ViewValue = $this->Nama->CurrentValue;
 			$this->Nama->ViewCustomAttributes = "";
 
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
-
 			// Nama
 			$this->Nama->LinkCustomAttributes = "";
 			$this->Nama->HrefValue = "";
 			$this->Nama->TooltipValue = "";
 		} elseif ($this->RowType == ROWTYPE_EDIT) { // Edit row
-
-			// id
-			$this->id->EditAttrs["class"] = "form-control";
-			$this->id->EditCustomAttributes = "";
-			$this->id->EditValue = $this->id->CurrentValue;
-			$this->id->ViewCustomAttributes = "";
 
 			// Nama
 			$this->Nama->EditAttrs["class"] = "form-control";
@@ -881,12 +878,8 @@ class t006_trucking_vendor_edit extends t006_trucking_vendor
 			$this->Nama->PlaceHolder = RemoveHtml($this->Nama->caption());
 
 			// Edit refer script
-			// id
-
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-
 			// Nama
+
 			$this->Nama->LinkCustomAttributes = "";
 			$this->Nama->HrefValue = "";
 		}

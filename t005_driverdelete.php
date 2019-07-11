@@ -49,8 +49,10 @@ ft005_driverdelete.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS 
 ft005_driverdelete.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-// Form object for search
+ft005_driverdelete.lists["x_TruckingVendor_id"] = <?php echo $t005_driver_delete->TruckingVendor_id->Lookup->toClientList() ?>;
+ft005_driverdelete.lists["x_TruckingVendor_id"].options = <?php echo JsonEncode($t005_driver_delete->TruckingVendor_id->lookupOptions()) ?>;
 
+// Form object for search
 </script>
 <script>
 
@@ -75,9 +77,6 @@ $t005_driver_delete->showMessage();
 <table class="table ew-table">
 	<thead>
 	<tr class="ew-table-header">
-<?php if ($t005_driver->id->Visible) { // id ?>
-		<th class="<?php echo $t005_driver->id->headerCellClass() ?>"><span id="elh_t005_driver_id" class="t005_driver_id"><?php echo $t005_driver->id->caption() ?></span></th>
-<?php } ?>
 <?php if ($t005_driver->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 		<th class="<?php echo $t005_driver->TruckingVendor_id->headerCellClass() ?>"><span id="elh_t005_driver_TruckingVendor_id" class="t005_driver_TruckingVendor_id"><?php echo $t005_driver->TruckingVendor_id->caption() ?></span></th>
 <?php } ?>
@@ -111,14 +110,6 @@ while (!$t005_driver_delete->Recordset->EOF) {
 	$t005_driver_delete->renderRow();
 ?>
 	<tr<?php echo $t005_driver->rowAttributes() ?>>
-<?php if ($t005_driver->id->Visible) { // id ?>
-		<td<?php echo $t005_driver->id->cellAttributes() ?>>
-<span id="el<?php echo $t005_driver_delete->RowCnt ?>_t005_driver_id" class="t005_driver_id">
-<span<?php echo $t005_driver->id->viewAttributes() ?>>
-<?php echo $t005_driver->id->getViewValue() ?></span>
-</span>
-</td>
-<?php } ?>
 <?php if ($t005_driver->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 		<td<?php echo $t005_driver->TruckingVendor_id->cellAttributes() ?>>
 <span id="el<?php echo $t005_driver_delete->RowCnt ?>_t005_driver_TruckingVendor_id" class="t005_driver_TruckingVendor_id">

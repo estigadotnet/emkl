@@ -66,6 +66,16 @@ $t101_jo_detail_preview->ListOptions->render("header", "left");
 	</div></div></th>
 	<?php } ?>
 <?php } ?>
+<?php if ($t101_jo_detail->Tanggal_Stuffing->Visible) { // Tanggal_Stuffing ?>
+	<?php if ($t101_jo_detail->SortUrl($t101_jo_detail->Tanggal_Stuffing) == "") { ?>
+		<th class="<?php echo $t101_jo_detail->Tanggal_Stuffing->headerCellClass() ?>"><?php echo $t101_jo_detail->Tanggal_Stuffing->caption() ?></th>
+	<?php } else { ?>
+		<th class="<?php echo $t101_jo_detail->Tanggal_Stuffing->headerCellClass() ?>"><div class="ew-pointer" data-sort="<?php echo $t101_jo_detail->Tanggal_Stuffing->Name ?>" data-sort-order="<?php echo $t101_jo_detail_preview->SortField == $t101_jo_detail->Tanggal_Stuffing->Name && $t101_jo_detail_preview->SortOrder == "ASC" ? "DESC" : "ASC" ?>"><div class="ew-table-header-btn">
+		<span class="ew-table-header-caption"><?php echo $t101_jo_detail->Tanggal_Stuffing->caption() ?></span>
+		<span class="ew-table-header-sort"><?php if ($t101_jo_detail_preview->SortField == $t101_jo_detail->Tanggal_Stuffing->Name) { ?><?php if ($t101_jo_detail_preview->SortOrder == "ASC") { ?><i class="fa fa-sort-up ew-sort-up"></span><?php } elseif ($t101_jo_detail_preview->SortOrder == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?><?php } ?></span>
+	</div></div></th>
+	<?php } ?>
+<?php } ?>
 <?php if ($t101_jo_detail->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
 	<?php if ($t101_jo_detail->SortUrl($t101_jo_detail->Nomor_Polisi_1) == "") { ?>
 		<th class="<?php echo $t101_jo_detail->Nomor_Polisi_1->headerCellClass() ?>"><?php echo $t101_jo_detail->Nomor_Polisi_1->caption() ?></th>
@@ -116,6 +126,36 @@ $t101_jo_detail_preview->ListOptions->render("header", "left");
 	</div></div></th>
 	<?php } ?>
 <?php } ?>
+<?php if ($t101_jo_detail->Ref_JOHead_id->Visible) { // Ref_JOHead_id ?>
+	<?php if ($t101_jo_detail->SortUrl($t101_jo_detail->Ref_JOHead_id) == "") { ?>
+		<th class="<?php echo $t101_jo_detail->Ref_JOHead_id->headerCellClass() ?>"><?php echo $t101_jo_detail->Ref_JOHead_id->caption() ?></th>
+	<?php } else { ?>
+		<th class="<?php echo $t101_jo_detail->Ref_JOHead_id->headerCellClass() ?>"><div class="ew-pointer" data-sort="<?php echo $t101_jo_detail->Ref_JOHead_id->Name ?>" data-sort-order="<?php echo $t101_jo_detail_preview->SortField == $t101_jo_detail->Ref_JOHead_id->Name && $t101_jo_detail_preview->SortOrder == "ASC" ? "DESC" : "ASC" ?>"><div class="ew-table-header-btn">
+		<span class="ew-table-header-caption"><?php echo $t101_jo_detail->Ref_JOHead_id->caption() ?></span>
+		<span class="ew-table-header-sort"><?php if ($t101_jo_detail_preview->SortField == $t101_jo_detail->Ref_JOHead_id->Name) { ?><?php if ($t101_jo_detail_preview->SortOrder == "ASC") { ?><i class="fa fa-sort-up ew-sort-up"></span><?php } elseif ($t101_jo_detail_preview->SortOrder == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?><?php } ?></span>
+	</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($t101_jo_detail->No_Tagihan->Visible) { // No_Tagihan ?>
+	<?php if ($t101_jo_detail->SortUrl($t101_jo_detail->No_Tagihan) == "") { ?>
+		<th class="<?php echo $t101_jo_detail->No_Tagihan->headerCellClass() ?>"><?php echo $t101_jo_detail->No_Tagihan->caption() ?></th>
+	<?php } else { ?>
+		<th class="<?php echo $t101_jo_detail->No_Tagihan->headerCellClass() ?>"><div class="ew-pointer" data-sort="<?php echo $t101_jo_detail->No_Tagihan->Name ?>" data-sort-order="<?php echo $t101_jo_detail_preview->SortField == $t101_jo_detail->No_Tagihan->Name && $t101_jo_detail_preview->SortOrder == "ASC" ? "DESC" : "ASC" ?>"><div class="ew-table-header-btn">
+		<span class="ew-table-header-caption"><?php echo $t101_jo_detail->No_Tagihan->caption() ?></span>
+		<span class="ew-table-header-sort"><?php if ($t101_jo_detail_preview->SortField == $t101_jo_detail->No_Tagihan->Name) { ?><?php if ($t101_jo_detail_preview->SortOrder == "ASC") { ?><i class="fa fa-sort-up ew-sort-up"></span><?php } elseif ($t101_jo_detail_preview->SortOrder == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?><?php } ?></span>
+	</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($t101_jo_detail->Jumlah_Tagihan->Visible) { // Jumlah_Tagihan ?>
+	<?php if ($t101_jo_detail->SortUrl($t101_jo_detail->Jumlah_Tagihan) == "") { ?>
+		<th class="<?php echo $t101_jo_detail->Jumlah_Tagihan->headerCellClass() ?>"><?php echo $t101_jo_detail->Jumlah_Tagihan->caption() ?></th>
+	<?php } else { ?>
+		<th class="<?php echo $t101_jo_detail->Jumlah_Tagihan->headerCellClass() ?>"><div class="ew-pointer" data-sort="<?php echo $t101_jo_detail->Jumlah_Tagihan->Name ?>" data-sort-order="<?php echo $t101_jo_detail_preview->SortField == $t101_jo_detail->Jumlah_Tagihan->Name && $t101_jo_detail_preview->SortOrder == "ASC" ? "DESC" : "ASC" ?>"><div class="ew-table-header-btn">
+		<span class="ew-table-header-caption"><?php echo $t101_jo_detail->Jumlah_Tagihan->caption() ?></span>
+		<span class="ew-table-header-sort"><?php if ($t101_jo_detail_preview->SortField == $t101_jo_detail->Jumlah_Tagihan->Name) { ?><?php if ($t101_jo_detail_preview->SortOrder == "ASC") { ?><i class="fa fa-sort-up ew-sort-up"></span><?php } elseif ($t101_jo_detail_preview->SortOrder == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?><?php } ?></span>
+	</div></div></th>
+	<?php } ?>
+<?php } ?>
 <?php
 
 // Render list options (header, right)
@@ -163,6 +203,13 @@ $t101_jo_detail_preview->ListOptions->render("body", "left", $t101_jo_detail_pre
 <?php echo $t101_jo_detail->Driver_id->getViewValue() ?></span>
 </td>
 <?php } ?>
+<?php if ($t101_jo_detail->Tanggal_Stuffing->Visible) { // Tanggal_Stuffing ?>
+		<!-- Tanggal_Stuffing -->
+		<td<?php echo $t101_jo_detail->Tanggal_Stuffing->cellAttributes() ?>>
+<span<?php echo $t101_jo_detail->Tanggal_Stuffing->viewAttributes() ?>>
+<?php echo $t101_jo_detail->Tanggal_Stuffing->getViewValue() ?></span>
+</td>
+<?php } ?>
 <?php if ($t101_jo_detail->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
 		<!-- Nomor_Polisi_1 -->
 		<td<?php echo $t101_jo_detail->Nomor_Polisi_1->cellAttributes() ?>>
@@ -196,6 +243,27 @@ $t101_jo_detail_preview->ListOptions->render("body", "left", $t101_jo_detail_pre
 		<td<?php echo $t101_jo_detail->Nomor_Container_2->cellAttributes() ?>>
 <span<?php echo $t101_jo_detail->Nomor_Container_2->viewAttributes() ?>>
 <?php echo $t101_jo_detail->Nomor_Container_2->getViewValue() ?></span>
+</td>
+<?php } ?>
+<?php if ($t101_jo_detail->Ref_JOHead_id->Visible) { // Ref_JOHead_id ?>
+		<!-- Ref_JOHead_id -->
+		<td<?php echo $t101_jo_detail->Ref_JOHead_id->cellAttributes() ?>>
+<span<?php echo $t101_jo_detail->Ref_JOHead_id->viewAttributes() ?>>
+<?php echo $t101_jo_detail->Ref_JOHead_id->getViewValue() ?></span>
+</td>
+<?php } ?>
+<?php if ($t101_jo_detail->No_Tagihan->Visible) { // No_Tagihan ?>
+		<!-- No_Tagihan -->
+		<td<?php echo $t101_jo_detail->No_Tagihan->cellAttributes() ?>>
+<span<?php echo $t101_jo_detail->No_Tagihan->viewAttributes() ?>>
+<?php echo $t101_jo_detail->No_Tagihan->getViewValue() ?></span>
+</td>
+<?php } ?>
+<?php if ($t101_jo_detail->Jumlah_Tagihan->Visible) { // Jumlah_Tagihan ?>
+		<!-- Jumlah_Tagihan -->
+		<td<?php echo $t101_jo_detail->Jumlah_Tagihan->cellAttributes() ?>>
+<span<?php echo $t101_jo_detail->Jumlah_Tagihan->viewAttributes() ?>>
+<?php echo $t101_jo_detail->Jumlah_Tagihan->getViewValue() ?></span>
 </td>
 <?php } ?>
 <?php

@@ -52,6 +52,14 @@ class t005_driver_view extends t005_driver
 	public $MultiDeleteUrl;
 	public $MultiUpdateUrl;
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -619,7 +627,7 @@ class t005_driver_view extends t005_driver
 		// Is modal
 		$this->IsModal = (Param("modal") == "1");
 		$this->CurrentAction = Param("action"); // Set up current action
-		$this->id->setVisibility();
+		$this->id->Visible = FALSE;
 		$this->TruckingVendor_id->setVisibility();
 		$this->Nama->setVisibility();
 		$this->No_HP_1->setVisibility();
@@ -645,8 +653,9 @@ class t005_driver_view extends t005_driver
 		$this->createToken();
 
 		// Set up lookup cache
-		// Check modal
+		$this->setupLookupOptions($this->TruckingVendor_id);
 
+		// Check modal
 		if ($this->IsModal)
 			$SkipHeaderFooter = TRUE;
 		$returnUrl = "";
@@ -843,6 +852,8 @@ class t005_driver_view extends t005_driver
 		$this->Row_Selected($row);
 		if (!$rs || $rs->EOF)
 			return;
+		if ($this->AuditTrailOnView)
+			$this->writeAuditTrailOnView($row);
 		$this->id->setDbValue($row['id']);
 		$this->TruckingVendor_id->setDbValue($row['TruckingVendor_id']);
 		$this->Nama->setDbValue($row['Nama']);
@@ -892,8 +903,25 @@ class t005_driver_view extends t005_driver
 			$this->id->ViewCustomAttributes = "";
 
 			// TruckingVendor_id
-			$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
-			$this->TruckingVendor_id->ViewValue = FormatNumber($this->TruckingVendor_id->ViewValue, 0, -2, -2, -2);
+			$curVal = strval($this->TruckingVendor_id->CurrentValue);
+			if ($curVal <> "") {
+				$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->lookupCacheOption($curVal);
+				if ($this->TruckingVendor_id->ViewValue === NULL) { // Lookup from database
+					$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+					$sqlWrk = $this->TruckingVendor_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+					$rswrk = Conn()->execute($sqlWrk);
+					if ($rswrk && !$rswrk->EOF) { // Lookup values found
+						$arwrk = array();
+						$arwrk[1] = $rswrk->fields('df');
+						$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->displayValue($arwrk);
+						$rswrk->Close();
+					} else {
+						$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
+					}
+				}
+			} else {
+				$this->TruckingVendor_id->ViewValue = NULL;
+			}
 			$this->TruckingVendor_id->ViewCustomAttributes = "";
 
 			// Nama
@@ -907,11 +935,6 @@ class t005_driver_view extends t005_driver
 			// No_HP_2
 			$this->No_HP_2->ViewValue = $this->No_HP_2->CurrentValue;
 			$this->No_HP_2->ViewCustomAttributes = "";
-
-			// id
-			$this->id->LinkCustomAttributes = "";
-			$this->id->HrefValue = "";
-			$this->id->TooltipValue = "";
 
 			// TruckingVendor_id
 			$this->TruckingVendor_id->LinkCustomAttributes = "";
@@ -1046,6 +1069,8 @@ class t005_driver_view extends t005_driver
 
 					// Format the field values
 					switch ($fld->FieldVar) {
+						case "x_TruckingVendor_id":
+							break;
 					}
 					$ar[strval($row[0])] = $row;
 					$rs->moveNext();

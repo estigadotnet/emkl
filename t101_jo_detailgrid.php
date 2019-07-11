@@ -55,6 +55,14 @@ ft101_jo_detailgrid.validate = function() {
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
 				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->Driver_id->caption(), $t101_jo_detail->Driver_id->RequiredErrorMessage)) ?>");
 		<?php } ?>
+		<?php if ($t101_jo_detail_grid->Tanggal_Stuffing->Required) { ?>
+			elm = this.getElements("x" + infix + "_Tanggal_Stuffing");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->Tanggal_Stuffing->caption(), $t101_jo_detail->Tanggal_Stuffing->RequiredErrorMessage)) ?>");
+		<?php } ?>
+			elm = this.getElements("x" + infix + "_Tanggal_Stuffing");
+			if (elm && !ew.checkEuroDate(elm.value))
+				return this.onError(elm, "<?php echo JsEncode($t101_jo_detail->Tanggal_Stuffing->errorMessage()) ?>");
 		<?php if ($t101_jo_detail_grid->Nomor_Polisi_1->Required) { ?>
 			elm = this.getElements("x" + infix + "_Nomor_Polisi_1");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -80,6 +88,27 @@ ft101_jo_detailgrid.validate = function() {
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
 				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->Nomor_Container_2->caption(), $t101_jo_detail->Nomor_Container_2->RequiredErrorMessage)) ?>");
 		<?php } ?>
+		<?php if ($t101_jo_detail_grid->Ref_JOHead_id->Required) { ?>
+			elm = this.getElements("x" + infix + "_Ref_JOHead_id");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->Ref_JOHead_id->caption(), $t101_jo_detail->Ref_JOHead_id->RequiredErrorMessage)) ?>");
+		<?php } ?>
+		<?php if ($t101_jo_detail_grid->No_Tagihan->Required) { ?>
+			elm = this.getElements("x" + infix + "_No_Tagihan");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->No_Tagihan->caption(), $t101_jo_detail->No_Tagihan->RequiredErrorMessage)) ?>");
+		<?php } ?>
+			elm = this.getElements("x" + infix + "_No_Tagihan");
+			if (elm && !ew.checkInteger(elm.value))
+				return this.onError(elm, "<?php echo JsEncode($t101_jo_detail->No_Tagihan->errorMessage()) ?>");
+		<?php if ($t101_jo_detail_grid->Jumlah_Tagihan->Required) { ?>
+			elm = this.getElements("x" + infix + "_Jumlah_Tagihan");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->Jumlah_Tagihan->caption(), $t101_jo_detail->Jumlah_Tagihan->RequiredErrorMessage)) ?>");
+		<?php } ?>
+			elm = this.getElements("x" + infix + "_Jumlah_Tagihan");
+			if (elm && !ew.checkNumber(elm.value))
+				return this.onError(elm, "<?php echo JsEncode($t101_jo_detail->Jumlah_Tagihan->errorMessage()) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -94,11 +123,15 @@ ft101_jo_detailgrid.emptyRow = function(infix) {
 	var fobj = this._form;
 	if (ew.valueChanged(fobj, infix, "TruckingVendor_id", false)) return false;
 	if (ew.valueChanged(fobj, infix, "Driver_id", false)) return false;
+	if (ew.valueChanged(fobj, infix, "Tanggal_Stuffing", false)) return false;
 	if (ew.valueChanged(fobj, infix, "Nomor_Polisi_1", false)) return false;
 	if (ew.valueChanged(fobj, infix, "Nomor_Polisi_2", false)) return false;
 	if (ew.valueChanged(fobj, infix, "Nomor_Polisi_3", false)) return false;
 	if (ew.valueChanged(fobj, infix, "Nomor_Container_1", false)) return false;
 	if (ew.valueChanged(fobj, infix, "Nomor_Container_2", false)) return false;
+	if (ew.valueChanged(fobj, infix, "Ref_JOHead_id", false)) return false;
+	if (ew.valueChanged(fobj, infix, "No_Tagihan", false)) return false;
+	if (ew.valueChanged(fobj, infix, "Jumlah_Tagihan", false)) return false;
 	return true;
 }
 
@@ -117,6 +150,8 @@ ft101_jo_detailgrid.lists["x_TruckingVendor_id"] = <?php echo $t101_jo_detail_gr
 ft101_jo_detailgrid.lists["x_TruckingVendor_id"].options = <?php echo JsonEncode($t101_jo_detail_grid->TruckingVendor_id->lookupOptions()) ?>;
 ft101_jo_detailgrid.lists["x_Driver_id"] = <?php echo $t101_jo_detail_grid->Driver_id->Lookup->toClientList() ?>;
 ft101_jo_detailgrid.lists["x_Driver_id"].options = <?php echo JsonEncode($t101_jo_detail_grid->Driver_id->lookupOptions()) ?>;
+ft101_jo_detailgrid.lists["x_Ref_JOHead_id"] = <?php echo $t101_jo_detail_grid->Ref_JOHead_id->Lookup->toClientList() ?>;
+ft101_jo_detailgrid.lists["x_Ref_JOHead_id"].options = <?php echo JsonEncode($t101_jo_detail_grid->Ref_JOHead_id->lookupOptions()) ?>;
 
 // Form object for search
 </script>
@@ -164,6 +199,15 @@ $t101_jo_detail_grid->ListOptions->render("header", "left");
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
+<?php if ($t101_jo_detail->Tanggal_Stuffing->Visible) { // Tanggal_Stuffing ?>
+	<?php if ($t101_jo_detail->sortUrl($t101_jo_detail->Tanggal_Stuffing) == "") { ?>
+		<th data-name="Tanggal_Stuffing" class="<?php echo $t101_jo_detail->Tanggal_Stuffing->headerCellClass() ?>"><div id="elh_t101_jo_detail_Tanggal_Stuffing" class="t101_jo_detail_Tanggal_Stuffing"><div class="ew-table-header-caption"><?php echo $t101_jo_detail->Tanggal_Stuffing->caption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="Tanggal_Stuffing" class="<?php echo $t101_jo_detail->Tanggal_Stuffing->headerCellClass() ?>"><div><div id="elh_t101_jo_detail_Tanggal_Stuffing" class="t101_jo_detail_Tanggal_Stuffing">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_jo_detail->Tanggal_Stuffing->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_jo_detail->Tanggal_Stuffing->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_jo_detail->Tanggal_Stuffing->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
 <?php if ($t101_jo_detail->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
 	<?php if ($t101_jo_detail->sortUrl($t101_jo_detail->Nomor_Polisi_1) == "") { ?>
 		<th data-name="Nomor_Polisi_1" class="<?php echo $t101_jo_detail->Nomor_Polisi_1->headerCellClass() ?>"><div id="elh_t101_jo_detail_Nomor_Polisi_1" class="t101_jo_detail_Nomor_Polisi_1"><div class="ew-table-header-caption"><?php echo $t101_jo_detail->Nomor_Polisi_1->caption() ?></div></div></th>
@@ -206,6 +250,33 @@ $t101_jo_detail_grid->ListOptions->render("header", "left");
 	<?php } else { ?>
 		<th data-name="Nomor_Container_2" class="<?php echo $t101_jo_detail->Nomor_Container_2->headerCellClass() ?>"><div><div id="elh_t101_jo_detail_Nomor_Container_2" class="t101_jo_detail_Nomor_Container_2">
 			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_jo_detail->Nomor_Container_2->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_jo_detail->Nomor_Container_2->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_jo_detail->Nomor_Container_2->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($t101_jo_detail->Ref_JOHead_id->Visible) { // Ref_JOHead_id ?>
+	<?php if ($t101_jo_detail->sortUrl($t101_jo_detail->Ref_JOHead_id) == "") { ?>
+		<th data-name="Ref_JOHead_id" class="<?php echo $t101_jo_detail->Ref_JOHead_id->headerCellClass() ?>"><div id="elh_t101_jo_detail_Ref_JOHead_id" class="t101_jo_detail_Ref_JOHead_id"><div class="ew-table-header-caption"><?php echo $t101_jo_detail->Ref_JOHead_id->caption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="Ref_JOHead_id" class="<?php echo $t101_jo_detail->Ref_JOHead_id->headerCellClass() ?>"><div><div id="elh_t101_jo_detail_Ref_JOHead_id" class="t101_jo_detail_Ref_JOHead_id">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_jo_detail->Ref_JOHead_id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_jo_detail->Ref_JOHead_id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_jo_detail->Ref_JOHead_id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($t101_jo_detail->No_Tagihan->Visible) { // No_Tagihan ?>
+	<?php if ($t101_jo_detail->sortUrl($t101_jo_detail->No_Tagihan) == "") { ?>
+		<th data-name="No_Tagihan" class="<?php echo $t101_jo_detail->No_Tagihan->headerCellClass() ?>"><div id="elh_t101_jo_detail_No_Tagihan" class="t101_jo_detail_No_Tagihan"><div class="ew-table-header-caption"><?php echo $t101_jo_detail->No_Tagihan->caption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="No_Tagihan" class="<?php echo $t101_jo_detail->No_Tagihan->headerCellClass() ?>"><div><div id="elh_t101_jo_detail_No_Tagihan" class="t101_jo_detail_No_Tagihan">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_jo_detail->No_Tagihan->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_jo_detail->No_Tagihan->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_jo_detail->No_Tagihan->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
+		</div></div></th>
+	<?php } ?>
+<?php } ?>
+<?php if ($t101_jo_detail->Jumlah_Tagihan->Visible) { // Jumlah_Tagihan ?>
+	<?php if ($t101_jo_detail->sortUrl($t101_jo_detail->Jumlah_Tagihan) == "") { ?>
+		<th data-name="Jumlah_Tagihan" class="<?php echo $t101_jo_detail->Jumlah_Tagihan->headerCellClass() ?>"><div id="elh_t101_jo_detail_Jumlah_Tagihan" class="t101_jo_detail_Jumlah_Tagihan"><div class="ew-table-header-caption"><?php echo $t101_jo_detail->Jumlah_Tagihan->caption() ?></div></div></th>
+	<?php } else { ?>
+		<th data-name="Jumlah_Tagihan" class="<?php echo $t101_jo_detail->Jumlah_Tagihan->headerCellClass() ?>"><div><div id="elh_t101_jo_detail_Jumlah_Tagihan" class="t101_jo_detail_Jumlah_Tagihan">
+			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t101_jo_detail->Jumlah_Tagihan->caption() ?></span><span class="ew-table-header-sort"><?php if ($t101_jo_detail->Jumlah_Tagihan->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t101_jo_detail->Jumlah_Tagihan->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
 		</div></div></th>
 	<?php } ?>
 <?php } ?>
@@ -321,6 +392,7 @@ $t101_jo_detail_grid->ListOptions->render("body", "left", $t101_jo_detail_grid->
 		<td data-name="TruckingVendor_id"<?php echo $t101_jo_detail->TruckingVendor_id->cellAttributes() ?>>
 <?php if ($t101_jo_detail->RowType == ROWTYPE_ADD) { // Add record ?>
 <span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_TruckingVendor_id" class="form-group t101_jo_detail_TruckingVendor_id">
+<?php $t101_jo_detail->TruckingVendor_id->EditAttrs["onchange"] = "ew.updateOptions.call(this);" . @$t101_jo_detail->TruckingVendor_id->EditAttrs["onchange"]; ?>
 <div class="input-group">
 	<select class="custom-select ew-custom-select" data-table="t101_jo_detail" data-field="x_TruckingVendor_id" data-value-separator="<?php echo $t101_jo_detail->TruckingVendor_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_TruckingVendor_id" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_TruckingVendor_id"<?php echo $t101_jo_detail->TruckingVendor_id->editAttributes() ?>>
 		<?php echo $t101_jo_detail->TruckingVendor_id->selectOptionListHtml("x<?php echo $t101_jo_detail_grid->RowIndex ?>_TruckingVendor_id") ?>
@@ -332,6 +404,7 @@ $t101_jo_detail_grid->ListOptions->render("body", "left", $t101_jo_detail_grid->
 <?php } ?>
 <?php if ($t101_jo_detail->RowType == ROWTYPE_EDIT) { // Edit record ?>
 <span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_TruckingVendor_id" class="form-group t101_jo_detail_TruckingVendor_id">
+<?php $t101_jo_detail->TruckingVendor_id->EditAttrs["onchange"] = "ew.updateOptions.call(this);" . @$t101_jo_detail->TruckingVendor_id->EditAttrs["onchange"]; ?>
 <div class="input-group">
 	<select class="custom-select ew-custom-select" data-table="t101_jo_detail" data-field="x_TruckingVendor_id" data-value-separator="<?php echo $t101_jo_detail->TruckingVendor_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_TruckingVendor_id" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_TruckingVendor_id"<?php echo $t101_jo_detail->TruckingVendor_id->editAttributes() ?>>
 		<?php echo $t101_jo_detail->TruckingVendor_id->selectOptionListHtml("x<?php echo $t101_jo_detail_grid->RowIndex ?>_TruckingVendor_id") ?>
@@ -370,6 +443,7 @@ $t101_jo_detail_grid->ListOptions->render("body", "left", $t101_jo_detail_grid->
 	<select class="custom-select ew-custom-select" data-table="t101_jo_detail" data-field="x_Driver_id" data-value-separator="<?php echo $t101_jo_detail->Driver_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id"<?php echo $t101_jo_detail->Driver_id->editAttributes() ?>>
 		<?php echo $t101_jo_detail->Driver_id->selectOptionListHtml("x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id") ?>
 	</select>
+<div class="input-group-append"><button type="button" class="btn btn-default ew-add-opt-btn" id="aol_x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" title="<?php echo HtmlTitle($Language->phrase("AddLink")) . "&nbsp;" . $t101_jo_detail->Driver_id->caption() ?>" data-title="<?php echo $t101_jo_detail->Driver_id->caption() ?>" onclick="ew.addOptionDialogShow({lnk:this,el:'x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id',url:'t005_driveraddopt.php'});"><i class="fa fa-plus ew-icon"></i></button></div>
 </div>
 <?php echo $t101_jo_detail->Driver_id->Lookup->getParamTag("p_x" . $t101_jo_detail_grid->RowIndex . "_Driver_id") ?>
 </span>
@@ -381,6 +455,7 @@ $t101_jo_detail_grid->ListOptions->render("body", "left", $t101_jo_detail_grid->
 	<select class="custom-select ew-custom-select" data-table="t101_jo_detail" data-field="x_Driver_id" data-value-separator="<?php echo $t101_jo_detail->Driver_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id"<?php echo $t101_jo_detail->Driver_id->editAttributes() ?>>
 		<?php echo $t101_jo_detail->Driver_id->selectOptionListHtml("x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id") ?>
 	</select>
+<div class="input-group-append"><button type="button" class="btn btn-default ew-add-opt-btn" id="aol_x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" title="<?php echo HtmlTitle($Language->phrase("AddLink")) . "&nbsp;" . $t101_jo_detail->Driver_id->caption() ?>" data-title="<?php echo $t101_jo_detail->Driver_id->caption() ?>" onclick="ew.addOptionDialogShow({lnk:this,el:'x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id',url:'t005_driveraddopt.php'});"><i class="fa fa-plus ew-icon"></i></button></div>
 </div>
 <?php echo $t101_jo_detail->Driver_id->Lookup->getParamTag("p_x" . $t101_jo_detail_grid->RowIndex . "_Driver_id") ?>
 </span>
@@ -396,6 +471,44 @@ $t101_jo_detail_grid->ListOptions->render("body", "left", $t101_jo_detail_grid->
 <?php } else { ?>
 <input type="hidden" data-table="t101_jo_detail" data-field="x_Driver_id" name="ft101_jo_detailgrid$x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" id="ft101_jo_detailgrid$x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" value="<?php echo HtmlEncode($t101_jo_detail->Driver_id->FormValue) ?>">
 <input type="hidden" data-table="t101_jo_detail" data-field="x_Driver_id" name="ft101_jo_detailgrid$o<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" id="ft101_jo_detailgrid$o<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" value="<?php echo HtmlEncode($t101_jo_detail->Driver_id->OldValue) ?>">
+<?php } ?>
+<?php } ?>
+</td>
+	<?php } ?>
+	<?php if ($t101_jo_detail->Tanggal_Stuffing->Visible) { // Tanggal_Stuffing ?>
+		<td data-name="Tanggal_Stuffing"<?php echo $t101_jo_detail->Tanggal_Stuffing->cellAttributes() ?>>
+<?php if ($t101_jo_detail->RowType == ROWTYPE_ADD) { // Add record ?>
+<span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_Tanggal_Stuffing" class="form-group t101_jo_detail_Tanggal_Stuffing">
+<input type="text" data-table="t101_jo_detail" data-field="x_Tanggal_Stuffing" data-format="11" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" size="10" placeholder="<?php echo HtmlEncode($t101_jo_detail->Tanggal_Stuffing->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->Tanggal_Stuffing->EditValue ?>"<?php echo $t101_jo_detail->Tanggal_Stuffing->editAttributes() ?>>
+<?php if (!$t101_jo_detail->Tanggal_Stuffing->ReadOnly && !$t101_jo_detail->Tanggal_Stuffing->Disabled && !isset($t101_jo_detail->Tanggal_Stuffing->EditAttrs["readonly"]) && !isset($t101_jo_detail->Tanggal_Stuffing->EditAttrs["disabled"])) { ?>
+<script>
+ew.createDateTimePicker("ft101_jo_detailgrid", "x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing", {"ignoreReadonly":true,"useCurrent":false,"format":11});
+</script>
+<?php } ?>
+</span>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Tanggal_Stuffing" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" value="<?php echo HtmlEncode($t101_jo_detail->Tanggal_Stuffing->OldValue) ?>">
+<?php } ?>
+<?php if ($t101_jo_detail->RowType == ROWTYPE_EDIT) { // Edit record ?>
+<span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_Tanggal_Stuffing" class="form-group t101_jo_detail_Tanggal_Stuffing">
+<input type="text" data-table="t101_jo_detail" data-field="x_Tanggal_Stuffing" data-format="11" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" size="10" placeholder="<?php echo HtmlEncode($t101_jo_detail->Tanggal_Stuffing->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->Tanggal_Stuffing->EditValue ?>"<?php echo $t101_jo_detail->Tanggal_Stuffing->editAttributes() ?>>
+<?php if (!$t101_jo_detail->Tanggal_Stuffing->ReadOnly && !$t101_jo_detail->Tanggal_Stuffing->Disabled && !isset($t101_jo_detail->Tanggal_Stuffing->EditAttrs["readonly"]) && !isset($t101_jo_detail->Tanggal_Stuffing->EditAttrs["disabled"])) { ?>
+<script>
+ew.createDateTimePicker("ft101_jo_detailgrid", "x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing", {"ignoreReadonly":true,"useCurrent":false,"format":11});
+</script>
+<?php } ?>
+</span>
+<?php } ?>
+<?php if ($t101_jo_detail->RowType == ROWTYPE_VIEW) { // View record ?>
+<span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_Tanggal_Stuffing" class="t101_jo_detail_Tanggal_Stuffing">
+<span<?php echo $t101_jo_detail->Tanggal_Stuffing->viewAttributes() ?>>
+<?php echo $t101_jo_detail->Tanggal_Stuffing->getViewValue() ?></span>
+</span>
+<?php if (!$t101_jo_detail->isConfirm()) { ?>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Tanggal_Stuffing" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" value="<?php echo HtmlEncode($t101_jo_detail->Tanggal_Stuffing->FormValue) ?>">
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Tanggal_Stuffing" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" value="<?php echo HtmlEncode($t101_jo_detail->Tanggal_Stuffing->OldValue) ?>">
+<?php } else { ?>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Tanggal_Stuffing" name="ft101_jo_detailgrid$x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" id="ft101_jo_detailgrid$x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" value="<?php echo HtmlEncode($t101_jo_detail->Tanggal_Stuffing->FormValue) ?>">
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Tanggal_Stuffing" name="ft101_jo_detailgrid$o<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" id="ft101_jo_detailgrid$o<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" value="<?php echo HtmlEncode($t101_jo_detail->Tanggal_Stuffing->OldValue) ?>">
 <?php } ?>
 <?php } ?>
 </td>
@@ -540,6 +653,100 @@ $t101_jo_detail_grid->ListOptions->render("body", "left", $t101_jo_detail_grid->
 <?php } ?>
 </td>
 	<?php } ?>
+	<?php if ($t101_jo_detail->Ref_JOHead_id->Visible) { // Ref_JOHead_id ?>
+		<td data-name="Ref_JOHead_id"<?php echo $t101_jo_detail->Ref_JOHead_id->cellAttributes() ?>>
+<?php if ($t101_jo_detail->RowType == ROWTYPE_ADD) { // Add record ?>
+<span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_Ref_JOHead_id" class="form-group t101_jo_detail_Ref_JOHead_id">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t101_jo_detail" data-field="x_Ref_JOHead_id" data-value-separator="<?php echo $t101_jo_detail->Ref_JOHead_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id"<?php echo $t101_jo_detail->Ref_JOHead_id->editAttributes() ?>>
+		<?php echo $t101_jo_detail->Ref_JOHead_id->selectOptionListHtml("x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id") ?>
+	</select>
+</div>
+<?php echo $t101_jo_detail->Ref_JOHead_id->Lookup->getParamTag("p_x" . $t101_jo_detail_grid->RowIndex . "_Ref_JOHead_id") ?>
+</span>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Ref_JOHead_id" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" value="<?php echo HtmlEncode($t101_jo_detail->Ref_JOHead_id->OldValue) ?>">
+<?php } ?>
+<?php if ($t101_jo_detail->RowType == ROWTYPE_EDIT) { // Edit record ?>
+<span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_Ref_JOHead_id" class="form-group t101_jo_detail_Ref_JOHead_id">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t101_jo_detail" data-field="x_Ref_JOHead_id" data-value-separator="<?php echo $t101_jo_detail->Ref_JOHead_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id"<?php echo $t101_jo_detail->Ref_JOHead_id->editAttributes() ?>>
+		<?php echo $t101_jo_detail->Ref_JOHead_id->selectOptionListHtml("x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id") ?>
+	</select>
+</div>
+<?php echo $t101_jo_detail->Ref_JOHead_id->Lookup->getParamTag("p_x" . $t101_jo_detail_grid->RowIndex . "_Ref_JOHead_id") ?>
+</span>
+<?php } ?>
+<?php if ($t101_jo_detail->RowType == ROWTYPE_VIEW) { // View record ?>
+<span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_Ref_JOHead_id" class="t101_jo_detail_Ref_JOHead_id">
+<span<?php echo $t101_jo_detail->Ref_JOHead_id->viewAttributes() ?>>
+<?php echo $t101_jo_detail->Ref_JOHead_id->getViewValue() ?></span>
+</span>
+<?php if (!$t101_jo_detail->isConfirm()) { ?>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Ref_JOHead_id" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" value="<?php echo HtmlEncode($t101_jo_detail->Ref_JOHead_id->FormValue) ?>">
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Ref_JOHead_id" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" value="<?php echo HtmlEncode($t101_jo_detail->Ref_JOHead_id->OldValue) ?>">
+<?php } else { ?>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Ref_JOHead_id" name="ft101_jo_detailgrid$x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" id="ft101_jo_detailgrid$x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" value="<?php echo HtmlEncode($t101_jo_detail->Ref_JOHead_id->FormValue) ?>">
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Ref_JOHead_id" name="ft101_jo_detailgrid$o<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" id="ft101_jo_detailgrid$o<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" value="<?php echo HtmlEncode($t101_jo_detail->Ref_JOHead_id->OldValue) ?>">
+<?php } ?>
+<?php } ?>
+</td>
+	<?php } ?>
+	<?php if ($t101_jo_detail->No_Tagihan->Visible) { // No_Tagihan ?>
+		<td data-name="No_Tagihan"<?php echo $t101_jo_detail->No_Tagihan->cellAttributes() ?>>
+<?php if ($t101_jo_detail->RowType == ROWTYPE_ADD) { // Add record ?>
+<span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_No_Tagihan" class="form-group t101_jo_detail_No_Tagihan">
+<input type="text" data-table="t101_jo_detail" data-field="x_No_Tagihan" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" size="5" placeholder="<?php echo HtmlEncode($t101_jo_detail->No_Tagihan->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->No_Tagihan->EditValue ?>"<?php echo $t101_jo_detail->No_Tagihan->editAttributes() ?>>
+</span>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_No_Tagihan" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->No_Tagihan->OldValue) ?>">
+<?php } ?>
+<?php if ($t101_jo_detail->RowType == ROWTYPE_EDIT) { // Edit record ?>
+<span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_No_Tagihan" class="form-group t101_jo_detail_No_Tagihan">
+<input type="text" data-table="t101_jo_detail" data-field="x_No_Tagihan" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" size="5" placeholder="<?php echo HtmlEncode($t101_jo_detail->No_Tagihan->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->No_Tagihan->EditValue ?>"<?php echo $t101_jo_detail->No_Tagihan->editAttributes() ?>>
+</span>
+<?php } ?>
+<?php if ($t101_jo_detail->RowType == ROWTYPE_VIEW) { // View record ?>
+<span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_No_Tagihan" class="t101_jo_detail_No_Tagihan">
+<span<?php echo $t101_jo_detail->No_Tagihan->viewAttributes() ?>>
+<?php echo $t101_jo_detail->No_Tagihan->getViewValue() ?></span>
+</span>
+<?php if (!$t101_jo_detail->isConfirm()) { ?>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_No_Tagihan" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->No_Tagihan->FormValue) ?>">
+<input type="hidden" data-table="t101_jo_detail" data-field="x_No_Tagihan" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->No_Tagihan->OldValue) ?>">
+<?php } else { ?>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_No_Tagihan" name="ft101_jo_detailgrid$x<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" id="ft101_jo_detailgrid$x<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->No_Tagihan->FormValue) ?>">
+<input type="hidden" data-table="t101_jo_detail" data-field="x_No_Tagihan" name="ft101_jo_detailgrid$o<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" id="ft101_jo_detailgrid$o<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->No_Tagihan->OldValue) ?>">
+<?php } ?>
+<?php } ?>
+</td>
+	<?php } ?>
+	<?php if ($t101_jo_detail->Jumlah_Tagihan->Visible) { // Jumlah_Tagihan ?>
+		<td data-name="Jumlah_Tagihan"<?php echo $t101_jo_detail->Jumlah_Tagihan->cellAttributes() ?>>
+<?php if ($t101_jo_detail->RowType == ROWTYPE_ADD) { // Add record ?>
+<span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_Jumlah_Tagihan" class="form-group t101_jo_detail_Jumlah_Tagihan">
+<input type="text" data-table="t101_jo_detail" data-field="x_Jumlah_Tagihan" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" size="10" placeholder="<?php echo HtmlEncode($t101_jo_detail->Jumlah_Tagihan->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->Jumlah_Tagihan->EditValue ?>"<?php echo $t101_jo_detail->Jumlah_Tagihan->editAttributes() ?>>
+</span>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Jumlah_Tagihan" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->Jumlah_Tagihan->OldValue) ?>">
+<?php } ?>
+<?php if ($t101_jo_detail->RowType == ROWTYPE_EDIT) { // Edit record ?>
+<span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_Jumlah_Tagihan" class="form-group t101_jo_detail_Jumlah_Tagihan">
+<input type="text" data-table="t101_jo_detail" data-field="x_Jumlah_Tagihan" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" size="10" placeholder="<?php echo HtmlEncode($t101_jo_detail->Jumlah_Tagihan->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->Jumlah_Tagihan->EditValue ?>"<?php echo $t101_jo_detail->Jumlah_Tagihan->editAttributes() ?>>
+</span>
+<?php } ?>
+<?php if ($t101_jo_detail->RowType == ROWTYPE_VIEW) { // View record ?>
+<span id="el<?php echo $t101_jo_detail_grid->RowCnt ?>_t101_jo_detail_Jumlah_Tagihan" class="t101_jo_detail_Jumlah_Tagihan">
+<span<?php echo $t101_jo_detail->Jumlah_Tagihan->viewAttributes() ?>>
+<?php echo $t101_jo_detail->Jumlah_Tagihan->getViewValue() ?></span>
+</span>
+<?php if (!$t101_jo_detail->isConfirm()) { ?>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Jumlah_Tagihan" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->Jumlah_Tagihan->FormValue) ?>">
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Jumlah_Tagihan" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->Jumlah_Tagihan->OldValue) ?>">
+<?php } else { ?>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Jumlah_Tagihan" name="ft101_jo_detailgrid$x<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" id="ft101_jo_detailgrid$x<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->Jumlah_Tagihan->FormValue) ?>">
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Jumlah_Tagihan" name="ft101_jo_detailgrid$o<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" id="ft101_jo_detailgrid$o<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->Jumlah_Tagihan->OldValue) ?>">
+<?php } ?>
+<?php } ?>
+</td>
+	<?php } ?>
 <?php
 
 // Render list options (body, right)
@@ -587,6 +794,7 @@ $t101_jo_detail_grid->ListOptions->render("body", "left", $t101_jo_detail_grid->
 		<td data-name="TruckingVendor_id">
 <?php if (!$t101_jo_detail->isConfirm()) { ?>
 <span id="el$rowindex$_t101_jo_detail_TruckingVendor_id" class="form-group t101_jo_detail_TruckingVendor_id">
+<?php $t101_jo_detail->TruckingVendor_id->EditAttrs["onchange"] = "ew.updateOptions.call(this);" . @$t101_jo_detail->TruckingVendor_id->EditAttrs["onchange"]; ?>
 <div class="input-group">
 	<select class="custom-select ew-custom-select" data-table="t101_jo_detail" data-field="x_TruckingVendor_id" data-value-separator="<?php echo $t101_jo_detail->TruckingVendor_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_TruckingVendor_id" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_TruckingVendor_id"<?php echo $t101_jo_detail->TruckingVendor_id->editAttributes() ?>>
 		<?php echo $t101_jo_detail->TruckingVendor_id->selectOptionListHtml("x<?php echo $t101_jo_detail_grid->RowIndex ?>_TruckingVendor_id") ?>
@@ -612,6 +820,7 @@ $t101_jo_detail_grid->ListOptions->render("body", "left", $t101_jo_detail_grid->
 	<select class="custom-select ew-custom-select" data-table="t101_jo_detail" data-field="x_Driver_id" data-value-separator="<?php echo $t101_jo_detail->Driver_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id"<?php echo $t101_jo_detail->Driver_id->editAttributes() ?>>
 		<?php echo $t101_jo_detail->Driver_id->selectOptionListHtml("x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id") ?>
 	</select>
+<div class="input-group-append"><button type="button" class="btn btn-default ew-add-opt-btn" id="aol_x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" title="<?php echo HtmlTitle($Language->phrase("AddLink")) . "&nbsp;" . $t101_jo_detail->Driver_id->caption() ?>" data-title="<?php echo $t101_jo_detail->Driver_id->caption() ?>" onclick="ew.addOptionDialogShow({lnk:this,el:'x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id',url:'t005_driveraddopt.php'});"><i class="fa fa-plus ew-icon"></i></button></div>
 </div>
 <?php echo $t101_jo_detail->Driver_id->Lookup->getParamTag("p_x" . $t101_jo_detail_grid->RowIndex . "_Driver_id") ?>
 </span>
@@ -623,6 +832,27 @@ $t101_jo_detail_grid->ListOptions->render("body", "left", $t101_jo_detail_grid->
 <input type="hidden" data-table="t101_jo_detail" data-field="x_Driver_id" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" value="<?php echo HtmlEncode($t101_jo_detail->Driver_id->FormValue) ?>">
 <?php } ?>
 <input type="hidden" data-table="t101_jo_detail" data-field="x_Driver_id" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Driver_id" value="<?php echo HtmlEncode($t101_jo_detail->Driver_id->OldValue) ?>">
+</td>
+	<?php } ?>
+	<?php if ($t101_jo_detail->Tanggal_Stuffing->Visible) { // Tanggal_Stuffing ?>
+		<td data-name="Tanggal_Stuffing">
+<?php if (!$t101_jo_detail->isConfirm()) { ?>
+<span id="el$rowindex$_t101_jo_detail_Tanggal_Stuffing" class="form-group t101_jo_detail_Tanggal_Stuffing">
+<input type="text" data-table="t101_jo_detail" data-field="x_Tanggal_Stuffing" data-format="11" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" size="10" placeholder="<?php echo HtmlEncode($t101_jo_detail->Tanggal_Stuffing->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->Tanggal_Stuffing->EditValue ?>"<?php echo $t101_jo_detail->Tanggal_Stuffing->editAttributes() ?>>
+<?php if (!$t101_jo_detail->Tanggal_Stuffing->ReadOnly && !$t101_jo_detail->Tanggal_Stuffing->Disabled && !isset($t101_jo_detail->Tanggal_Stuffing->EditAttrs["readonly"]) && !isset($t101_jo_detail->Tanggal_Stuffing->EditAttrs["disabled"])) { ?>
+<script>
+ew.createDateTimePicker("ft101_jo_detailgrid", "x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing", {"ignoreReadonly":true,"useCurrent":false,"format":11});
+</script>
+<?php } ?>
+</span>
+<?php } else { ?>
+<span id="el$rowindex$_t101_jo_detail_Tanggal_Stuffing" class="form-group t101_jo_detail_Tanggal_Stuffing">
+<span<?php echo $t101_jo_detail->Tanggal_Stuffing->viewAttributes() ?>>
+<input type="text" readonly class="form-control-plaintext" value="<?php echo RemoveHtml($t101_jo_detail->Tanggal_Stuffing->ViewValue) ?>"></span>
+</span>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Tanggal_Stuffing" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" value="<?php echo HtmlEncode($t101_jo_detail->Tanggal_Stuffing->FormValue) ?>">
+<?php } ?>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Tanggal_Stuffing" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Tanggal_Stuffing" value="<?php echo HtmlEncode($t101_jo_detail->Tanggal_Stuffing->OldValue) ?>">
 </td>
 	<?php } ?>
 	<?php if ($t101_jo_detail->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
@@ -703,6 +933,59 @@ $t101_jo_detail_grid->ListOptions->render("body", "left", $t101_jo_detail_grid->
 <input type="hidden" data-table="t101_jo_detail" data-field="x_Nomor_Container_2" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Nomor_Container_2" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Nomor_Container_2" value="<?php echo HtmlEncode($t101_jo_detail->Nomor_Container_2->FormValue) ?>">
 <?php } ?>
 <input type="hidden" data-table="t101_jo_detail" data-field="x_Nomor_Container_2" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Nomor_Container_2" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Nomor_Container_2" value="<?php echo HtmlEncode($t101_jo_detail->Nomor_Container_2->OldValue) ?>">
+</td>
+	<?php } ?>
+	<?php if ($t101_jo_detail->Ref_JOHead_id->Visible) { // Ref_JOHead_id ?>
+		<td data-name="Ref_JOHead_id">
+<?php if (!$t101_jo_detail->isConfirm()) { ?>
+<span id="el$rowindex$_t101_jo_detail_Ref_JOHead_id" class="form-group t101_jo_detail_Ref_JOHead_id">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t101_jo_detail" data-field="x_Ref_JOHead_id" data-value-separator="<?php echo $t101_jo_detail->Ref_JOHead_id->displayValueSeparatorAttribute() ?>" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id"<?php echo $t101_jo_detail->Ref_JOHead_id->editAttributes() ?>>
+		<?php echo $t101_jo_detail->Ref_JOHead_id->selectOptionListHtml("x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id") ?>
+	</select>
+</div>
+<?php echo $t101_jo_detail->Ref_JOHead_id->Lookup->getParamTag("p_x" . $t101_jo_detail_grid->RowIndex . "_Ref_JOHead_id") ?>
+</span>
+<?php } else { ?>
+<span id="el$rowindex$_t101_jo_detail_Ref_JOHead_id" class="form-group t101_jo_detail_Ref_JOHead_id">
+<span<?php echo $t101_jo_detail->Ref_JOHead_id->viewAttributes() ?>>
+<input type="text" readonly class="form-control-plaintext" value="<?php echo RemoveHtml($t101_jo_detail->Ref_JOHead_id->ViewValue) ?>"></span>
+</span>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Ref_JOHead_id" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" value="<?php echo HtmlEncode($t101_jo_detail->Ref_JOHead_id->FormValue) ?>">
+<?php } ?>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Ref_JOHead_id" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Ref_JOHead_id" value="<?php echo HtmlEncode($t101_jo_detail->Ref_JOHead_id->OldValue) ?>">
+</td>
+	<?php } ?>
+	<?php if ($t101_jo_detail->No_Tagihan->Visible) { // No_Tagihan ?>
+		<td data-name="No_Tagihan">
+<?php if (!$t101_jo_detail->isConfirm()) { ?>
+<span id="el$rowindex$_t101_jo_detail_No_Tagihan" class="form-group t101_jo_detail_No_Tagihan">
+<input type="text" data-table="t101_jo_detail" data-field="x_No_Tagihan" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" size="5" placeholder="<?php echo HtmlEncode($t101_jo_detail->No_Tagihan->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->No_Tagihan->EditValue ?>"<?php echo $t101_jo_detail->No_Tagihan->editAttributes() ?>>
+</span>
+<?php } else { ?>
+<span id="el$rowindex$_t101_jo_detail_No_Tagihan" class="form-group t101_jo_detail_No_Tagihan">
+<span<?php echo $t101_jo_detail->No_Tagihan->viewAttributes() ?>>
+<input type="text" readonly class="form-control-plaintext" value="<?php echo RemoveHtml($t101_jo_detail->No_Tagihan->ViewValue) ?>"></span>
+</span>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_No_Tagihan" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->No_Tagihan->FormValue) ?>">
+<?php } ?>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_No_Tagihan" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_No_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->No_Tagihan->OldValue) ?>">
+</td>
+	<?php } ?>
+	<?php if ($t101_jo_detail->Jumlah_Tagihan->Visible) { // Jumlah_Tagihan ?>
+		<td data-name="Jumlah_Tagihan">
+<?php if (!$t101_jo_detail->isConfirm()) { ?>
+<span id="el$rowindex$_t101_jo_detail_Jumlah_Tagihan" class="form-group t101_jo_detail_Jumlah_Tagihan">
+<input type="text" data-table="t101_jo_detail" data-field="x_Jumlah_Tagihan" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" size="10" placeholder="<?php echo HtmlEncode($t101_jo_detail->Jumlah_Tagihan->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->Jumlah_Tagihan->EditValue ?>"<?php echo $t101_jo_detail->Jumlah_Tagihan->editAttributes() ?>>
+</span>
+<?php } else { ?>
+<span id="el$rowindex$_t101_jo_detail_Jumlah_Tagihan" class="form-group t101_jo_detail_Jumlah_Tagihan">
+<span<?php echo $t101_jo_detail->Jumlah_Tagihan->viewAttributes() ?>>
+<input type="text" readonly class="form-control-plaintext" value="<?php echo RemoveHtml($t101_jo_detail->Jumlah_Tagihan->ViewValue) ?>"></span>
+</span>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Jumlah_Tagihan" name="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" id="x<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->Jumlah_Tagihan->FormValue) ?>">
+<?php } ?>
+<input type="hidden" data-table="t101_jo_detail" data-field="x_Jumlah_Tagihan" name="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" id="o<?php echo $t101_jo_detail_grid->RowIndex ?>_Jumlah_Tagihan" value="<?php echo HtmlEncode($t101_jo_detail->Jumlah_Tagihan->OldValue) ?>">
 </td>
 	<?php } ?>
 <?php

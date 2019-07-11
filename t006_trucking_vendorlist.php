@@ -160,15 +160,6 @@ $t006_trucking_vendor_list->renderListOptions();
 // Render list options (header, left)
 $t006_trucking_vendor_list->ListOptions->render("header", "left");
 ?>
-<?php if ($t006_trucking_vendor->id->Visible) { // id ?>
-	<?php if ($t006_trucking_vendor->sortUrl($t006_trucking_vendor->id) == "") { ?>
-		<th data-name="id" class="<?php echo $t006_trucking_vendor->id->headerCellClass() ?>"><div id="elh_t006_trucking_vendor_id" class="t006_trucking_vendor_id"><div class="ew-table-header-caption"><?php echo $t006_trucking_vendor->id->caption() ?></div></div></th>
-	<?php } else { ?>
-		<th data-name="id" class="<?php echo $t006_trucking_vendor->id->headerCellClass() ?>"><div class="ew-pointer" onclick="ew.sort(event,'<?php echo $t006_trucking_vendor->SortUrl($t006_trucking_vendor->id) ?>',2);"><div id="elh_t006_trucking_vendor_id" class="t006_trucking_vendor_id">
-			<div class="ew-table-header-btn"><span class="ew-table-header-caption"><?php echo $t006_trucking_vendor->id->caption() ?></span><span class="ew-table-header-sort"><?php if ($t006_trucking_vendor->id->getSort() == "ASC") { ?><i class="fa fa-sort-up"></i><?php } elseif ($t006_trucking_vendor->id->getSort() == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?></span></div>
-		</div></div></th>
-	<?php } ?>
-<?php } ?>
 <?php if ($t006_trucking_vendor->Nama->Visible) { // Nama ?>
 	<?php if ($t006_trucking_vendor->sortUrl($t006_trucking_vendor->Nama) == "") { ?>
 		<th data-name="Nama" class="<?php echo $t006_trucking_vendor->Nama->headerCellClass() ?>"><div id="elh_t006_trucking_vendor_Nama" class="t006_trucking_vendor_Nama"><div class="ew-table-header-caption"><?php echo $t006_trucking_vendor->Nama->caption() ?></div></div></th>
@@ -243,14 +234,6 @@ while ($t006_trucking_vendor_list->RecCnt < $t006_trucking_vendor_list->StopRec)
 // Render list options (body, left)
 $t006_trucking_vendor_list->ListOptions->render("body", "left", $t006_trucking_vendor_list->RowCnt);
 ?>
-	<?php if ($t006_trucking_vendor->id->Visible) { // id ?>
-		<td data-name="id"<?php echo $t006_trucking_vendor->id->cellAttributes() ?>>
-<span id="el<?php echo $t006_trucking_vendor_list->RowCnt ?>_t006_trucking_vendor_id" class="t006_trucking_vendor_id">
-<span<?php echo $t006_trucking_vendor->id->viewAttributes() ?>>
-<?php echo $t006_trucking_vendor->id->getViewValue() ?></span>
-</span>
-</td>
-	<?php } ?>
 	<?php if ($t006_trucking_vendor->Nama->Visible) { // Nama ?>
 		<td data-name="Nama"<?php echo $t006_trucking_vendor->Nama->cellAttributes() ?>>
 <span id="el<?php echo $t006_trucking_vendor_list->RowCnt ?>_t006_trucking_vendor_Nama" class="t006_trucking_vendor_Nama">
@@ -333,6 +316,18 @@ if ($t006_trucking_vendor_list->Recordset)
 <?php if ($t006_trucking_vendor_list->Pager->RecordCount > 0) { ?>
 <div class="ew-pager ew-rec">
 	<span><?php echo $Language->Phrase("Record") ?>&nbsp;<?php echo $t006_trucking_vendor_list->Pager->FromIndex ?>&nbsp;<?php echo $Language->Phrase("To") ?>&nbsp;<?php echo $t006_trucking_vendor_list->Pager->ToIndex ?>&nbsp;<?php echo $Language->Phrase("Of") ?>&nbsp;<?php echo $t006_trucking_vendor_list->Pager->RecordCount ?></span>
+</div>
+<?php } ?>
+<?php if ($t006_trucking_vendor_list->TotalRecs > 0 && (!$t006_trucking_vendor_list->AutoHidePageSizeSelector || $t006_trucking_vendor_list->Pager->Visible)) { ?>
+<div class="ew-pager">
+<input type="hidden" name="t" value="t006_trucking_vendor">
+<select name="<?php echo TABLE_REC_PER_PAGE ?>" class="form-control form-control-sm ew-tooltip" title="<?php echo $Language->phrase("RecordsPerPage") ?>" onchange="this.form.submit();">
+<option value="10"<?php if ($t006_trucking_vendor_list->DisplayRecs == 10) { ?> selected<?php } ?>>10</option>
+<option value="20"<?php if ($t006_trucking_vendor_list->DisplayRecs == 20) { ?> selected<?php } ?>>20</option>
+<option value="50"<?php if ($t006_trucking_vendor_list->DisplayRecs == 50) { ?> selected<?php } ?>>50</option>
+<option value="100"<?php if ($t006_trucking_vendor_list->DisplayRecs == 100) { ?> selected<?php } ?>>100</option>
+<option value="ALL"<?php if ($t006_trucking_vendor->getRecordsPerPage() == -1) { ?> selected<?php } ?>><?php echo $Language->Phrase("AllRecords") ?></option>
+</select>
 </div>
 <?php } ?>
 </form>

@@ -63,6 +63,14 @@ ft101_jo_detailadd.validate = function() {
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
 				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->Driver_id->caption(), $t101_jo_detail->Driver_id->RequiredErrorMessage)) ?>");
 		<?php } ?>
+		<?php if ($t101_jo_detail_add->Tanggal_Stuffing->Required) { ?>
+			elm = this.getElements("x" + infix + "_Tanggal_Stuffing");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->Tanggal_Stuffing->caption(), $t101_jo_detail->Tanggal_Stuffing->RequiredErrorMessage)) ?>");
+		<?php } ?>
+			elm = this.getElements("x" + infix + "_Tanggal_Stuffing");
+			if (elm && !ew.checkEuroDate(elm.value))
+				return this.onError(elm, "<?php echo JsEncode($t101_jo_detail->Tanggal_Stuffing->errorMessage()) ?>");
 		<?php if ($t101_jo_detail_add->Nomor_Polisi_1->Required) { ?>
 			elm = this.getElements("x" + infix + "_Nomor_Polisi_1");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -88,6 +96,27 @@ ft101_jo_detailadd.validate = function() {
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
 				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->Nomor_Container_2->caption(), $t101_jo_detail->Nomor_Container_2->RequiredErrorMessage)) ?>");
 		<?php } ?>
+		<?php if ($t101_jo_detail_add->Ref_JOHead_id->Required) { ?>
+			elm = this.getElements("x" + infix + "_Ref_JOHead_id");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->Ref_JOHead_id->caption(), $t101_jo_detail->Ref_JOHead_id->RequiredErrorMessage)) ?>");
+		<?php } ?>
+		<?php if ($t101_jo_detail_add->No_Tagihan->Required) { ?>
+			elm = this.getElements("x" + infix + "_No_Tagihan");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->No_Tagihan->caption(), $t101_jo_detail->No_Tagihan->RequiredErrorMessage)) ?>");
+		<?php } ?>
+			elm = this.getElements("x" + infix + "_No_Tagihan");
+			if (elm && !ew.checkInteger(elm.value))
+				return this.onError(elm, "<?php echo JsEncode($t101_jo_detail->No_Tagihan->errorMessage()) ?>");
+		<?php if ($t101_jo_detail_add->Jumlah_Tagihan->Required) { ?>
+			elm = this.getElements("x" + infix + "_Jumlah_Tagihan");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_detail->Jumlah_Tagihan->caption(), $t101_jo_detail->Jumlah_Tagihan->RequiredErrorMessage)) ?>");
+		<?php } ?>
+			elm = this.getElements("x" + infix + "_Jumlah_Tagihan");
+			if (elm && !ew.checkNumber(elm.value))
+				return this.onError(elm, "<?php echo JsEncode($t101_jo_detail->Jumlah_Tagihan->errorMessage()) ?>");
 
 			// Fire Form_CustomValidate event
 			if (!this.Form_CustomValidate(fobj))
@@ -120,6 +149,8 @@ ft101_jo_detailadd.lists["x_TruckingVendor_id"] = <?php echo $t101_jo_detail_add
 ft101_jo_detailadd.lists["x_TruckingVendor_id"].options = <?php echo JsonEncode($t101_jo_detail_add->TruckingVendor_id->lookupOptions()) ?>;
 ft101_jo_detailadd.lists["x_Driver_id"] = <?php echo $t101_jo_detail_add->Driver_id->Lookup->toClientList() ?>;
 ft101_jo_detailadd.lists["x_Driver_id"].options = <?php echo JsonEncode($t101_jo_detail_add->Driver_id->lookupOptions()) ?>;
+ft101_jo_detailadd.lists["x_Ref_JOHead_id"] = <?php echo $t101_jo_detail_add->Ref_JOHead_id->Lookup->toClientList() ?>;
+ft101_jo_detailadd.lists["x_Ref_JOHead_id"].options = <?php echo JsonEncode($t101_jo_detail_add->Ref_JOHead_id->lookupOptions()) ?>;
 
 // Form object for search
 </script>
@@ -148,6 +179,7 @@ $t101_jo_detail_add->showMessage();
 		<label id="elh_t101_jo_detail_TruckingVendor_id" for="x_TruckingVendor_id" class="<?php echo $t101_jo_detail_add->LeftColumnClass ?>"><?php echo $t101_jo_detail->TruckingVendor_id->caption() ?><?php echo ($t101_jo_detail->TruckingVendor_id->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
 		<div class="<?php echo $t101_jo_detail_add->RightColumnClass ?>"><div<?php echo $t101_jo_detail->TruckingVendor_id->cellAttributes() ?>>
 <span id="el_t101_jo_detail_TruckingVendor_id">
+<?php $t101_jo_detail->TruckingVendor_id->EditAttrs["onchange"] = "ew.updateOptions.call(this);" . @$t101_jo_detail->TruckingVendor_id->EditAttrs["onchange"]; ?>
 <div class="input-group">
 	<select class="custom-select ew-custom-select" data-table="t101_jo_detail" data-field="x_TruckingVendor_id" data-value-separator="<?php echo $t101_jo_detail->TruckingVendor_id->displayValueSeparatorAttribute() ?>" id="x_TruckingVendor_id" name="x_TruckingVendor_id"<?php echo $t101_jo_detail->TruckingVendor_id->editAttributes() ?>>
 		<?php echo $t101_jo_detail->TruckingVendor_id->selectOptionListHtml("x_TruckingVendor_id") ?>
@@ -167,10 +199,26 @@ $t101_jo_detail_add->showMessage();
 	<select class="custom-select ew-custom-select" data-table="t101_jo_detail" data-field="x_Driver_id" data-value-separator="<?php echo $t101_jo_detail->Driver_id->displayValueSeparatorAttribute() ?>" id="x_Driver_id" name="x_Driver_id"<?php echo $t101_jo_detail->Driver_id->editAttributes() ?>>
 		<?php echo $t101_jo_detail->Driver_id->selectOptionListHtml("x_Driver_id") ?>
 	</select>
+<div class="input-group-append"><button type="button" class="btn btn-default ew-add-opt-btn" id="aol_x_Driver_id" title="<?php echo HtmlTitle($Language->phrase("AddLink")) . "&nbsp;" . $t101_jo_detail->Driver_id->caption() ?>" data-title="<?php echo $t101_jo_detail->Driver_id->caption() ?>" onclick="ew.addOptionDialogShow({lnk:this,el:'x_Driver_id',url:'t005_driveraddopt.php'});"><i class="fa fa-plus ew-icon"></i></button></div>
 </div>
 <?php echo $t101_jo_detail->Driver_id->Lookup->getParamTag("p_x_Driver_id") ?>
 </span>
 <?php echo $t101_jo_detail->Driver_id->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($t101_jo_detail->Tanggal_Stuffing->Visible) { // Tanggal_Stuffing ?>
+	<div id="r_Tanggal_Stuffing" class="form-group row">
+		<label id="elh_t101_jo_detail_Tanggal_Stuffing" for="x_Tanggal_Stuffing" class="<?php echo $t101_jo_detail_add->LeftColumnClass ?>"><?php echo $t101_jo_detail->Tanggal_Stuffing->caption() ?><?php echo ($t101_jo_detail->Tanggal_Stuffing->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
+		<div class="<?php echo $t101_jo_detail_add->RightColumnClass ?>"><div<?php echo $t101_jo_detail->Tanggal_Stuffing->cellAttributes() ?>>
+<span id="el_t101_jo_detail_Tanggal_Stuffing">
+<input type="text" data-table="t101_jo_detail" data-field="x_Tanggal_Stuffing" data-format="11" name="x_Tanggal_Stuffing" id="x_Tanggal_Stuffing" size="10" placeholder="<?php echo HtmlEncode($t101_jo_detail->Tanggal_Stuffing->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->Tanggal_Stuffing->EditValue ?>"<?php echo $t101_jo_detail->Tanggal_Stuffing->editAttributes() ?>>
+<?php if (!$t101_jo_detail->Tanggal_Stuffing->ReadOnly && !$t101_jo_detail->Tanggal_Stuffing->Disabled && !isset($t101_jo_detail->Tanggal_Stuffing->EditAttrs["readonly"]) && !isset($t101_jo_detail->Tanggal_Stuffing->EditAttrs["disabled"])) { ?>
+<script>
+ew.createDateTimePicker("ft101_jo_detailadd", "x_Tanggal_Stuffing", {"ignoreReadonly":true,"useCurrent":false,"format":11});
+</script>
+<?php } ?>
+</span>
+<?php echo $t101_jo_detail->Tanggal_Stuffing->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($t101_jo_detail->Nomor_Polisi_1->Visible) { // Nomor_Polisi_1 ?>
@@ -223,6 +271,41 @@ $t101_jo_detail_add->showMessage();
 <?php echo $t101_jo_detail->Nomor_Container_2->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
+<?php if ($t101_jo_detail->Ref_JOHead_id->Visible) { // Ref_JOHead_id ?>
+	<div id="r_Ref_JOHead_id" class="form-group row">
+		<label id="elh_t101_jo_detail_Ref_JOHead_id" for="x_Ref_JOHead_id" class="<?php echo $t101_jo_detail_add->LeftColumnClass ?>"><?php echo $t101_jo_detail->Ref_JOHead_id->caption() ?><?php echo ($t101_jo_detail->Ref_JOHead_id->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
+		<div class="<?php echo $t101_jo_detail_add->RightColumnClass ?>"><div<?php echo $t101_jo_detail->Ref_JOHead_id->cellAttributes() ?>>
+<span id="el_t101_jo_detail_Ref_JOHead_id">
+<div class="input-group">
+	<select class="custom-select ew-custom-select" data-table="t101_jo_detail" data-field="x_Ref_JOHead_id" data-value-separator="<?php echo $t101_jo_detail->Ref_JOHead_id->displayValueSeparatorAttribute() ?>" id="x_Ref_JOHead_id" name="x_Ref_JOHead_id"<?php echo $t101_jo_detail->Ref_JOHead_id->editAttributes() ?>>
+		<?php echo $t101_jo_detail->Ref_JOHead_id->selectOptionListHtml("x_Ref_JOHead_id") ?>
+	</select>
+</div>
+<?php echo $t101_jo_detail->Ref_JOHead_id->Lookup->getParamTag("p_x_Ref_JOHead_id") ?>
+</span>
+<?php echo $t101_jo_detail->Ref_JOHead_id->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($t101_jo_detail->No_Tagihan->Visible) { // No_Tagihan ?>
+	<div id="r_No_Tagihan" class="form-group row">
+		<label id="elh_t101_jo_detail_No_Tagihan" for="x_No_Tagihan" class="<?php echo $t101_jo_detail_add->LeftColumnClass ?>"><?php echo $t101_jo_detail->No_Tagihan->caption() ?><?php echo ($t101_jo_detail->No_Tagihan->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
+		<div class="<?php echo $t101_jo_detail_add->RightColumnClass ?>"><div<?php echo $t101_jo_detail->No_Tagihan->cellAttributes() ?>>
+<span id="el_t101_jo_detail_No_Tagihan">
+<input type="text" data-table="t101_jo_detail" data-field="x_No_Tagihan" name="x_No_Tagihan" id="x_No_Tagihan" size="5" placeholder="<?php echo HtmlEncode($t101_jo_detail->No_Tagihan->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->No_Tagihan->EditValue ?>"<?php echo $t101_jo_detail->No_Tagihan->editAttributes() ?>>
+</span>
+<?php echo $t101_jo_detail->No_Tagihan->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
+<?php if ($t101_jo_detail->Jumlah_Tagihan->Visible) { // Jumlah_Tagihan ?>
+	<div id="r_Jumlah_Tagihan" class="form-group row">
+		<label id="elh_t101_jo_detail_Jumlah_Tagihan" for="x_Jumlah_Tagihan" class="<?php echo $t101_jo_detail_add->LeftColumnClass ?>"><?php echo $t101_jo_detail->Jumlah_Tagihan->caption() ?><?php echo ($t101_jo_detail->Jumlah_Tagihan->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
+		<div class="<?php echo $t101_jo_detail_add->RightColumnClass ?>"><div<?php echo $t101_jo_detail->Jumlah_Tagihan->cellAttributes() ?>>
+<span id="el_t101_jo_detail_Jumlah_Tagihan">
+<input type="text" data-table="t101_jo_detail" data-field="x_Jumlah_Tagihan" name="x_Jumlah_Tagihan" id="x_Jumlah_Tagihan" size="10" placeholder="<?php echo HtmlEncode($t101_jo_detail->Jumlah_Tagihan->getPlaceHolder()) ?>" value="<?php echo $t101_jo_detail->Jumlah_Tagihan->EditValue ?>"<?php echo $t101_jo_detail->Jumlah_Tagihan->editAttributes() ?>>
+</span>
+<?php echo $t101_jo_detail->Jumlah_Tagihan->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
 </div><!-- /page* -->
 	<?php if (strval($t101_jo_detail->JOHead_id->getSessionValue()) <> "") { ?>
 	<input type="hidden" name="x_JOHead_id" id="x_JOHead_id" value="<?php echo HtmlEncode(strval($t101_jo_detail->JOHead_id->getSessionValue())) ?>">
@@ -245,7 +328,21 @@ if (DEBUG_ENABLED)
 
 // Write your table-specific startup script here
 // document.write("page loaded");
+	// tampilkan TANGGAL HARI INI
 
+	$("[data-table=t101_jo_detail][data-field=x_Tanggal_Stuffing]").val("<?php echo date('d-m-Y');?>");
+	$(document).ready(
+		function() {
+			$("[data-table=t101_jo_detail][data-field=x_Tanggal_Stuffing]").change(
+				function() {
+					var str = this.value;
+					var res = str.slice(0, -8);
+					res = res + "00:00:00";
+					$("[data-table=t101_jo_detail][data-field=x_Tanggal_Stuffing]").val(res); //alert(res);
+				}
+			);
+		}
+	);
 </script>
 <?php include_once "footer.php" ?>
 <?php

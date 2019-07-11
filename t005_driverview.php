@@ -50,8 +50,10 @@ ft005_driverview.Form_CustomValidate = function(fobj) { // DO NOT CHANGE THIS LI
 ft005_driverview.validateRequired = <?php echo json_encode(CLIENT_VALIDATE) ?>;
 
 // Dynamic selection lists
-// Form object for search
+ft005_driverview.lists["x_TruckingVendor_id"] = <?php echo $t005_driver_view->TruckingVendor_id->Lookup->toClientList() ?>;
+ft005_driverview.lists["x_TruckingVendor_id"].options = <?php echo JsonEncode($t005_driver_view->TruckingVendor_id->lookupOptions()) ?>;
 
+// Form object for search
 </script>
 <script>
 
@@ -76,17 +78,6 @@ $t005_driver_view->showMessage();
 <input type="hidden" name="t" value="t005_driver">
 <input type="hidden" name="modal" value="<?php echo (int)$t005_driver_view->IsModal ?>">
 <table class="table table-striped table-sm ew-view-table">
-<?php if ($t005_driver->id->Visible) { // id ?>
-	<tr id="r_id">
-		<td class="<?php echo $t005_driver_view->TableLeftColumnClass ?>"><span id="elh_t005_driver_id"><?php echo $t005_driver->id->caption() ?></span></td>
-		<td data-name="id"<?php echo $t005_driver->id->cellAttributes() ?>>
-<span id="el_t005_driver_id">
-<span<?php echo $t005_driver->id->viewAttributes() ?>>
-<?php echo $t005_driver->id->getViewValue() ?></span>
-</span>
-</td>
-	</tr>
-<?php } ?>
 <?php if ($t005_driver->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 	<tr id="r_TruckingVendor_id">
 		<td class="<?php echo $t005_driver_view->TableLeftColumnClass ?>"><span id="elh_t005_driver_TruckingVendor_id"><?php echo $t005_driver->TruckingVendor_id->caption() ?></span></td>

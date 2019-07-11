@@ -46,16 +46,6 @@ $t005_driver_preview->renderListOptions();
 // Render list options (header, left)
 $t005_driver_preview->ListOptions->render("header", "left");
 ?>
-<?php if ($t005_driver->id->Visible) { // id ?>
-	<?php if ($t005_driver->SortUrl($t005_driver->id) == "") { ?>
-		<th class="<?php echo $t005_driver->id->headerCellClass() ?>"><?php echo $t005_driver->id->caption() ?></th>
-	<?php } else { ?>
-		<th class="<?php echo $t005_driver->id->headerCellClass() ?>"><div class="ew-pointer" data-sort="<?php echo $t005_driver->id->Name ?>" data-sort-order="<?php echo $t005_driver_preview->SortField == $t005_driver->id->Name && $t005_driver_preview->SortOrder == "ASC" ? "DESC" : "ASC" ?>"><div class="ew-table-header-btn">
-		<span class="ew-table-header-caption"><?php echo $t005_driver->id->caption() ?></span>
-		<span class="ew-table-header-sort"><?php if ($t005_driver_preview->SortField == $t005_driver->id->Name) { ?><?php if ($t005_driver_preview->SortOrder == "ASC") { ?><i class="fa fa-sort-up ew-sort-up"></span><?php } elseif ($t005_driver_preview->SortOrder == "DESC") { ?><i class="fa fa-sort-down"></i><?php } ?><?php } ?></span>
-	</div></div></th>
-	<?php } ?>
-<?php } ?>
 <?php if ($t005_driver->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 	<?php if ($t005_driver->SortUrl($t005_driver->TruckingVendor_id) == "") { ?>
 		<th class="<?php echo $t005_driver->TruckingVendor_id->headerCellClass() ?>"><?php echo $t005_driver->TruckingVendor_id->caption() ?></th>
@@ -129,13 +119,6 @@ while ($t005_driver_preview->Recordset && !$t005_driver_preview->Recordset->EOF)
 // Render list options (body, left)
 $t005_driver_preview->ListOptions->render("body", "left", $t005_driver_preview->RowCnt);
 ?>
-<?php if ($t005_driver->id->Visible) { // id ?>
-		<!-- id -->
-		<td<?php echo $t005_driver->id->cellAttributes() ?>>
-<span<?php echo $t005_driver->id->viewAttributes() ?>>
-<?php echo $t005_driver->id->getViewValue() ?></span>
-</td>
-<?php } ?>
 <?php if ($t005_driver->TruckingVendor_id->Visible) { // TruckingVendor_id ?>
 		<!-- TruckingVendor_id -->
 		<td<?php echo $t005_driver->TruckingVendor_id->cellAttributes() ?>>

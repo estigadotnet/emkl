@@ -19,6 +19,14 @@ class t101_jo_head_add extends t101_jo_head
 	// Page object name
 	public $PageObjName = "t101_jo_head_add";
 
+	// Audit Trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Page headings
 	public $Heading = "";
 	public $Subheading = "";
@@ -557,11 +565,11 @@ class t101_jo_head_add extends t101_jo_head
 		$this->CurrentAction = Param("action"); // Set up current action
 		$this->id->Visible = FALSE;
 		$this->Export_Import->setVisibility();
+		$this->No_BL->setVisibility();
 		$this->Nomor_JO->setVisibility();
 		$this->Shipper_id->setVisibility();
 		$this->Party->setVisibility();
 		$this->Container->setVisibility();
-		$this->Tanggal_Stuffing->setVisibility();
 		$this->Destination_id->setVisibility();
 		$this->Feeder_id->setVisibility();
 		$this->hideFieldsForAddEdit();
@@ -713,14 +721,13 @@ class t101_jo_head_add extends t101_jo_head
 		$this->id->CurrentValue = NULL;
 		$this->id->OldValue = $this->id->CurrentValue;
 		$this->Export_Import->CurrentValue = "Export";
+		$this->No_BL->CurrentValue = "-";
 		$this->Nomor_JO->CurrentValue = "-";
 		$this->Shipper_id->CurrentValue = NULL;
 		$this->Shipper_id->OldValue = $this->Shipper_id->CurrentValue;
 		$this->Party->CurrentValue = NULL;
 		$this->Party->OldValue = $this->Party->CurrentValue;
 		$this->Container->CurrentValue = "40";
-		$this->Tanggal_Stuffing->CurrentValue = NULL;
-		$this->Tanggal_Stuffing->OldValue = $this->Tanggal_Stuffing->CurrentValue;
 		$this->Destination_id->CurrentValue = NULL;
 		$this->Destination_id->OldValue = $this->Destination_id->CurrentValue;
 		$this->Feeder_id->CurrentValue = NULL;
@@ -741,6 +748,15 @@ class t101_jo_head_add extends t101_jo_head
 				$this->Export_Import->Visible = FALSE; // Disable update for API request
 			else
 				$this->Export_Import->setFormValue($val);
+		}
+
+		// Check field name 'No_BL' first before field var 'x_No_BL'
+		$val = $CurrentForm->hasValue("No_BL") ? $CurrentForm->getValue("No_BL") : $CurrentForm->getValue("x_No_BL");
+		if (!$this->No_BL->IsDetailKey) {
+			if (IsApi() && $val == NULL)
+				$this->No_BL->Visible = FALSE; // Disable update for API request
+			else
+				$this->No_BL->setFormValue($val);
 		}
 
 		// Check field name 'Nomor_JO' first before field var 'x_Nomor_JO'
@@ -779,16 +795,6 @@ class t101_jo_head_add extends t101_jo_head
 				$this->Container->setFormValue($val);
 		}
 
-		// Check field name 'Tanggal_Stuffing' first before field var 'x_Tanggal_Stuffing'
-		$val = $CurrentForm->hasValue("Tanggal_Stuffing") ? $CurrentForm->getValue("Tanggal_Stuffing") : $CurrentForm->getValue("x_Tanggal_Stuffing");
-		if (!$this->Tanggal_Stuffing->IsDetailKey) {
-			if (IsApi() && $val == NULL)
-				$this->Tanggal_Stuffing->Visible = FALSE; // Disable update for API request
-			else
-				$this->Tanggal_Stuffing->setFormValue($val);
-			$this->Tanggal_Stuffing->CurrentValue = UnFormatDateTime($this->Tanggal_Stuffing->CurrentValue, 11);
-		}
-
 		// Check field name 'Destination_id' first before field var 'x_Destination_id'
 		$val = $CurrentForm->hasValue("Destination_id") ? $CurrentForm->getValue("Destination_id") : $CurrentForm->getValue("x_Destination_id");
 		if (!$this->Destination_id->IsDetailKey) {
@@ -816,12 +822,11 @@ class t101_jo_head_add extends t101_jo_head
 	{
 		global $CurrentForm;
 		$this->Export_Import->CurrentValue = $this->Export_Import->FormValue;
+		$this->No_BL->CurrentValue = $this->No_BL->FormValue;
 		$this->Nomor_JO->CurrentValue = $this->Nomor_JO->FormValue;
 		$this->Shipper_id->CurrentValue = $this->Shipper_id->FormValue;
 		$this->Party->CurrentValue = $this->Party->FormValue;
 		$this->Container->CurrentValue = $this->Container->FormValue;
-		$this->Tanggal_Stuffing->CurrentValue = $this->Tanggal_Stuffing->FormValue;
-		$this->Tanggal_Stuffing->CurrentValue = UnFormatDateTime($this->Tanggal_Stuffing->CurrentValue, 11);
 		$this->Destination_id->CurrentValue = $this->Destination_id->FormValue;
 		$this->Feeder_id->CurrentValue = $this->Feeder_id->FormValue;
 	}
@@ -863,11 +868,11 @@ class t101_jo_head_add extends t101_jo_head
 			return;
 		$this->id->setDbValue($row['id']);
 		$this->Export_Import->setDbValue($row['Export_Import']);
+		$this->No_BL->setDbValue($row['No_BL']);
 		$this->Nomor_JO->setDbValue($row['Nomor_JO']);
 		$this->Shipper_id->setDbValue($row['Shipper_id']);
 		$this->Party->setDbValue($row['Party']);
 		$this->Container->setDbValue($row['Container']);
-		$this->Tanggal_Stuffing->setDbValue($row['Tanggal_Stuffing']);
 		$this->Destination_id->setDbValue($row['Destination_id']);
 		$this->Feeder_id->setDbValue($row['Feeder_id']);
 	}
@@ -879,11 +884,11 @@ class t101_jo_head_add extends t101_jo_head
 		$row = [];
 		$row['id'] = $this->id->CurrentValue;
 		$row['Export_Import'] = $this->Export_Import->CurrentValue;
+		$row['No_BL'] = $this->No_BL->CurrentValue;
 		$row['Nomor_JO'] = $this->Nomor_JO->CurrentValue;
 		$row['Shipper_id'] = $this->Shipper_id->CurrentValue;
 		$row['Party'] = $this->Party->CurrentValue;
 		$row['Container'] = $this->Container->CurrentValue;
-		$row['Tanggal_Stuffing'] = $this->Tanggal_Stuffing->CurrentValue;
 		$row['Destination_id'] = $this->Destination_id->CurrentValue;
 		$row['Feeder_id'] = $this->Feeder_id->CurrentValue;
 		return $row;
@@ -925,11 +930,11 @@ class t101_jo_head_add extends t101_jo_head
 		// Common render codes for all row types
 		// id
 		// Export_Import
+		// No_BL
 		// Nomor_JO
 		// Shipper_id
 		// Party
 		// Container
-		// Tanggal_Stuffing
 		// Destination_id
 		// Feeder_id
 
@@ -946,6 +951,10 @@ class t101_jo_head_add extends t101_jo_head
 				$this->Export_Import->ViewValue = NULL;
 			}
 			$this->Export_Import->ViewCustomAttributes = "";
+
+			// No_BL
+			$this->No_BL->ViewValue = $this->No_BL->CurrentValue;
+			$this->No_BL->ViewCustomAttributes = "";
 
 			// Nomor_JO
 			$this->Nomor_JO->ViewValue = $this->Nomor_JO->CurrentValue;
@@ -985,11 +994,6 @@ class t101_jo_head_add extends t101_jo_head
 				$this->Container->ViewValue = NULL;
 			}
 			$this->Container->ViewCustomAttributes = "";
-
-			// Tanggal_Stuffing
-			$this->Tanggal_Stuffing->ViewValue = $this->Tanggal_Stuffing->CurrentValue;
-			$this->Tanggal_Stuffing->ViewValue = FormatDateTime($this->Tanggal_Stuffing->ViewValue, 11);
-			$this->Tanggal_Stuffing->ViewCustomAttributes = "";
 
 			// Destination_id
 			$curVal = strval($this->Destination_id->CurrentValue);
@@ -1040,6 +1044,11 @@ class t101_jo_head_add extends t101_jo_head
 			$this->Export_Import->HrefValue = "";
 			$this->Export_Import->TooltipValue = "";
 
+			// No_BL
+			$this->No_BL->LinkCustomAttributes = "";
+			$this->No_BL->HrefValue = "";
+			$this->No_BL->TooltipValue = "";
+
 			// Nomor_JO
 			$this->Nomor_JO->LinkCustomAttributes = "";
 			$this->Nomor_JO->HrefValue = "";
@@ -1060,11 +1069,6 @@ class t101_jo_head_add extends t101_jo_head
 			$this->Container->HrefValue = "";
 			$this->Container->TooltipValue = "";
 
-			// Tanggal_Stuffing
-			$this->Tanggal_Stuffing->LinkCustomAttributes = "";
-			$this->Tanggal_Stuffing->HrefValue = "";
-			$this->Tanggal_Stuffing->TooltipValue = "";
-
 			// Destination_id
 			$this->Destination_id->LinkCustomAttributes = "";
 			$this->Destination_id->HrefValue = "";
@@ -1079,6 +1083,14 @@ class t101_jo_head_add extends t101_jo_head
 			// Export_Import
 			$this->Export_Import->EditCustomAttributes = "";
 			$this->Export_Import->EditValue = $this->Export_Import->options(FALSE);
+
+			// No_BL
+			$this->No_BL->EditAttrs["class"] = "form-control";
+			$this->No_BL->EditCustomAttributes = "";
+			if (REMOVE_XSS)
+				$this->No_BL->CurrentValue = HtmlDecode($this->No_BL->CurrentValue);
+			$this->No_BL->EditValue = HtmlEncode($this->No_BL->CurrentValue);
+			$this->No_BL->PlaceHolder = RemoveHtml($this->No_BL->caption());
 
 			// Nomor_JO
 			$this->Nomor_JO->EditAttrs["class"] = "form-control";
@@ -1120,12 +1132,6 @@ class t101_jo_head_add extends t101_jo_head
 			// Container
 			$this->Container->EditCustomAttributes = "";
 			$this->Container->EditValue = $this->Container->options(FALSE);
-
-			// Tanggal_Stuffing
-			$this->Tanggal_Stuffing->EditAttrs["class"] = "form-control";
-			$this->Tanggal_Stuffing->EditCustomAttributes = "";
-			$this->Tanggal_Stuffing->EditValue = HtmlEncode(FormatDateTime($this->Tanggal_Stuffing->CurrentValue, 11));
-			$this->Tanggal_Stuffing->PlaceHolder = RemoveHtml($this->Tanggal_Stuffing->caption());
 
 			// Destination_id
 			$this->Destination_id->EditAttrs["class"] = "form-control";
@@ -1179,6 +1185,10 @@ class t101_jo_head_add extends t101_jo_head
 			$this->Export_Import->LinkCustomAttributes = "";
 			$this->Export_Import->HrefValue = "";
 
+			// No_BL
+			$this->No_BL->LinkCustomAttributes = "";
+			$this->No_BL->HrefValue = "";
+
 			// Nomor_JO
 			$this->Nomor_JO->LinkCustomAttributes = "";
 			$this->Nomor_JO->HrefValue = "";
@@ -1194,10 +1204,6 @@ class t101_jo_head_add extends t101_jo_head
 			// Container
 			$this->Container->LinkCustomAttributes = "";
 			$this->Container->HrefValue = "";
-
-			// Tanggal_Stuffing
-			$this->Tanggal_Stuffing->LinkCustomAttributes = "";
-			$this->Tanggal_Stuffing->HrefValue = "";
 
 			// Destination_id
 			$this->Destination_id->LinkCustomAttributes = "";
@@ -1236,6 +1242,11 @@ class t101_jo_head_add extends t101_jo_head
 				AddMessage($FormError, str_replace("%s", $this->Export_Import->caption(), $this->Export_Import->RequiredErrorMessage));
 			}
 		}
+		if ($this->No_BL->Required) {
+			if (!$this->No_BL->IsDetailKey && $this->No_BL->FormValue != NULL && $this->No_BL->FormValue == "") {
+				AddMessage($FormError, str_replace("%s", $this->No_BL->caption(), $this->No_BL->RequiredErrorMessage));
+			}
+		}
 		if ($this->Nomor_JO->Required) {
 			if (!$this->Nomor_JO->IsDetailKey && $this->Nomor_JO->FormValue != NULL && $this->Nomor_JO->FormValue == "") {
 				AddMessage($FormError, str_replace("%s", $this->Nomor_JO->caption(), $this->Nomor_JO->RequiredErrorMessage));
@@ -1258,14 +1269,6 @@ class t101_jo_head_add extends t101_jo_head
 			if ($this->Container->FormValue == "") {
 				AddMessage($FormError, str_replace("%s", $this->Container->caption(), $this->Container->RequiredErrorMessage));
 			}
-		}
-		if ($this->Tanggal_Stuffing->Required) {
-			if (!$this->Tanggal_Stuffing->IsDetailKey && $this->Tanggal_Stuffing->FormValue != NULL && $this->Tanggal_Stuffing->FormValue == "") {
-				AddMessage($FormError, str_replace("%s", $this->Tanggal_Stuffing->caption(), $this->Tanggal_Stuffing->RequiredErrorMessage));
-			}
-		}
-		if (!CheckEuroDate($this->Tanggal_Stuffing->FormValue)) {
-			AddMessage($FormError, $this->Tanggal_Stuffing->errorMessage());
 		}
 		if ($this->Destination_id->Required) {
 			if (!$this->Destination_id->IsDetailKey && $this->Destination_id->FormValue != NULL && $this->Destination_id->FormValue == "") {
@@ -1317,6 +1320,9 @@ class t101_jo_head_add extends t101_jo_head
 		// Export_Import
 		$this->Export_Import->setDbValueDef($rsnew, $this->Export_Import->CurrentValue, "", strval($this->Export_Import->CurrentValue) == "");
 
+		// No_BL
+		$this->No_BL->setDbValueDef($rsnew, $this->No_BL->CurrentValue, NULL, strval($this->No_BL->CurrentValue) == "");
+
 		// Nomor_JO
 		$this->Nomor_JO->setDbValueDef($rsnew, $this->Nomor_JO->CurrentValue, "", strval($this->Nomor_JO->CurrentValue) == "");
 
@@ -1328,9 +1334,6 @@ class t101_jo_head_add extends t101_jo_head
 
 		// Container
 		$this->Container->setDbValueDef($rsnew, $this->Container->CurrentValue, "", strval($this->Container->CurrentValue) == "");
-
-		// Tanggal_Stuffing
-		$this->Tanggal_Stuffing->setDbValueDef($rsnew, UnFormatDateTime($this->Tanggal_Stuffing->CurrentValue, 11), CurrentDate(), FALSE);
 
 		// Destination_id
 		$this->Destination_id->setDbValueDef($rsnew, $this->Destination_id->CurrentValue, 0, FALSE);

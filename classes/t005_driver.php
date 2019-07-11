@@ -21,6 +21,14 @@ class t005_driver extends DbTable
 	public $OffsetColumnClass = "col-sm-10 offset-sm-2";
 	public $TableLeftColumnClass = "w-col-2";
 
+	// Audit trail
+	public $AuditTrailOnAdd = TRUE;
+	public $AuditTrailOnEdit = TRUE;
+	public $AuditTrailOnDelete = TRUE;
+	public $AuditTrailOnView = FALSE;
+	public $AuditTrailOnViewData = FALSE;
+	public $AuditTrailOnSearch = FALSE;
+
 	// Export
 	public $ExportDoc;
 
@@ -58,7 +66,7 @@ class t005_driver extends DbTable
 		$this->DetailEdit = TRUE; // Allow detail edit
 		$this->DetailView = TRUE; // Allow detail view
 		$this->ShowMultipleDetails = FALSE; // Show multiple details
-		$this->GridAddRowCount = 5;
+		$this->GridAddRowCount = 1;
 		$this->AllowAddDeleteRow = TRUE; // Allow add/delete row
 		$this->UserIDAllowSecurity = 0; // User ID Allow
 		$this->BasicSearch = new BasicSearch($this->TableVar);
@@ -72,11 +80,14 @@ class t005_driver extends DbTable
 		$this->fields['id'] = &$this->id;
 
 		// TruckingVendor_id
-		$this->TruckingVendor_id = new DbField('t005_driver', 't005_driver', 'x_TruckingVendor_id', 'TruckingVendor_id', '`TruckingVendor_id`', '`TruckingVendor_id`', 3, -1, FALSE, '`TruckingVendor_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'TEXT');
+		$this->TruckingVendor_id = new DbField('t005_driver', 't005_driver', 'x_TruckingVendor_id', 'TruckingVendor_id', '`TruckingVendor_id`', '`TruckingVendor_id`', 3, -1, FALSE, '`TruckingVendor_id`', FALSE, FALSE, FALSE, 'FORMATTED TEXT', 'SELECT');
 		$this->TruckingVendor_id->IsForeignKey = TRUE; // Foreign key field
 		$this->TruckingVendor_id->Nullable = FALSE; // NOT NULL field
 		$this->TruckingVendor_id->Required = TRUE; // Required field
 		$this->TruckingVendor_id->Sortable = TRUE; // Allow sort
+		$this->TruckingVendor_id->UsePleaseSelect = TRUE; // Use PleaseSelect by default
+		$this->TruckingVendor_id->PleaseSelectText = $Language->phrase("PleaseSelect"); // PleaseSelect text
+		$this->TruckingVendor_id->Lookup = new Lookup('TruckingVendor_id', 't006_trucking_vendor', FALSE, 'id', ["Nama","","",""], [], [], [], [], [], [], '', '');
 		$this->TruckingVendor_id->DefaultErrorMessage = $Language->phrase("IncorrectInteger");
 		$this->fields['TruckingVendor_id'] = &$this->TruckingVendor_id;
 
@@ -438,6 +449,8 @@ class t005_driver extends DbTable
 			// Get insert id if necessary
 			$this->id->setDbValue($conn->insert_ID());
 			$rs['id'] = $this->id->DbValue;
+			if ($this->AuditTrailOnAdd)
+				$this->writeAuditTrailOnAdd($rs);
 		}
 		return $success;
 	}
@@ -467,6 +480,13 @@ class t005_driver extends DbTable
 	{
 		$conn = &$this->getConnection();
 		$success = $conn->execute($this->updateSql($rs, $where, $curfilter));
+		if ($success && $this->AuditTrailOnEdit && $rsold) {
+			$rsaudit = $rs;
+			$fldname = 'id';
+			if (!array_key_exists($fldname, $rsaudit))
+				$rsaudit[$fldname] = $rsold[$fldname];
+			$this->writeAuditTrailOnEdit($rsold, $rsaudit);
+		}
 		return $success;
 	}
 
@@ -496,6 +516,8 @@ class t005_driver extends DbTable
 		$conn = &$this->getConnection();
 		if ($success)
 			$success = $conn->execute($this->deleteSql($rs, $where, $curfilter));
+		if ($success && $this->AuditTrailOnDelete)
+			$this->writeAuditTrailOnDelete($rs);
 		return $success;
 	}
 
@@ -766,8 +788,25 @@ class t005_driver extends DbTable
 		$this->id->ViewCustomAttributes = "";
 
 		// TruckingVendor_id
-		$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
-		$this->TruckingVendor_id->ViewValue = FormatNumber($this->TruckingVendor_id->ViewValue, 0, -2, -2, -2);
+		$curVal = strval($this->TruckingVendor_id->CurrentValue);
+		if ($curVal <> "") {
+			$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->lookupCacheOption($curVal);
+			if ($this->TruckingVendor_id->ViewValue === NULL) { // Lookup from database
+				$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+				$sqlWrk = $this->TruckingVendor_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = $rswrk->fields('df');
+					$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->displayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
+				}
+			}
+		} else {
+			$this->TruckingVendor_id->ViewValue = NULL;
+		}
 		$this->TruckingVendor_id->ViewCustomAttributes = "";
 
 		// Nama
@@ -833,12 +872,27 @@ class t005_driver extends DbTable
 		$this->TruckingVendor_id->EditCustomAttributes = "";
 		if ($this->TruckingVendor_id->getSessionValue() <> "") {
 			$this->TruckingVendor_id->CurrentValue = $this->TruckingVendor_id->getSessionValue();
-		$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
-		$this->TruckingVendor_id->ViewValue = FormatNumber($this->TruckingVendor_id->ViewValue, 0, -2, -2, -2);
+		$curVal = strval($this->TruckingVendor_id->CurrentValue);
+		if ($curVal <> "") {
+			$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->lookupCacheOption($curVal);
+			if ($this->TruckingVendor_id->ViewValue === NULL) { // Lookup from database
+				$filterWrk = "`id`" . SearchString("=", $curVal, DATATYPE_NUMBER, "");
+				$sqlWrk = $this->TruckingVendor_id->Lookup->getSql(FALSE, $filterWrk, '', $this);
+				$rswrk = Conn()->execute($sqlWrk);
+				if ($rswrk && !$rswrk->EOF) { // Lookup values found
+					$arwrk = array();
+					$arwrk[1] = $rswrk->fields('df');
+					$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->displayValue($arwrk);
+					$rswrk->Close();
+				} else {
+					$this->TruckingVendor_id->ViewValue = $this->TruckingVendor_id->CurrentValue;
+				}
+			}
+		} else {
+			$this->TruckingVendor_id->ViewValue = NULL;
+		}
 		$this->TruckingVendor_id->ViewCustomAttributes = "";
 		} else {
-		$this->TruckingVendor_id->EditValue = $this->TruckingVendor_id->CurrentValue;
-		$this->TruckingVendor_id->PlaceHolder = RemoveHtml($this->TruckingVendor_id->caption());
 		}
 
 		// Nama
@@ -894,7 +948,6 @@ class t005_driver extends DbTable
 			if ($doc->Horizontal) { // Horizontal format, write header
 				$doc->beginExportRow();
 				if ($exportPageType == "view") {
-					$doc->exportCaption($this->id);
 					$doc->exportCaption($this->TruckingVendor_id);
 					$doc->exportCaption($this->Nama);
 					$doc->exportCaption($this->No_HP_1);
@@ -936,7 +989,6 @@ class t005_driver extends DbTable
 				if (!$doc->ExportCustom) {
 					$doc->beginExportRow($rowCnt); // Allow CSS styles if enabled
 					if ($exportPageType == "view") {
-						$doc->exportField($this->id);
 						$doc->exportField($this->TruckingVendor_id);
 						$doc->exportField($this->Nama);
 						$doc->exportField($this->No_HP_1);
@@ -1061,6 +1113,138 @@ class t005_driver extends DbTable
 
 		// No binary fields
 		return FALSE;
+	}
+
+	// Write Audit Trail start/end for grid update
+	public function writeAuditTrailDummy($typ)
+	{
+		$table = 't005_driver';
+		$usr = CurrentUserName();
+		WriteAuditTrail("log", DbCurrentDateTime(), ScriptName(), $usr, $typ, $table, "", "", "", "");
+	}
+
+	// Write Audit Trail (add page)
+	public function writeAuditTrailOnAdd(&$rs)
+	{
+		global $Language;
+		if (!$this->AuditTrailOnAdd)
+			return;
+		$table = 't005_driver';
+
+		// Get key value
+		$key = "";
+		if ($key <> "")
+			$key .= $GLOBALS["COMPOSITE_KEY_SEPARATOR"];
+		$key .= $rs['id'];
+
+		// Write Audit Trail
+		$dt = DbCurrentDateTime();
+		$id = ScriptName();
+		$usr = CurrentUserName();
+		foreach (array_keys($rs) as $fldname) {
+			if (array_key_exists($fldname, $this->fields) && $this->fields[$fldname]->DataType <> DATATYPE_BLOB) { // Ignore BLOB fields
+				if ($this->fields[$fldname]->HtmlTag == "PASSWORD") {
+					$newvalue = $Language->phrase("PasswordMask"); // Password Field
+				} elseif ($this->fields[$fldname]->DataType == DATATYPE_MEMO) {
+					if (AUDIT_TRAIL_TO_DATABASE)
+						$newvalue = $rs[$fldname];
+					else
+						$newvalue = "[MEMO]"; // Memo Field
+				} elseif ($this->fields[$fldname]->DataType == DATATYPE_XML) {
+					$newvalue = "[XML]"; // XML Field
+				} else {
+					$newvalue = $rs[$fldname];
+				}
+				WriteAuditTrail("log", $dt, $id, $usr, "A", $table, $fldname, $key, "", $newvalue);
+			}
+		}
+	}
+
+	// Write Audit Trail (edit page)
+	public function writeAuditTrailOnEdit(&$rsold, &$rsnew)
+	{
+		global $Language;
+		if (!$this->AuditTrailOnEdit)
+			return;
+		$table = 't005_driver';
+
+		// Get key value
+		$key = "";
+		if ($key <> "")
+			$key .= $GLOBALS["COMPOSITE_KEY_SEPARATOR"];
+		$key .= $rsold['id'];
+
+		// Write Audit Trail
+		$dt = DbCurrentDateTime();
+		$id = ScriptName();
+		$usr = CurrentUserName();
+		foreach (array_keys($rsnew) as $fldname) {
+			if (array_key_exists($fldname, $this->fields) && array_key_exists($fldname, $rsold) && $this->fields[$fldname]->DataType <> DATATYPE_BLOB) { // Ignore BLOB fields
+				if ($this->fields[$fldname]->DataType == DATATYPE_DATE) { // DateTime field
+					$modified = (FormatDateTime($rsold[$fldname], 0) <> FormatDateTime($rsnew[$fldname], 0));
+				} else {
+					$modified = !CompareValue($rsold[$fldname], $rsnew[$fldname]);
+				}
+				if ($modified) {
+					if ($this->fields[$fldname]->HtmlTag == "PASSWORD") { // Password Field
+						$oldvalue = $Language->phrase("PasswordMask");
+						$newvalue = $Language->phrase("PasswordMask");
+					} elseif ($this->fields[$fldname]->DataType == DATATYPE_MEMO) { // Memo field
+						if (AUDIT_TRAIL_TO_DATABASE) {
+							$oldvalue = $rsold[$fldname];
+							$newvalue = $rsnew[$fldname];
+						} else {
+							$oldvalue = "[MEMO]";
+							$newvalue = "[MEMO]";
+						}
+					} elseif ($this->fields[$fldname]->DataType == DATATYPE_XML) { // XML field
+						$oldvalue = "[XML]";
+						$newvalue = "[XML]";
+					} else {
+						$oldvalue = $rsold[$fldname];
+						$newvalue = $rsnew[$fldname];
+					}
+					WriteAuditTrail("log", $dt, $id, $usr, "U", $table, $fldname, $key, $oldvalue, $newvalue);
+				}
+			}
+		}
+	}
+
+	// Write Audit Trail (delete page)
+	public function writeAuditTrailOnDelete(&$rs)
+	{
+		global $Language;
+		if (!$this->AuditTrailOnDelete)
+			return;
+		$table = 't005_driver';
+
+		// Get key value
+		$key = "";
+		if ($key <> "")
+			$key .= $GLOBALS["COMPOSITE_KEY_SEPARATOR"];
+		$key .= $rs['id'];
+
+		// Write Audit Trail
+		$dt = DbCurrentDateTime();
+		$id = ScriptName();
+		$curUser = CurrentUserName();
+		foreach (array_keys($rs) as $fldname) {
+			if (array_key_exists($fldname, $this->fields) && $this->fields[$fldname]->DataType <> DATATYPE_BLOB) { // Ignore BLOB fields
+				if ($this->fields[$fldname]->HtmlTag == "PASSWORD") {
+					$oldvalue = $Language->phrase("PasswordMask"); // Password Field
+				} elseif ($this->fields[$fldname]->DataType == DATATYPE_MEMO) {
+					if (AUDIT_TRAIL_TO_DATABASE)
+						$oldvalue = $rs[$fldname];
+					else
+						$oldvalue = "[MEMO]"; // Memo field
+				} elseif ($this->fields[$fldname]->DataType == DATATYPE_XML) {
+					$oldvalue = "[XML]"; // XML field
+				} else {
+					$oldvalue = $rs[$fldname];
+				}
+				WriteAuditTrail("log", $dt, $id, $curUser, "D", $table, $fldname, $key, $oldvalue, "");
+			}
+		}
 	}
 
 	// Table level events

@@ -58,6 +58,11 @@ ft101_jo_headadd.validate = function() {
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
 				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_head->Export_Import->caption(), $t101_jo_head->Export_Import->RequiredErrorMessage)) ?>");
 		<?php } ?>
+		<?php if ($t101_jo_head_add->No_BL->Required) { ?>
+			elm = this.getElements("x" + infix + "_No_BL");
+			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
+				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_head->No_BL->caption(), $t101_jo_head->No_BL->RequiredErrorMessage)) ?>");
+		<?php } ?>
 		<?php if ($t101_jo_head_add->Nomor_JO->Required) { ?>
 			elm = this.getElements("x" + infix + "_Nomor_JO");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -81,14 +86,6 @@ ft101_jo_headadd.validate = function() {
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
 				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_head->Container->caption(), $t101_jo_head->Container->RequiredErrorMessage)) ?>");
 		<?php } ?>
-		<?php if ($t101_jo_head_add->Tanggal_Stuffing->Required) { ?>
-			elm = this.getElements("x" + infix + "_Tanggal_Stuffing");
-			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
-				return this.onError(elm, "<?php echo JsEncode(str_replace("%s", $t101_jo_head->Tanggal_Stuffing->caption(), $t101_jo_head->Tanggal_Stuffing->RequiredErrorMessage)) ?>");
-		<?php } ?>
-			elm = this.getElements("x" + infix + "_Tanggal_Stuffing");
-			if (elm && !ew.checkEuroDate(elm.value))
-				return this.onError(elm, "<?php echo JsEncode($t101_jo_head->Tanggal_Stuffing->errorMessage()) ?>");
 		<?php if ($t101_jo_head_add->Destination_id->Required) { ?>
 			elm = this.getElements("x" + infix + "_Destination_id");
 			if (elm && !ew.isHidden(elm) && !ew.hasValue(elm))
@@ -169,12 +166,22 @@ $t101_jo_head_add->showMessage();
 <?php echo $t101_jo_head->Export_Import->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
+<?php if ($t101_jo_head->No_BL->Visible) { // No_BL ?>
+	<div id="r_No_BL" class="form-group row">
+		<label id="elh_t101_jo_head_No_BL" for="x_No_BL" class="<?php echo $t101_jo_head_add->LeftColumnClass ?>"><?php echo $t101_jo_head->No_BL->caption() ?><?php echo ($t101_jo_head->No_BL->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
+		<div class="<?php echo $t101_jo_head_add->RightColumnClass ?>"><div<?php echo $t101_jo_head->No_BL->cellAttributes() ?>>
+<span id="el_t101_jo_head_No_BL">
+<input type="text" data-table="t101_jo_head" data-field="x_No_BL" name="x_No_BL" id="x_No_BL" size="15" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->No_BL->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->No_BL->EditValue ?>"<?php echo $t101_jo_head->No_BL->editAttributes() ?>>
+</span>
+<?php echo $t101_jo_head->No_BL->CustomMsg ?></div></div>
+	</div>
+<?php } ?>
 <?php if ($t101_jo_head->Nomor_JO->Visible) { // Nomor_JO ?>
 	<div id="r_Nomor_JO" class="form-group row">
 		<label id="elh_t101_jo_head_Nomor_JO" for="x_Nomor_JO" class="<?php echo $t101_jo_head_add->LeftColumnClass ?>"><?php echo $t101_jo_head->Nomor_JO->caption() ?><?php echo ($t101_jo_head->Nomor_JO->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
 		<div class="<?php echo $t101_jo_head_add->RightColumnClass ?>"><div<?php echo $t101_jo_head->Nomor_JO->cellAttributes() ?>>
 <span id="el_t101_jo_head_Nomor_JO">
-<input type="text" data-table="t101_jo_head" data-field="x_Nomor_JO" name="x_Nomor_JO" id="x_Nomor_JO" size="30" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->Nomor_JO->EditValue ?>"<?php echo $t101_jo_head->Nomor_JO->editAttributes() ?>>
+<input type="text" data-table="t101_jo_head" data-field="x_Nomor_JO" name="x_Nomor_JO" id="x_Nomor_JO" size="10" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->Nomor_JO->EditValue ?>"<?php echo $t101_jo_head->Nomor_JO->editAttributes() ?>>
 </span>
 <?php echo $t101_jo_head->Nomor_JO->CustomMsg ?></div></div>
 	</div>
@@ -216,21 +223,6 @@ $t101_jo_head_add->showMessage();
 </div></div>
 </span>
 <?php echo $t101_jo_head->Container->CustomMsg ?></div></div>
-	</div>
-<?php } ?>
-<?php if ($t101_jo_head->Tanggal_Stuffing->Visible) { // Tanggal_Stuffing ?>
-	<div id="r_Tanggal_Stuffing" class="form-group row">
-		<label id="elh_t101_jo_head_Tanggal_Stuffing" for="x_Tanggal_Stuffing" class="<?php echo $t101_jo_head_add->LeftColumnClass ?>"><?php echo $t101_jo_head->Tanggal_Stuffing->caption() ?><?php echo ($t101_jo_head->Tanggal_Stuffing->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
-		<div class="<?php echo $t101_jo_head_add->RightColumnClass ?>"><div<?php echo $t101_jo_head->Tanggal_Stuffing->cellAttributes() ?>>
-<span id="el_t101_jo_head_Tanggal_Stuffing">
-<input type="text" data-table="t101_jo_head" data-field="x_Tanggal_Stuffing" data-format="11" name="x_Tanggal_Stuffing" id="x_Tanggal_Stuffing" placeholder="<?php echo HtmlEncode($t101_jo_head->Tanggal_Stuffing->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->Tanggal_Stuffing->EditValue ?>"<?php echo $t101_jo_head->Tanggal_Stuffing->editAttributes() ?>>
-<?php if (!$t101_jo_head->Tanggal_Stuffing->ReadOnly && !$t101_jo_head->Tanggal_Stuffing->Disabled && !isset($t101_jo_head->Tanggal_Stuffing->EditAttrs["readonly"]) && !isset($t101_jo_head->Tanggal_Stuffing->EditAttrs["disabled"])) { ?>
-<script>
-ew.createDateTimePicker("ft101_jo_headadd", "x_Tanggal_Stuffing", {"ignoreReadonly":true,"useCurrent":false,"format":11});
-</script>
-<?php } ?>
-</span>
-<?php echo $t101_jo_head->Tanggal_Stuffing->CustomMsg ?></div></div>
 	</div>
 <?php } ?>
 <?php if ($t101_jo_head->Destination_id->Visible) { // Destination_id ?>
@@ -294,21 +286,19 @@ if (DEBUG_ENABLED)
 // document.write("page loaded");
 	// tampilkan TANGGAL HARI INI
 
-	$("#x_Tanggal_Stuffing").val("<?php echo date('d-m-Y');?>");
-$(document).ready(
-	function() {
-		$("#x_Tanggal_Stuffing").change(
-			function() {
-				var str = this.value;
-				var res = str.slice(0, -8);
-				res = res + "00:00:00";
-				$("#x_Tanggal_Stuffing").val(res); //alert(res);
-			}
-		);
-	}
-);
-
-//alert($("#x_Tanggal_Stuffing").val());
+	$("[data-table=t101_jo_detail][data-field=x_Tanggal_Stuffing]").val("<?php echo date('d-m-Y');?>");
+	$(document).ready(
+		function() {
+			$("[data-table=t101_jo_detail][data-field=x_Tanggal_Stuffing]").change(
+				function() {
+					var str = this.value;
+					var res = str.slice(0, -8);
+					res = res + "00:00:00";
+					$("[data-table=t101_jo_detail][data-field=x_Tanggal_Stuffing]").val(res); //alert(res);
+				}
+			);
+		}
+	);
 </script>
 <?php include_once "footer.php" ?>
 <?php
