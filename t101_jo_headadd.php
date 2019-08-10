@@ -171,7 +171,7 @@ $t101_jo_head_add->showMessage();
 		<label id="elh_t101_jo_head_No_BL" for="x_No_BL" class="<?php echo $t101_jo_head_add->LeftColumnClass ?>"><?php echo $t101_jo_head->No_BL->caption() ?><?php echo ($t101_jo_head->No_BL->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
 		<div class="<?php echo $t101_jo_head_add->RightColumnClass ?>"><div<?php echo $t101_jo_head->No_BL->cellAttributes() ?>>
 <span id="el_t101_jo_head_No_BL">
-<input type="text" data-table="t101_jo_head" data-field="x_No_BL" name="x_No_BL" id="x_No_BL" size="15" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->No_BL->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->No_BL->EditValue ?>"<?php echo $t101_jo_head->No_BL->editAttributes() ?>>
+<input type="text" data-table="t101_jo_head" data-field="x_No_BL" name="x_No_BL" id="x_No_BL" size="20" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->No_BL->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->No_BL->EditValue ?>"<?php echo $t101_jo_head->No_BL->editAttributes() ?>>
 </span>
 <?php echo $t101_jo_head->No_BL->CustomMsg ?></div></div>
 	</div>
@@ -181,7 +181,7 @@ $t101_jo_head_add->showMessage();
 		<label id="elh_t101_jo_head_Nomor_JO" for="x_Nomor_JO" class="<?php echo $t101_jo_head_add->LeftColumnClass ?>"><?php echo $t101_jo_head->Nomor_JO->caption() ?><?php echo ($t101_jo_head->Nomor_JO->Required) ? $Language->phrase("FieldRequiredIndicator") : "" ?></label>
 		<div class="<?php echo $t101_jo_head_add->RightColumnClass ?>"><div<?php echo $t101_jo_head->Nomor_JO->cellAttributes() ?>>
 <span id="el_t101_jo_head_Nomor_JO">
-<input type="text" data-table="t101_jo_head" data-field="x_Nomor_JO" name="x_Nomor_JO" id="x_Nomor_JO" size="10" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->Nomor_JO->EditValue ?>"<?php echo $t101_jo_head->Nomor_JO->editAttributes() ?>>
+<input type="text" data-table="t101_jo_head" data-field="x_Nomor_JO" name="x_Nomor_JO" id="x_Nomor_JO" size="20" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->Nomor_JO->EditValue ?>"<?php echo $t101_jo_head->Nomor_JO->editAttributes() ?>>
 </span>
 <?php echo $t101_jo_head->Nomor_JO->CustomMsg ?></div></div>
 	</div>

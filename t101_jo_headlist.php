@@ -250,7 +250,7 @@ $t101_jo_head_list->renderRow();
 		<label for="x_No_BL" class="ew-search-caption ew-label"><?php echo $t101_jo_head->No_BL->caption() ?></label>
 		<span class="ew-search-operator"><?php echo $Language->phrase("LIKE") ?><input type="hidden" name="z_No_BL" id="z_No_BL" value="LIKE"></span>
 		<span class="ew-search-field">
-<input type="text" data-table="t101_jo_head" data-field="x_No_BL" name="x_No_BL" id="x_No_BL" size="15" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->No_BL->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->No_BL->EditValue ?>"<?php echo $t101_jo_head->No_BL->editAttributes() ?>>
+<input type="text" data-table="t101_jo_head" data-field="x_No_BL" name="x_No_BL" id="x_No_BL" size="20" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->No_BL->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->No_BL->EditValue ?>"<?php echo $t101_jo_head->No_BL->editAttributes() ?>>
 </span>
 	</div>
 <?php } ?>
@@ -261,7 +261,7 @@ $t101_jo_head_list->renderRow();
 		<label for="x_Nomor_JO" class="ew-search-caption ew-label"><?php echo $t101_jo_head->Nomor_JO->caption() ?></label>
 		<span class="ew-search-operator"><?php echo $Language->phrase("LIKE") ?><input type="hidden" name="z_Nomor_JO" id="z_Nomor_JO" value="LIKE"></span>
 		<span class="ew-search-field">
-<input type="text" data-table="t101_jo_head" data-field="x_Nomor_JO" name="x_Nomor_JO" id="x_Nomor_JO" size="10" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->Nomor_JO->EditValue ?>"<?php echo $t101_jo_head->Nomor_JO->editAttributes() ?>>
+<input type="text" data-table="t101_jo_head" data-field="x_Nomor_JO" name="x_Nomor_JO" id="x_Nomor_JO" size="20" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->Nomor_JO->EditValue ?>"<?php echo $t101_jo_head->Nomor_JO->editAttributes() ?>>
 </span>
 	</div>
 <?php } ?>
@@ -569,13 +569,13 @@ $t101_jo_head_list->ListOptions->render("body", "left", $t101_jo_head_list->RowC
 		<td data-name="No_BL"<?php echo $t101_jo_head->No_BL->cellAttributes() ?>>
 <?php if ($t101_jo_head->RowType == ROWTYPE_ADD) { // Add record ?>
 <span id="el<?php echo $t101_jo_head_list->RowCnt ?>_t101_jo_head_No_BL" class="form-group t101_jo_head_No_BL">
-<input type="text" data-table="t101_jo_head" data-field="x_No_BL" name="x<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" id="x<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" size="15" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->No_BL->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->No_BL->EditValue ?>"<?php echo $t101_jo_head->No_BL->editAttributes() ?>>
+<input type="text" data-table="t101_jo_head" data-field="x_No_BL" name="x<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" id="x<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" size="20" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->No_BL->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->No_BL->EditValue ?>"<?php echo $t101_jo_head->No_BL->editAttributes() ?>>
 </span>
 <input type="hidden" data-table="t101_jo_head" data-field="x_No_BL" name="o<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" id="o<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" value="<?php echo HtmlEncode($t101_jo_head->No_BL->OldValue) ?>">
 <?php } ?>
 <?php if ($t101_jo_head->RowType == ROWTYPE_EDIT) { // Edit record ?>
 <span id="el<?php echo $t101_jo_head_list->RowCnt ?>_t101_jo_head_No_BL" class="form-group t101_jo_head_No_BL">
-<input type="text" data-table="t101_jo_head" data-field="x_No_BL" name="x<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" id="x<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" size="15" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->No_BL->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->No_BL->EditValue ?>"<?php echo $t101_jo_head->No_BL->editAttributes() ?>>
+<input type="text" data-table="t101_jo_head" data-field="x_No_BL" name="x<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" id="x<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" size="20" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->No_BL->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->No_BL->EditValue ?>"<?php echo $t101_jo_head->No_BL->editAttributes() ?>>
 </span>
 <?php } ?>
 <?php if ($t101_jo_head->RowType == ROWTYPE_VIEW) { // View record ?>
@@ -590,13 +590,13 @@ $t101_jo_head_list->ListOptions->render("body", "left", $t101_jo_head_list->RowC
 		<td data-name="Nomor_JO"<?php echo $t101_jo_head->Nomor_JO->cellAttributes() ?>>
 <?php if ($t101_jo_head->RowType == ROWTYPE_ADD) { // Add record ?>
 <span id="el<?php echo $t101_jo_head_list->RowCnt ?>_t101_jo_head_Nomor_JO" class="form-group t101_jo_head_Nomor_JO">
-<input type="text" data-table="t101_jo_head" data-field="x_Nomor_JO" name="x<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" id="x<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" size="10" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->Nomor_JO->EditValue ?>"<?php echo $t101_jo_head->Nomor_JO->editAttributes() ?>>
+<input type="text" data-table="t101_jo_head" data-field="x_Nomor_JO" name="x<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" id="x<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" size="20" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->Nomor_JO->EditValue ?>"<?php echo $t101_jo_head->Nomor_JO->editAttributes() ?>>
 </span>
 <input type="hidden" data-table="t101_jo_head" data-field="x_Nomor_JO" name="o<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" id="o<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" value="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->OldValue) ?>">
 <?php } ?>
 <?php if ($t101_jo_head->RowType == ROWTYPE_EDIT) { // Edit record ?>
 <span id="el<?php echo $t101_jo_head_list->RowCnt ?>_t101_jo_head_Nomor_JO" class="form-group t101_jo_head_Nomor_JO">
-<input type="text" data-table="t101_jo_head" data-field="x_Nomor_JO" name="x<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" id="x<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" size="10" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->Nomor_JO->EditValue ?>"<?php echo $t101_jo_head->Nomor_JO->editAttributes() ?>>
+<input type="text" data-table="t101_jo_head" data-field="x_Nomor_JO" name="x<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" id="x<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" size="20" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->Nomor_JO->EditValue ?>"<?php echo $t101_jo_head->Nomor_JO->editAttributes() ?>>
 </span>
 <?php } ?>
 <?php if ($t101_jo_head->RowType == ROWTYPE_VIEW) { // View record ?>
@@ -811,7 +811,7 @@ $t101_jo_head_list->ListOptions->render("body", "left", $t101_jo_head_list->RowI
 	<?php if ($t101_jo_head->No_BL->Visible) { // No_BL ?>
 		<td data-name="No_BL">
 <span id="el$rowindex$_t101_jo_head_No_BL" class="form-group t101_jo_head_No_BL">
-<input type="text" data-table="t101_jo_head" data-field="x_No_BL" name="x<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" id="x<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" size="15" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->No_BL->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->No_BL->EditValue ?>"<?php echo $t101_jo_head->No_BL->editAttributes() ?>>
+<input type="text" data-table="t101_jo_head" data-field="x_No_BL" name="x<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" id="x<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" size="20" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->No_BL->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->No_BL->EditValue ?>"<?php echo $t101_jo_head->No_BL->editAttributes() ?>>
 </span>
 <input type="hidden" data-table="t101_jo_head" data-field="x_No_BL" name="o<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" id="o<?php echo $t101_jo_head_list->RowIndex ?>_No_BL" value="<?php echo HtmlEncode($t101_jo_head->No_BL->OldValue) ?>">
 </td>
@@ -819,7 +819,7 @@ $t101_jo_head_list->ListOptions->render("body", "left", $t101_jo_head_list->RowI
 	<?php if ($t101_jo_head->Nomor_JO->Visible) { // Nomor_JO ?>
 		<td data-name="Nomor_JO">
 <span id="el$rowindex$_t101_jo_head_Nomor_JO" class="form-group t101_jo_head_Nomor_JO">
-<input type="text" data-table="t101_jo_head" data-field="x_Nomor_JO" name="x<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" id="x<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" size="10" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->Nomor_JO->EditValue ?>"<?php echo $t101_jo_head->Nomor_JO->editAttributes() ?>>
+<input type="text" data-table="t101_jo_head" data-field="x_Nomor_JO" name="x<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" id="x<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" size="20" maxlength="50" placeholder="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->getPlaceHolder()) ?>" value="<?php echo $t101_jo_head->Nomor_JO->EditValue ?>"<?php echo $t101_jo_head->Nomor_JO->editAttributes() ?>>
 </span>
 <input type="hidden" data-table="t101_jo_head" data-field="x_Nomor_JO" name="o<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" id="o<?php echo $t101_jo_head_list->RowIndex ?>_Nomor_JO" value="<?php echo HtmlEncode($t101_jo_head->Nomor_JO->OldValue) ?>">
 </td>
